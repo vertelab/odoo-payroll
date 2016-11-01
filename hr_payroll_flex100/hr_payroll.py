@@ -42,7 +42,7 @@ class hr_payslip(models.Model):
         @param contract_ids: list of contract id
         @return: returns a list of dict containing the input that should be applied for the given contract between date_from and date_to
         """
-        def was_on_leave(employee_id, datetime_day, context=None):
+			def was_on_leave(employee_id, datetime_day, context=None):
             res = False
             day = datetime_day.strftime("%Y-%m-%d")
             holiday_ids = self.pool.get('hr.holidays').search(cr, uid, [('state','=','validate'),('employee_id','=',employee_id),('type','=','remove'),('date_from','<=',day),('date_to','>=',day)])
