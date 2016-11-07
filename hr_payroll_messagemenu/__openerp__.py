@@ -19,16 +19,16 @@
 #
 ##############################################################################
 {
-'name': 'Payroll Schema',
+'name': 'Payroll Message Menu',
 'version': '0.1',
-'summary': 'Extends hr.attendance with nomalized days using resource schema',
+'summary': 'Human Resource',
 'category': 'hr',
-'description': """Extends hr.attendance with nomalized days using resource schema
+'description': """show time report menus in messaging menu
 
 """,
 'author': 'Vertel AB',
 'website': 'http://www.vertel.se',
-'depends': ['payroll'],
-'data': [],
+'depends': ['hr_timesheet_sheet', 'hr_holidays'],
+'data': ['hr_payroll_messagemenu_view.xml'],
 'installable': True,
 }

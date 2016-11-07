@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <!-- main menus -->
+        <menuitem name="Time Report" id="msg_menu_time_report" parent="mail.mail_feeds_main" sequence="50" groups="base.group_hr_user"/>
+
+        <menuitem name="Attendances" id="msg_menu_hr_attendance" parent="mail.mail_feeds_main" sequence="55" groups="base.group_hr_attendance"/>
+
+        <menuitem name="Leaves" id="msg_menu_open_ask_holidays" parent="mail.mail_feeds_main" sequence="60"/>
+
+
+        <!-- time report -->
+        <menuitem name="My Current Timesheet" id="menu_act_msg_hr_timesheet_sheet_form_my_current" parent="msg_menu_time_report" action="hr_timesheet_sheet.ir_actions_server_timsheet_sheet" sequence="1"/>
+
+
+        <!-- attendance -->
+
+        <menuitem id="msg_sign_in_out" parent="msg_menu_hr_attendance" action="hr_timesheet.action_hr_timesheet_sign_in" sequence="1" groups="base.group_hr_attendance"/>
+
+
+        <!-- leaves -->
+        <menuitem id="msg_menu_open_ask_holidays_new" parent="msg_menu_open_ask_holidays" action="hr_holidays.open_ask_holidays"/>
+
+        <menuitem id="msg_menu_request_approve_holidays" name="Leave Requests to Approve" parent="msg_menu_open_ask_holidays" action="hr_holidays.request_approve_holidays" groups="base.group_hr_user"/>
+
+        <menuitem id="msg_menu_open_allocation_holidays" parent="msg_menu_open_ask_holidays" action="hr_holidays.open_allocation_holidays"/>
+
+        <menuitem id="msg_menu_request_approve_allocation" parent="msg_menu_open_ask_holidays" action="hr_holidays.request_approve_allocation" groups="base.group_hr_manager"/>
+
+        <menuitem id="msg_menu_open_company_allocation" name="Leaves Summary" parent="msg_menu_open_ask_holidays" action="hr_holidays.open_company_allocation"/>
+
+    </data>
+</openerp>
