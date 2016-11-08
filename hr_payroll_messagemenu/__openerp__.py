@@ -29,6 +29,6 @@
 'author': 'Vertel AB',
 'website': 'http://www.vertel.se',
 'depends': ['hr_timesheet_sheet', 'hr_holidays'],
-'data': ['hr_payroll_messagemenu_view.xml'],
+'data': ['hr_payroll_messagemenu_view.xml', 'hr_payroll_messagemenu_data.xml',],
 'installable': True,
 }
