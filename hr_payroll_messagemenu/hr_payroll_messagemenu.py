@@ -2,7 +2,7 @@
 ##############################################################################
 #
 # OpenERP, Open Source Management Solution, third party addon
-# Copyright (C) 2016- Vertel AB (<http://vertel.se>).
+# Copyright (C) 2004-2016 Vertel AB (<http://vertel.se>).
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -18,17 +18,15 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-{
-'name': 'Payroll Message Menu',
-'version': '0.1',
-'summary': 'Human Resource',
-'category': 'hr',
-'description': """show time report menus in messaging menu
 
-""",
-'author': 'Vertel AB',
-'website': 'http://www.vertel.se',
-'depends': ['hr_timesheet_sheet', 'hr_holidays'],
-'data': ['hr_payroll_messagemenu_view.xml', 'hr_payroll_messagemenu_data.xml',],
-'installable': True,
-}
+from openerp import models, fields, api, _, tools
+import openerp.tools
+from datetime import datetime, timedelta
+import time
+import re
+
+import logging
+_logger = logging.getLogger(__name__)
+
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

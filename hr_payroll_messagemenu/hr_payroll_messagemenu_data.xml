@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<openerp>
+    <data noupdate="1">
+
+        <!-- ir.filters -->
+        <record id="timesheet_validation_filter" model="ir.filters">
+            <field name="name">Timesheet Validation Finished</field>
+            <field name="model_id">hr_timesheet_sheet.sheet</field>
+            <field name="user_id"></field>
+            <field name="domain">[('state', 'in', ['done', 'cancel'])]</field>
+            <field name="context">{}</field>
+        </record>
+
+        <!-- Action Server -->
+        <record id="timesheet_validation_message_action" model="ir.actions.server">
+            <field name="name">Timesheet Validation Message Action</field>
+            <field name="model_id" ref="hr_timesheet_sheet.model_hr_timesheet_sheet_sheet"/>
+            <field name="state">object_create</field>
+            <field name="use_create">new_other</field>
+            <field name="crud_model_id" ref="mail.model_mail_message"/>
+        </record>
+
+        <!-- Base Action Rule -->
+        <record id="timesheet_validation_message" model="base.action.rule">
+            <field name="name">Timesheet Validation Message</field>
+            <field name="model_id" ref="hr_timesheet_sheet.model_hr_timesheet_sheet_sheet"/>
+            <field name="kind">on_write</field>
+            <field name="filter_id" ref="hr_payroll_messagemenu.timesheet_validation_filter"/>
+            <field name="server_action_ids" eval="[(6,0,[ref('timesheet_validation_message_action')])]"/>
+        </record>
+
+        <!-- Related Document ID -->
+        <record id="timesheet_validation_message_action_line_res_id" model="ir.server.object.lines">
+            <field name="server_id" ref="hr_payroll_messagemenu.timesheet_validation_message_action"/>
+            <field name="col1" ref="mail.field_mail_message_res_id"/>
+            <field name="type">equation</field>
+            <field name="value">object.id</field>
+        </record>
+        <!-- Related Document Model -->
+        <record id="timesheet_validation_message_action_line_model" model="ir.server.object.lines">
+            <field name="server_id" ref="hr_payroll_messagemenu.timesheet_validation_message_action"/>
+            <field name="col1" ref="mail.field_mail_message_model"/>
+            <field name="type">value</field>
+            <field name="value">hr_timesheet_sheet.sheet</field>
+        </record>
+        <!-- From -->
+        <record id="timesheet_validation_message_action_line_email_from" model="ir.server.object.lines">
+            <field name="server_id" ref="hr_payroll_messagemenu.timesheet_validation_message_action"/>
+            <field name="col1" ref="mail.field_mail_message_email_from"/>
+            <field name="type">equation</field>
+            <field name="value">self.pool.get('res.users').browse(cr, uid, uid).partner_id.email</field>
+        </record>
+        <!-- Author -->
+        <record id="timesheet_validation_message_action_line_author_id" model="ir.server.object.lines">
+            <field name="server_id" ref="hr_payroll_messagemenu.timesheet_validation_message_action"/>
+            <field name="col1" ref="mail.field_mail_message_author_id"/>
+            <field name="type">equation</field>
+            <field name="value">self.pool.get('res.users').browse(cr, uid, uid).partner_id.id</field>
+        </record>
+        <!-- Subject -->
+        <record id="timesheet_validation_message_action_line_subject" model="ir.server.object.lines">
+            <field name="server_id" ref="hr_payroll_messagemenu.timesheet_validation_message_action"/>
+            <field name="col1" ref="mail.field_mail_message_subject"/>
+            <field name="type">equation</field>
+            <field name="value">'Your timesheet [%s to %s] has been %s' %(object.date_from, object.date_to, object.state)</field>
+        </record>
+        <!-- Subtype -->
+        <record id="timesheet_validation_message_action_line_subtype_id" model="ir.server.object.lines">
+            <field name="server_id" ref="hr_payroll_messagemenu.timesheet_validation_message_action"/>
+            <field name="col1" ref="mail.field_mail_message_subtype_id"/>
+            <field name="type">value</field>
+            <field name="value" ref="mail.mt_comment"/>
+        </record>
+        <!-- Type -->
+        <record id="timesheet_validation_message_action_line_type" model="ir.server.object.lines">
+            <field name="server_id" ref="hr_payroll_messagemenu.timesheet_validation_message_action"/>
+            <field name="col1" ref="mail.field_mail_message_type"/>
+            <field name="type">value</field>
+            <field name="value">comment</field>
+        </record>
+
+
+
+    </data>
+</openerp>
