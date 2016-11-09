@@ -36,5 +36,4 @@ class hr_salary_rule(models.Model):
     
     use_employee_fund = fields.Boolean(string="Use for employee fund",default=False)
 
-
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
