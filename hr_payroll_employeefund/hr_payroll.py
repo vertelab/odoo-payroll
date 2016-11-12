@@ -34,7 +34,6 @@ class hr_salary_rule(models.Model):
     
     use_employee_fund = fields.Boolean(string="Use for employee fund",default=False)
 
-
 class hr_payslip(models.Model):
 	_inherit = 'hr.payslip'
 	

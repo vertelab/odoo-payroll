@@ -24,11 +24,13 @@
 'summary': 'Extends hr.contract with an analytic account for a fund',
 'category': 'hr',
 'description': """Extends the Employee Contract with an analytic account to be used as a fund. 
+This can be used as a flexible time bank (hours) or monetary values (cost/revenue).
 
+Financed by Dermanord-Svensk Hudvård AB
 """,
 'author': 'Vertel AB',
 'website': 'http://www.vertel.se',
-'depends': ['hr_payroll'],
+'depends': ['hr_payroll_account'],
 'data': ['payslip_view.xml'],
 'installable': True,
 }
