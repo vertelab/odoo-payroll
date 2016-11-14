@@ -1,43 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
-    <data>
-<!--employee attendance tree view-->
-        <record id="view_he_attendance_who" model="ir.ui.view">
-            <field name="name">hr.employercert.attendance.tree</field>
-            <field name="model">hr.attendance</field>
-            <field name="inherit_id" ref="hr_attendance.view_attendance_who"/>
-            <field name="arch" type="xml">
-                <field name="action" position="after">
-                    <field name="working_hours_on_day" sum="Total Hours (h)"/>
-                    <field name="get_working_hours" sum="Worked in schadule (h)"/>
-                    <field name="over_hours" sum="Overtime Hours (h)"/>
-                </field>
-            </field>
-        </record>
-
-<!--employee attendance form view-->
-        <record id="view_he_attendance_form" model="ir.ui.view">
-            <field name="name">hr.employercert.attendance.form</field>
-            <field name="model">hr.attendance</field>
-            <field name="inherit_id" ref="hr_attendance.view_attendance_form"/>
-            <field name="arch" type="xml">
-                <field name="action_desc" position="after">
-                    <field name="working_hours_on_day" string="Total Hours (h)"/>
-                    <field name="get_working_hours" sum="Worked in schadule (h)"/>
-                    <field name="over_hours"/>
-                </field>
-<!--
-                <sheet position="after">
-                    <div class="oe_chatter">
-                        <field name="message_follower_ids" widget="mail_followers"/>
-                        <field name="message_ids" widget="mail_thread"/>
-                    </div>
-                </sheet>
--->
-            </field>
-        </record>
-        
-
-
-    </data>
+  <data>
+    <!--employee attendance tree view-->
+    <record id="view_he_attendance_who" model="ir.ui.view">
+      <field name="name">hr.employercert.attendance.tree</field>
+      <field name="model">hr.attendance</field>
+      <field name="inherit_id" ref="hr_attendance.view_attendance_who" />
+      <field name="arch" type="xml">
+        <field name="action" position="after">
+          <field name="working_hours_on_day" sum="Total Hours (h)" />
+          <field name="get_working_hours" sum="Worked in schadule (h)" />
+          <!--
+               <field name="over_hours" sum="Overtime Hours (h)"/>
+          -->
+        </field>
+      </field>
+    </record>
+    <!--employee attendance form view-->
+    <record id="view_he_attendance_form" model="ir.ui.view">
+      <field name="name">hr.employercert.attendance.form</field>
+      <field name="model">hr.attendance</field>
+      <field name="inherit_id" ref="hr_attendance.view_attendance_form" />
+      <field name="arch" type="xml">
+        <field name="action_desc" position="after">
+          <field name="working_hours_on_day" string="Total Hours (h)" />
+          <field name="get_working_hours" sum="Worked in schadule (h)" />
+          <!--
+               <field name="over_hours"/>
+          -->
+        </field>
+        <!--
+             <sheet position="after">
+             <div class="oe_chatter">
+             <field name="message_follower_ids" widget="mail_followers"/>
+             <field name="message_ids" widget="mail_thread"/>
+             </div>
+             </sheet>
+        -->
+      </field>
+    </record>
+    <record id="hr_timesheet_sheet_form" model="ir.ui.view">
+      <field name="name">hr.timesheet.sheet.form,schema</field>
+      <field name="model">hr_timesheet_sheet.sheet</field>
+      <field name="inherit_id" ref="hr_timesheet_sheet.hr_timesheet_sheet_form" />
+      <field name="arch" type="xml">
+        <field name="total_difference" position="after">
+          <field name="total_attendance_schema" />
+          <field name="total_difference_schema" />
+          <field name="total_timesheet_invoiceable" />
+        </field>
+      </field>
+    </record>
+  </data>
 </openerp>

@@ -25,18 +25,14 @@ from openerp import models, fields, api, _
 import logging
 _logger = logging.getLogger(__name__)
 
-class stock_picking(models.Model):
-    _inherit = 'stock.picking'
-    
-    nbr_lines = fields.Integer('# lines', compute='_get_nbr_lines', store=True)
-    @api.one
-    @api.depends('pack_operation_ids','carrier_tracking_ref')
-    def _get_nbr_lines(self):
-        self.nbr_lines = len(self.pack_operation_ids)
 
 class hr_payslip(models.Model):
 	_inherit = 'hr.payslip'
 	
+    @api.one
+    def _holiday_ids(self):
+        self.holiday_ids = self.pool.get('hr.holidays').search(cr, uid, [('state','=','validate'),('employee_id','=',employee_id),('type','=','remove'),('date_from','<=',day),('date_to','>=',day)])
+    
 	def get_worked_day_lines(self, cr, uid, contract_ids, date_from, date_to, context=None):
         """
         @param contract_ids: list of contract id

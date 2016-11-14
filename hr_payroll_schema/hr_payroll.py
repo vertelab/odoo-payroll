@@ -79,18 +79,17 @@ class hr_analytic_timesheet(models.Model):
         amount_invoiceable = sum([t.unit_amount * t.to_invoice.factor for t in time])
         return (amount,amount_invoiceable)
 
-class hr_timesheet_sheet_sheet_day(osv.osv):
-    _name = "hr_timesheet_sheet.sheet.day"
+class hr_timesheet_sheet_sheet_day(models.Model):
+    _inherit = "hr_timesheet_sheet.sheet.day"
         
     @api.one
-    @api.depends('account.analytic.line.date','account.analytic.line.amount','hr.attendance.action','hr.attendance.name','hr.attendance.sheet_id')
+    #~ @api.depends('account.analytic.line.date','account.analytic.line.amount','hr.attendance.action','hr.attendance.name','hr.attendance.sheet_id')
     def _total_attendance_schema(self):
-        contract = self.sheet_id.employee_id.contract_ids[0] if self.sheet_id.employee_id and self.sheet_id.employee_id.contract_ids else False
-        if contract:
+        if self.sheet_id.employee_id.contract_id:
             att = self.env['hr.attendance'].search([('employee_id','=',self.sheet_id.employee_id.id),('name','>',self.date + ' 00:00:00'),('name','<',self.date + ' 23:59:59')],order='name')
             for (start,end) in zip(att,att[1:])[::2]:
                 self.total_attendance_schema += self.pool.get('resource.calendar').get_working_hours(self.env.cr, self.env.uid,
-                    contract.working_hours.id,
+                    self.sheet_id.employee_id.contract_id.working_hours.id,
                     datetime.strptime(start.name, tools.DEFAULT_SERVER_DATETIME_FORMAT),
                     datetime.strptime(end.name, tools.DEFAULT_SERVER_DATETIME_FORMAT))
             self.total_difference_schema = self.total_attendance_schema - self.total_timesheet
@@ -102,11 +101,11 @@ class hr_timesheet_sheet_sheet_day(osv.osv):
     total_difference_schema = fields.Float(compute='_total_attendance_schema',string="Difference (Schema)",store=True)
    
     
-class hr_timesheet_sheet(osv.osv):
+class hr_timesheet_sheet(models.Model):
     _inherit = "hr_timesheet_sheet.sheet"
     
     @api.one
-    @api.depends('attendances_ids','attendances_ids.sheema_id','period_ids')
+    @api.depends('attendances_ids','attendances_ids.sheet_id','period_ids')
     def _total_attendance_schema(self):
         self.total_attendance_schema = sum([d.total_attendance_schema for d in self.period_ids])
         self.total_difference_schema = sum([d.total_difference_schema for d in self.period_ids])
@@ -115,7 +114,7 @@ class hr_timesheet_sheet(osv.osv):
     total_difference_schema = fields.Float(compute='_total_attendance_schema',string="Difference (Schema)",store=True)
     
     @api.one
-    @api.depends('timesheet_ids','timesheet_ids.unit_amount','timesheet_ids.to_invoice_factor')
+    @api.depends('timesheet_ids','timesheet_ids.unit_amount','timesheet_ids.to_invoice.factor')
     def _total_timesheet_invoiceable(self):
         self.total_timesheet_invoiceable = sum([t.unit_amount * t.to_invoice.factor for t in self.timesheet_ids])
     total_timesheet_invoiceable = fields.Float(compute='_total_timesheet_invoiceable',string="Invoiceable",store=True)
