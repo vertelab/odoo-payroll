@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <template id="hr_attendance_form" name="HR Attendance Form">
+            <t t-call="website.layout">
+                <div class="container">
+                    <form action="/hr/attendance/log" method="post">
+                        <select id="hr_employee" class="form-control selectpicker dropdown selection_dropdown" data-style="btn-primary" onchange="employee(), employee_state()">
+                            <option value="" selected="checked"><span>-- Choose Employee --</span></option>
+                            <t t-if="len(employees) &gt; 0" t-foreach="employees" t-as="e">
+                                <option t-att-value="e.id"><span t-field="e.name"/></option>
+                            </t>
+                        </select>
+                        <p id="employee_id"/>
+                        <p id="employee_state"/>
+                        <button id="login" class="btn btn-success btn-lg hidden" type="submit">Log In</button>
+                        <button id="logout" class="btn btn-warning btn-lg hidden" type="submit">Log Out</button>
+                    </form>
+                    <p id="data"/>
+                </div>
+            </t>
+        </template>
+
+<!--
+        <template id="hr_attendance_log" name="HR Attendance Log">
+            <t t-call="website.layout">
+                <div class="container">
+                    <img t-att-src="'/website/image/hr.employee/%s/image' %employee.id"/>
+                    <h3>Now you have <t t-esc="'signed in' if employee.state == 'present' else 'signed out'"/></h3>
+                </div>
+            </t>
+        </template>
+-->
+
+        <template id="hr_attendance_javascript" inherit_id="website.layout">
+            <xpath expr="//body" position="inside">
+                <script>
+                    function employee()
+                    {
+                        $("#employee_id").html($("#hr_employee").val());
+                    }
+
+                    function employee_state(){
+                        openerp.jsonRpc("/hr/attendance/report", 'call', {
+                            'employee': $("#hr_employee").val(),
+                        }).done(function(data){
+                            $("#employee_state").html(data);
+                            if(data == "present") {
+                                $("#login").addClass("hidden");
+                                $("#logout").removeClass("hidden");
+                            }
+                            if(data == "absent") {
+                                $("#login").removeClass("hidden");
+                                $("#logout").addClass("hidden");
+                            }
+                        });
+                    }
+
+                    var source = new EventSource("localhost:8070/longpolling/poll");
+                    source.onopen = function () {
+                        connectionOpen(true);
+                    };
+
+                    source.onerror = function () {
+                        connectionOpen(false);
+                    };
+
+                    source.addEventListener('connections', updateConnections, false);
+                    source.addEventListener('requests', updateRequests, false);
+                    source.addEventListener('uptime', updateUptime, false);
+
+                    source.onmessage = function (event) {
+                        $("#data").html(event.data);
+                    };
+
+
+                </script>
+            </xpath>
+        </template>
+
+    </data>
+</openerp>
