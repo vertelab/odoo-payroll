@@ -29,6 +29,6 @@
 'author': 'Vertel AB',
 'website': 'http://www.vertel.se',
 'depends': ['payroll'],
-'data': [],
+'data': [''],
 'installable': True,
 }
