@@ -24,6 +24,10 @@ function employee_state(){
             }
         });
     }
+    else {
+        $("#login").addClass("hidden");
+        $("#logout").addClass("hidden");
+    }
 }
 
 /* Come and Go */
