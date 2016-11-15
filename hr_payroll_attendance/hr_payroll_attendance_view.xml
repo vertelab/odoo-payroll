@@ -5,7 +5,10 @@
         <template id="hr_attendance_form" name="HR Attendance Form">
             <t t-call="website.layout">
                 <div class="container">
-                    <form action="/hr/attendance/log" method="post">
+<!--
+                    <form class="form-inline" >
+-->
+                        <div class="form-group">
                         <select id="hr_employee" class="form-control selectpicker dropdown selection_dropdown" data-style="btn-primary" onchange="employee(), employee_state()">
                             <option value="" selected="checked"><span>-- Choose Employee --</span></option>
                             <t t-if="len(employees) &gt; 0" t-foreach="employees" t-as="e">
@@ -14,9 +17,12 @@
                         </select>
                         <p id="employee_id"/>
                         <p id="employee_state"/>
-                        <button id="login" class="btn btn-success btn-lg hidden" type="submit">Log In</button>
-                        <button id="logout" class="btn btn-warning btn-lg hidden" type="submit">Log Out</button>
+                        <button id="login" class="btn btn-success btn-lg hidden" onclick="come_and_go()" >Log In</button>
+                        <button id="logout" class="btn btn-warning btn-lg hidden" onclick="come_and_go()" >Log Out</button>
+                    </div>
+<!--
                     </form>
+-->
                     <p id="data"/>
                 </div>
             </t>
@@ -42,22 +48,25 @@
                     }
 
                     function employee_state(){
-                        openerp.jsonRpc("/hr/attendance/report", 'call', {
-                            'employee': $("#hr_employee").val(),
-                        }).done(function(data){
-                            $("#employee_state").html(data);
-                            if(data == "present") {
-                                $("#login").addClass("hidden");
-                                $("#logout").removeClass("hidden");
-                            }
-                            if(data == "absent") {
-                                $("#login").removeClass("hidden");
-                                $("#logout").addClass("hidden");
-                            }
-                        });
+                        if ($("#hr_employee").val() != '') {
+                            openerp.jsonRpc("/hr/attendance/report", 'call', {
+                                'employee': $("#hr_employee").val(),
+                            }).done(function(data){
+                                $("#employee_state").html(data);
+                                if(data == "present") {
+                                    $("#login").addClass("hidden");
+                                    $("#logout").removeClass("hidden");
+                                }
+                                if(data == "absent") {
+                                    $("#login").removeClass("hidden");
+                                    $("#logout").addClass("hidden");
+                                }
+                                
+                            });
+                        }
                     }
 
-                    var source = new EventSource("localhost:8070/longpolling/poll");
+                    var source = new EventSource("localhost:8069/longpolling/poll");
                     source.onopen = function () {
                         connectionOpen(true);
                     };
@@ -73,6 +82,18 @@
                     source.onmessage = function (event) {
                         $("#data").html(event.data);
                     };
+                /* Come and Go */
+                function come_and_go(){
+                    openerp.jsonRpc("/hr/attendance/come_and_go", 'call', {
+                        'employee_id': $("#hr_employee").val(),
+                    }).done(function(data){
+                            $("#employee_state").html(data);
+                            $("#data").html(data);
+                            $("#login").addClass("hidden");
+                            $("#logout").addClass("hidden");
+                            window.alert(data);
+                        });
+                }
 
 
                 </script>
