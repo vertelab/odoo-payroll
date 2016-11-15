@@ -29,6 +29,7 @@ class hr_contract(models.Model):
 
     employee_fund      = fields.Many2one(string="Employee Fund",comodel_name='account.analytic.account',help="Use this account together with marked salary rule" )
     employee_fund_balance = fields.Float(string='Balance',digits_compute=dp.get_precision('Payroll'),related='employee_fund.balance')
+    employee_fund_name = fields.Char(string='Name',related='employee_fund.name')
 
 class hr_salary_rule(models.Model):
     _inherit = 'hr.salary.rule'
