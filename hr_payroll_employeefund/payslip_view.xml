@@ -19,12 +19,8 @@
       <field name="inherit_id" ref="hr_contract.hr_contract_view_form" />
       <field name="arch" type="xml">
         <field name="advantages" position="after">
-			<group>
-          <label for="employee_fund" />
-          <group>
             <field name="employee_fund"  class='oe_inline' />
             <field name="employee_fund_balance" class='oe_inline' />
-          </group></group>
         </field>
       </field>
     </record>
