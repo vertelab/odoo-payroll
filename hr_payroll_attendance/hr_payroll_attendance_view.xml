@@ -1,102 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
     <data>
-
         <template id="hr_attendance_form" name="HR Attendance Form">
-            <t t-call="website.layout">
-                <div class="container">
-<!--
-                    <form class="form-inline" >
--->
-                        <div class="form-group">
-                        <select id="hr_employee" class="form-control selectpicker dropdown selection_dropdown" data-style="btn-primary" onchange="employee(), employee_state()">
-                            <option value="" selected="checked"><span>-- Choose Employee --</span></option>
-                            <t t-if="len(employees) &gt; 0" t-foreach="employees" t-as="e">
-                                <option t-att-value="e.id"><span t-field="e.name"/></option>
+            <html t-att-lang="lang and lang.replace('_', '-')" t-att-data-oe-company-name="res_company.name">
+                <head>
+                    <meta charset="utf-8" />
+                    <t t-if="main_object and 'website_meta_title' in main_object and not title">
+                        <t t-set="title" t-value="main_object.website_meta_title" />
+                    </t>
+                    <t t-if="main_object and 'name' in main_object and not title and not additional_title">
+                        <t t-set="additional_title" t-value="main_object.name" />
+                    </t>
+                    <t t-if="not title">
+                        <t t-set="title">
+                            <t t-if="additional_title">
+                                <t t-raw="additional_title" />
+                                |
                             </t>
-                        </select>
-                        <p id="employee_id"/>
-                        <p id="employee_state"/>
-                        <button id="login" class="btn btn-success btn-lg hidden" onclick="come_and_go()" >Log In</button>
-                        <button id="logout" class="btn btn-warning btn-lg hidden" onclick="come_and_go()" >Log Out</button>
+                            <t t-esc="(website or res_company).name" />
+                        </t>
+                    </t>
+                    <title>
+                        <t t-esc="title" />
+                    </title>
+                    <t t-set="languages" t-value="website.get_languages() if website else None" />
+                    <t t-if="request and request.website_multilang and website">
+                        <t t-foreach="website.get_alternate_languages(request.httprequest)" t-as="lg">
+                            <link rel="alternate" t-att-hreflang="lg['hreflang']" t-att-href="lg['href']" />
+                        </t>
+                    </t>
+                    <t t-call-assets="website.assets_frontend" t-js="false" />
+                    <link href="/hr_payroll_attendance/static/src/css/attendance.css" rel="stylesheet"/>
+                </head>
+                <body>
+                    <div class="container">
+                        <div id="attendance_div" class="col-md-12 col-sm-12 col-xs-12">
+                            <div class="col-md-6 col-sm-6 col-xs-6">
+                                <div class="form-group">
+                                    <select id="hr_employee" class="form-control selectpicker dropdown dropdown_attendance" data-style="btn-primary" onchange="employee_state()">
+                                        <option value="" selected="checked">
+                                            <span>-- Choose Employee --</span>
+                                        </option>
+                                        <t t-if="len(employees) &gt; 0" t-foreach="employees" t-as="e">
+                                            <option t-att-value="e.id">
+                                                <span t-field="e.name" />
+                                            </option>
+                                        </t>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-sm-6 col-xs-6 text-center">
+                                <button id="login" class="btn btn-success btn-lg hidden" onclick="come_and_go()">Log In</button>
+                                <button id="logout" class="btn btn-warning btn-lg hidden" onclick="come_and_go()">Log Out</button>
+                            </div>
+                        </div>
+                        <div id="Log_div" class="col-md-12 col-sm-12 col-xs-12">
+                            <div id="employee_image" class="col-md-6 col-sm-6 col-xs-6" />
+                            <div id="employee_message" class="col-md-6 col-sm-6 col-xs-6" />
+                        </div>
                     </div>
-<!--
-                    </form>
-
--->
-                    <p id="data"/>
-                    <p id="attendance_data"/>
-                </div>
-            </t>
+                    <t t-call-assets="web.assets_common" t-css="false"/>
+                    <script type="text/javascript" src="/hr_payroll_attendance/static/src/js/attendance.js" />
+                </body>
+            </html>
         </template>
-
-<!--
-        <template id="hr_attendance_log" name="HR Attendance Log">
-            <t t-call="website.layout">
-                <div class="container">
-                    <img t-att-src="'/website/image/hr.employee/%s/image' %employee.id"/>
-                    <h3>Now you have <t t-esc="'signed in' if employee.state == 'present' else 'signed out'"/></h3>
-                </div>
-            </t>
-        </template>
--->
-
-        <template id="hr_attendance_javascript" inherit_id="website.layout">
-            <xpath expr="//body" position="inside">
-                <script>
-                    function attendance_data_loop() {
-                        openerp.jsonRpc('/longpolling/poll','call',{"channels":["attendance"],last:0}).then(function(r){
-                            $('#attendance_data').html(r[0].message);
-                            attendance_data_loop();
-                            }, function(r) {
-                                attendance_data_loop();
-                            }
-                        )
-                    };
-                    attendance_data_loop()
-                    
-                    function employee()
-                    {
-                        $("#employee_id").html($("#hr_employee").val());
-                    }
-
-                    function employee_state(){
-                        if ($("#hr_employee").val() != '') {
-                            openerp.jsonRpc("/hr/attendance/report", 'call', {
-                                'employee': $("#hr_employee").val(),
-                            }).done(function(data){
-                                $("#employee_state").html(data);
-                                if(data == "present") {
-                                    $("#login").addClass("hidden");
-                                    $("#logout").removeClass("hidden");
-                                }
-                                if(data == "absent") {
-                                    $("#login").removeClass("hidden");
-                                    $("#logout").addClass("hidden");
-                                }
-                                
-                            });
-                        }
-                    }
-
-                /* Come and Go */
-                function come_and_go(){
-                    openerp.jsonRpc("/hr/attendance/come_and_go", 'call', {
-                        'employee_id': $("#hr_employee").val(),
-                    }).done(function(data){
-                            $("#employee_state").html(data);
-                            $("#data").html(data);
-                            $("#login").addClass("hidden");
-                            $("#logout").addClass("hidden");
-                            
-                            
-                        });
-                }
-
-
-                </script>
-            </xpath>
-        </template>
-
     </data>
 </openerp>

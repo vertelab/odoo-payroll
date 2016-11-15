@@ -1,0 +1,38 @@
+.absolute_center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#attendance_div {
+    position: fixed;
+    top: 50px;
+    left: 0px;
+}
+
+#Log_div {
+    position: fixed;
+    bottom: 50px;
+    left: 0px;
+}
+
+#employee_image img {
+    margin: auto;
+    display: block;
+    width: 250px;
+}
+
+.dropdown_attendance {
+    height: 80px !important;
+    font-size: 1.7em;
+}
+
+.dropdown_attendance option {
+    height: 40px !important;
+}
+
+.btn-lg {
+    height: 80px !important;
+    width: 100% !important;
+    font-size: 1.7em;
+}

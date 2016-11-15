@@ -37,27 +37,23 @@ class attendanceReport(http.Controller):
     def attendance_report(self, employee=None, **kw):
         state = request.env['hr.employee'].browse(int(employee)).state
         return state
+
     @http.route(['/hr/attendance/come_and_go'], type='json', auth="user", website=True)
     def attendance_comeandgo(self, employee_id=None, **kw):
         employee = request.env['hr.employee'].browse(int(employee_id))
         employee.attendance_action_change()
-        return {'img': employee.image, 'name': employee.name, 'state': employee.state}
+        return {'img': employee.image, 'name': employee.name, 'state': employee.state, 'id': employee.id,}
 
-    @http.route(['/hr/attendance/source'], type='http', auth="public", website=True)
-    def attendance_source(self, employee=None, **post):
-        while True:
-            employee_login = request.env['hr.employee'].search([('state', '=', 'present')])
-            while employee_login - request.env['hr.employee'].search([('state', '=', 'present')]):
-                # send to client
-                headers=[('Content-Type', 'text/plain; charset=utf-8')]
-                r = werkzeug.wrappers.Response(request_id, headers=headers)
-                break
-        state = request.env['hr.employee'].browse(int(employee)).state
-        return state
-
-    #~ @http.route(['/hr/attendance/log'], type='http', auth="user", website=True)
-    #~ def attendance_log(self, employee=None, **post):
-        #~ employees = request.env['hr.employee'].search([])
-        #~ return request.website.render("hr_payroll_attendance.hr_attendance_form", {'employee': employee,})
+    #~ @http.route(['/hr/attendance/source'], type='http', auth="public", website=True)
+    #~ def attendance_source(self, employee=None, **post):
+        #~ while True:
+            #~ employee_login = request.env['hr.employee'].search([('state', '=', 'present')])
+            #~ while employee_login - request.env['hr.employee'].search([('state', '=', 'present')]):
+                #~ # send to client
+                #~ headers=[('Content-Type', 'text/plain; charset=utf-8')]
+                #~ r = werkzeug.wrappers.Response(request_id, headers=headers)
+                #~ break
+        #~ state = request.env['hr.employee'].browse(int(employee)).state
+        #~ return state
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
