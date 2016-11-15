@@ -22,8 +22,10 @@
                     </div>
 <!--
                     </form>
+
 -->
                     <p id="data"/>
+                    <p id="attendance_data"/>
                 </div>
             </t>
         </template>
@@ -42,6 +44,17 @@
         <template id="hr_attendance_javascript" inherit_id="website.layout">
             <xpath expr="//body" position="inside">
                 <script>
+                    function attendance_data_loop() {
+                        openerp.jsonRpc('/longpolling/poll','call',{"channels":["attendance"],last:0}).then(function(r){
+                            $('#attendance_data').html(r[0].message);
+                            attendance_data_loop();
+                            }, function(r) {
+                                attendance_data_loop();
+                            }
+                        )
+                    };
+                    attendance_data_loop()
+                    
                     function employee()
                     {
                         $("#employee_id").html($("#hr_employee").val());
@@ -66,22 +79,6 @@
                         }
                     }
 
-                    var source = new EventSource("localhost:8069/longpolling/poll");
-                    source.onopen = function () {
-                        connectionOpen(true);
-                    };
-
-                    source.onerror = function () {
-                        connectionOpen(false);
-                    };
-
-                    source.addEventListener('connections', updateConnections, false);
-                    source.addEventListener('requests', updateRequests, false);
-                    source.addEventListener('uptime', updateUptime, false);
-
-                    source.onmessage = function (event) {
-                        $("#data").html(event.data);
-                    };
                 /* Come and Go */
                 function come_and_go(){
                     openerp.jsonRpc("/hr/attendance/come_and_go", 'call', {
@@ -91,7 +88,8 @@
                             $("#data").html(data);
                             $("#login").addClass("hidden");
                             $("#logout").addClass("hidden");
-                            window.alert(data);
+                            
+                            
                         });
                 }
 
