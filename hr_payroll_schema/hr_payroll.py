@@ -25,6 +25,12 @@ from datetime import datetime, timedelta
 import time
 import re
 
+from openerp.tools import (
+    DEFAULT_SERVER_DATE_FORMAT,
+    DEFAULT_SERVER_DATETIME_FORMAT,
+    drop_view_if_exists,
+)
+
 import logging
 _logger = logging.getLogger(__name__)
 
@@ -101,14 +107,94 @@ class hr_timesheet_sheet_sheet_day(models.Model):
     total_difference_schema = fields.Float(compute='_total_attendance_schema',string="Difference (Schema)",store=True)
    
     
+    #~ def init(self, cr):
+        #~ drop_view_if_exists(cr, 'hr_timesheet_sheet_sheet_day')
+        #~ cr.execute("""create or replace view hr_timesheet_sheet_sheet_day as
+            #~ SELECT
+                #~ id,
+                #~ name,
+                #~ sheet_id,
+                #~ total_timesheet,
+                #~ total_attendance,
+                #~ total_attendance_schema,
+                #~ total_difference_schema,
+                #~ cast(round(cast(total_attendance - total_timesheet as Numeric),2) as Double Precision) AS total_difference
+            #~ FROM
+                #~ ((
+                    #~ SELECT
+                        #~ MAX(id) as id,
+                        #~ name,
+                        #~ sheet_id,
+                        #~ timezone,
+                        #~ SUM(total_timesheet) as total_timesheet,
+                        #~ CASE WHEN SUM(orphan_attendances) != 0
+                            #~ THEN (SUM(total_attendance) +
+                                #~ CASE WHEN current_date <> name
+                                    #~ THEN 1440
+                                    #~ ELSE (EXTRACT(hour FROM current_time AT TIME ZONE 'UTC' AT TIME ZONE coalesce(timezone, 'UTC')) * 60) + EXTRACT(minute FROM current_time AT TIME ZONE 'UTC' AT TIME ZONE coalesce(timezone, 'UTC'))
+                                #~ END
+                                #~ )
+                            #~ ELSE SUM(total_attendance)
+                        #~ END /60  as total_attendance,
+                        #~ SUM(total_attendance_schema) as total_attendance_schema,
+                        #~ SUM(total_difference_schema) as total_difference_schema
+                    #~ FROM
+                        #~ ((
+                            #~ select
+                                #~ min(hrt.id) as id,
+                                #~ p.tz as timezone,
+                                #~ l.date::date as name,
+                                #~ s.id as sheet_id,
+                                #~ sum(l.unit_amount) as total_timesheet,
+                                #~ 0 as orphan_attendances,
+                                #~ 0.0 as total_attendance
+                            #~ from
+                                #~ hr_analytic_timesheet hrt
+                                #~ JOIN account_analytic_line l ON l.id = hrt.line_id
+                                #~ LEFT JOIN hr_timesheet_sheet_sheet s ON s.id = hrt.sheet_id
+                                #~ JOIN hr_employee e ON s.employee_id = e.id
+                                #~ JOIN resource_resource r ON e.resource_id = r.id
+                                #~ LEFT JOIN res_users u ON r.user_id = u.id
+                                #~ LEFT JOIN res_partner p ON u.partner_id = p.id
+                            #~ group by l.date::date, s.id, timezone
+                        #~ ) union (
+                            #~ select
+                                #~ -min(a.id) as id,
+                                #~ p.tz as timezone,
+                                #~ (a.name AT TIME ZONE 'UTC' AT TIME ZONE coalesce(p.tz, 'UTC'))::date as name,
+                                #~ s.id as sheet_id,
+                                #~ 0.0 as total_timesheet,
+                                #~ SUM(CASE WHEN a.action = 'sign_in' THEN -1 ELSE 1 END) as orphan_attendances,
+                                #~ SUM(((EXTRACT(hour FROM (a.name AT TIME ZONE 'UTC' AT TIME ZONE coalesce(p.tz, 'UTC'))) * 60) + EXTRACT(minute FROM (a.name AT TIME ZONE 'UTC' AT TIME ZONE coalesce(p.tz, 'UTC')))) * (CASE WHEN a.action = 'sign_in' THEN -1 ELSE 1 END)) as total_attendance
+                            #~ from
+                                #~ hr_attendance a
+                                #~ LEFT JOIN hr_timesheet_sheet_sheet s
+                                #~ ON s.id = a.sheet_id
+                                #~ JOIN hr_employee e
+                                #~ ON a.employee_id = e.id
+                                #~ JOIN resource_resource r
+                                #~ ON e.resource_id = r.id
+                                #~ LEFT JOIN res_users u
+                                #~ ON r.user_id = u.id
+                                #~ LEFT JOIN res_partner p
+                                #~ ON u.partner_id = p.id
+                            #~ WHERE action in ('sign_in', 'sign_out')
+                            #~ group by (a.name AT TIME ZONE 'UTC' AT TIME ZONE coalesce(p.tz, 'UTC'))::date, s.id, timezone
+                        #~ )) AS foo
+                        #~ GROUP BY name, sheet_id, timezone
+                #~ )) AS bar""")   
+    
 class hr_timesheet_sheet(models.Model):
     _inherit = "hr_timesheet_sheet.sheet"
     
     @api.one
     @api.depends('attendances_ids','attendances_ids.sheet_id','period_ids')
     def _total_attendance_schema(self):
-        self.total_attendance_schema = sum([d.total_attendance_schema for d in self.period_ids])
-        self.total_difference_schema = sum([d.total_difference_schema for d in self.period_ids])
+        pass
+        #~ self.total_attendance_schema = sum([d.total_attendance_schema for d in self.period_ids])
+        #~ self.total_attendance_schema = sum(self.period_ids.mapped('total_attendance_schema'))
+        #~ self.total_attendance_schema = sum(self.period_ids.mapped('total_attendance_schema'))
+        #~ self.total_difference_schema = sum(self.period_ids.mapped('total_difference_schema'))
         
     total_attendance_schema = fields.Float(compute='_total_attendance_schema',string="Attendance (Schema)",store=True)
     total_difference_schema = fields.Float(compute='_total_attendance_schema',string="Difference (Schema)",store=True)
