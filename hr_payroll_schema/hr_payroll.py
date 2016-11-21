@@ -65,7 +65,7 @@ class hr_attendance(models.Model):
                     datetime.strptime(start.name, tools.DEFAULT_SERVER_DATETIME_FORMAT),
                     datetime.strptime(end.name, tools.DEFAULT_SERVER_DATETIME_FORMAT))
         else:
-            self.get_working_hours = False
+            self.get_working_hours = 0.0
     get_working_hours = fields.Float(compute='_get_working_hours', string='Worked in schedule (h)')
     
     @api.one
@@ -74,7 +74,7 @@ class hr_attendance(models.Model):
             (self.timesheet_amount,self.timesheet_amount_invoiceable) = self.env['hr.analytic.timesheet'].get_day_amount(self.name[:10],self.employee_id)
     timesheet_amount = fields.Float(compute="_timesheet_amount",string="Reported time")
     timesheet_amount_invoiceable = fields.Float(compute="_timesheet_amount",string="Reported time (invoiceable)")
-    
+
 class hr_analytic_timesheet(models.Model):
     _inherit = 'hr.analytic.timesheet'
     
@@ -85,124 +85,33 @@ class hr_analytic_timesheet(models.Model):
         amount_invoiceable = sum([t.unit_amount * t.to_invoice.factor for t in time])
         return (amount,amount_invoiceable)
 
-class hr_timesheet_sheet_sheet_day(models.Model):
-    _inherit = "hr_timesheet_sheet.sheet.day"
-        
     @api.one
-    #~ @api.depends('account.analytic.line.date','account.analytic.line.amount','hr.attendance.action','hr.attendance.name','hr.attendance.sheet_id')
-    def _total_attendance_schema(self):
-        if self.sheet_id.employee_id.contract_id:
-            att = self.env['hr.attendance'].search([('employee_id','=',self.sheet_id.employee_id.id),('name','>',self.date + ' 00:00:00'),('name','<',self.date + ' 23:59:59')],order='name')
-            for (start,end) in zip(att,att[1:])[::2]:
-                self.total_attendance_schema += self.pool.get('resource.calendar').get_working_hours(self.env.cr, self.env.uid,
-                    self.sheet_id.employee_id.contract_id.working_hours.id,
-                    datetime.strptime(start.name, tools.DEFAULT_SERVER_DATETIME_FORMAT),
-                    datetime.strptime(end.name, tools.DEFAULT_SERVER_DATETIME_FORMAT))
-            self.total_difference_schema = self.total_attendance_schema - self.total_timesheet
-        else:
-            self.total_attendance_schema = 0.0
-            self.total_difference_schema = 0.0
-        
-    total_attendance_schema = fields.Float(compute='_total_attendance_schema',string="Attendance (Schema)",store=True)
-    total_difference_schema = fields.Float(compute='_total_attendance_schema',string="Difference (Schema)",store=True)
-   
-    
-    #~ def init(self, cr):
-        #~ drop_view_if_exists(cr, 'hr_timesheet_sheet_sheet_day')
-        #~ cr.execute("""create or replace view hr_timesheet_sheet_sheet_day as
-            #~ SELECT
-                #~ id,
-                #~ name,
-                #~ sheet_id,
-                #~ total_timesheet,
-                #~ total_attendance,
-                #~ total_attendance_schema,
-                #~ total_difference_schema,
-                #~ cast(round(cast(total_attendance - total_timesheet as Numeric),2) as Double Precision) AS total_difference
-            #~ FROM
-                #~ ((
-                    #~ SELECT
-                        #~ MAX(id) as id,
-                        #~ name,
-                        #~ sheet_id,
-                        #~ timezone,
-                        #~ SUM(total_timesheet) as total_timesheet,
-                        #~ CASE WHEN SUM(orphan_attendances) != 0
-                            #~ THEN (SUM(total_attendance) +
-                                #~ CASE WHEN current_date <> name
-                                    #~ THEN 1440
-                                    #~ ELSE (EXTRACT(hour FROM current_time AT TIME ZONE 'UTC' AT TIME ZONE coalesce(timezone, 'UTC')) * 60) + EXTRACT(minute FROM current_time AT TIME ZONE 'UTC' AT TIME ZONE coalesce(timezone, 'UTC'))
-                                #~ END
-                                #~ )
-                            #~ ELSE SUM(total_attendance)
-                        #~ END /60  as total_attendance,
-                        #~ SUM(total_attendance_schema) as total_attendance_schema,
-                        #~ SUM(total_difference_schema) as total_difference_schema
-                    #~ FROM
-                        #~ ((
-                            #~ select
-                                #~ min(hrt.id) as id,
-                                #~ p.tz as timezone,
-                                #~ l.date::date as name,
-                                #~ s.id as sheet_id,
-                                #~ sum(l.unit_amount) as total_timesheet,
-                                #~ 0 as orphan_attendances,
-                                #~ 0.0 as total_attendance
-                            #~ from
-                                #~ hr_analytic_timesheet hrt
-                                #~ JOIN account_analytic_line l ON l.id = hrt.line_id
-                                #~ LEFT JOIN hr_timesheet_sheet_sheet s ON s.id = hrt.sheet_id
-                                #~ JOIN hr_employee e ON s.employee_id = e.id
-                                #~ JOIN resource_resource r ON e.resource_id = r.id
-                                #~ LEFT JOIN res_users u ON r.user_id = u.id
-                                #~ LEFT JOIN res_partner p ON u.partner_id = p.id
-                            #~ group by l.date::date, s.id, timezone
-                        #~ ) union (
-                            #~ select
-                                #~ -min(a.id) as id,
-                                #~ p.tz as timezone,
-                                #~ (a.name AT TIME ZONE 'UTC' AT TIME ZONE coalesce(p.tz, 'UTC'))::date as name,
-                                #~ s.id as sheet_id,
-                                #~ 0.0 as total_timesheet,
-                                #~ SUM(CASE WHEN a.action = 'sign_in' THEN -1 ELSE 1 END) as orphan_attendances,
-                                #~ SUM(((EXTRACT(hour FROM (a.name AT TIME ZONE 'UTC' AT TIME ZONE coalesce(p.tz, 'UTC'))) * 60) + EXTRACT(minute FROM (a.name AT TIME ZONE 'UTC' AT TIME ZONE coalesce(p.tz, 'UTC')))) * (CASE WHEN a.action = 'sign_in' THEN -1 ELSE 1 END)) as total_attendance
-                            #~ from
-                                #~ hr_attendance a
-                                #~ LEFT JOIN hr_timesheet_sheet_sheet s
-                                #~ ON s.id = a.sheet_id
-                                #~ JOIN hr_employee e
-                                #~ ON a.employee_id = e.id
-                                #~ JOIN resource_resource r
-                                #~ ON e.resource_id = r.id
-                                #~ LEFT JOIN res_users u
-                                #~ ON r.user_id = u.id
-                                #~ LEFT JOIN res_partner p
-                                #~ ON u.partner_id = p.id
-                            #~ WHERE action in ('sign_in', 'sign_out')
-                            #~ group by (a.name AT TIME ZONE 'UTC' AT TIME ZONE coalesce(p.tz, 'UTC'))::date, s.id, timezone
-                        #~ )) AS foo
-                        #~ GROUP BY name, sheet_id, timezone
-                #~ )) AS bar""")   
+    def _timesheet_amount(self):
+        pass
+        #~ if self.employee_id and self._check_last_sign_out(self):
+            #~ (self.timesheet_amount,self.timesheet_amount_invoiceable) = self.env['hr.analytic.timesheet'].get_day_amount(self.name[:10],self.employee_id)
+    timesheet_amount = fields.Float(compute="_timesheet_amount",string="Reported time")
+    timesheet_amount_invoiceable = fields.Float(compute="_timesheet_amount",string="Reported time (invoiceable)")
+
     
 class hr_timesheet_sheet(models.Model):
     _inherit = "hr_timesheet_sheet.sheet"
     
     @api.one
-    @api.depends('attendances_ids','attendances_ids.sheet_id','period_ids')
+    @api.depends('attendances_ids','attendances_ids.sheet_id')
     def _total_attendance_schema(self):
-        pass
-        #~ self.total_attendance_schema = sum([d.total_attendance_schema for d in self.period_ids])
-        #~ self.total_attendance_schema = sum(self.period_ids.mapped('total_attendance_schema'))
-        #~ self.total_attendance_schema = sum(self.period_ids.mapped('total_attendance_schema'))
-        #~ self.total_difference_schema = sum(self.period_ids.mapped('total_difference_schema'))
-        
+        self.total_attendance_schema = sum(self.attendances_ids.mapped('get_working_hours'))
+        self.total_difference_schema = self.total_attendance_schema - sum(self.attendances_ids.mapped('working_hours_on_day')) 
     total_attendance_schema = fields.Float(compute='_total_attendance_schema',string="Attendance (Schema)",store=True)
     total_difference_schema = fields.Float(compute='_total_attendance_schema',string="Difference (Schema)",store=True)
-    
+
     @api.one
-    @api.depends('timesheet_ids','timesheet_ids.unit_amount','timesheet_ids.to_invoice.factor')
-    def _total_timesheet_invoiceable(self):
-        self.total_timesheet_invoiceable = sum([t.unit_amount * t.to_invoice.factor for t in self.timesheet_ids])
-    total_timesheet_invoiceable = fields.Float(compute='_total_timesheet_invoiceable',string="Invoiceable",store=True)
+    @api.depends('timesheet_ids','timesheet_ids.timesheet_amount','timesheet_ids.timesheet_amount_invoiceable')
+    def _timesheet_amount(self):
+        self.timesheet_amount = sum(self.timesheet_ids.mapped("timesheet_amount"))
+        self.timesheet_amount_invoiceable = sum(self.timesheet_ids.mapped("timesheet_amount_invoiceable"))
+    timesheet_amount = fields.Float(compute="_timesheet_amount",string="Reported time")
+    timesheet_amount_invoiceable = fields.Float(compute="_timesheet_amount",string="Reported time (invoiceable)")
+    
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

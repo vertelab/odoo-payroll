@@ -2,8 +2,8 @@
 <openerp>
   <data>
     <!--employee attendance tree view-->
-    <record id="view_he_attendance_who" model="ir.ui.view">
-      <field name="name">hr.employercert.attendance.tree</field>
+    <record id="view_attendance_who" model="ir.ui.view">
+      <field name="name">hr.attendance.schema.tree</field>
       <field name="model">hr.attendance</field>
       <field name="inherit_id" ref="hr_attendance.view_attendance_who" />
       <field name="arch" type="xml">
@@ -47,7 +47,8 @@
         <field name="total_difference" position="after">
           <field name="total_attendance_schema" />
           <field name="total_difference_schema" />
-          <field name="total_timesheet_invoiceable" />
+          <field name="timesheet_amount" />
+          <field name="timesheet_amount_invoiceable" />
         </field>
       </field>
     </record>
