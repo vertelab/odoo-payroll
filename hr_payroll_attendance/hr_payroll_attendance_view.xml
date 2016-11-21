@@ -31,8 +31,13 @@
                     </t>
                     <t t-call-assets="website.assets_frontend" t-js="false" />
                     <link href="/hr_payroll_attendance/static/src/css/attendance.css" rel="stylesheet"/>
+                    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300" rel="stylesheet"/>
                 </head>
-                <body>
+                <body onload="clock()">
+                    <div id="time_div" class="pull-right">
+                        <h1 id="time" class="text-center"/>
+                        <p id="date" class="text-center"/>
+                    </div>
                     <div class="container">
                         <div id="attendance_div" class="col-md-12 col-sm-12 col-xs-12">
                             <div class="col-md-6 col-sm-6 col-xs-6">
@@ -56,7 +61,11 @@
                         </div>
                         <div id="Log_div" class="col-md-12 col-sm-12 col-xs-12">
                             <div id="employee_image" class="col-md-6 col-sm-6 col-xs-6" />
-                            <div id="employee_message" class="col-md-6 col-sm-6 col-xs-6" />
+                            <div class="col-md-6 col-sm-6 col-xs-6">
+                                <div id="employee_message" class="col-md-12 col-sm-12 col-xs-12" />
+                                <div id="employee_worked_hour" class="col-md-12 col-sm-12 col-xs-12" />
+                                <div id="employee_time_bank" class="col-md-12 col-sm-12 col-xs-12" />
+                            </div>
                         </div>
                     </div>
                     <t t-call-assets="web.assets_common" t-css="false"/>
