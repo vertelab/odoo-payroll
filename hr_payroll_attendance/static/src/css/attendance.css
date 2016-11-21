@@ -1,12 +1,25 @@
+body {
+    font-family: 'Open Sans', sans-serif;
+}
+
 .absolute_center {
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
+#time_div {
+    top: 0px;
+    right: 0px;
+}
+
+#time_div h1 {
+    margin: 8px 8px 0px 0px;
+}
+
 #attendance_div {
     position: fixed;
-    top: 50px;
+    top: 100px;
     left: 0px;
 }
 
