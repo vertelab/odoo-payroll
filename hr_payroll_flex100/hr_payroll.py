@@ -43,6 +43,8 @@ class hr_attendance(models.Model):
             _logger.error('job_int %s - att %s = %s' % (job_intervals[0][0],datetime.strptime(att[0].name, tools.DEFAULT_SERVER_DATETIME_FORMAT),flex_begin))
             flex_end = datetime.strptime(att[-1].name, tools.DEFAULT_SERVER_DATETIME_FORMAT) - job_intervals[-1][1]
             self.flextime = (flex_begin + flex_end).total_seconds() / 60.0
+        else:
+            self.flextime = 0
     flextime = fields.Float(compute='_flextime', string='Flex hours (h)')
 
 
@@ -53,8 +55,8 @@ class hr_payslip(models.Model):
     def _holiday_ids(self):
         self.holiday_ids = self.env['hr.holidays.status'].search([('active','=',True),('limit','=',False)])
         self.holiday_ids += self.env['hr.holidays.status'].search([('id','in',[self.env.ref('l10n_se_hr_payroll.sick_leave_qualify').id,self.env.ref('l10n_se_hr_payroll.sick_leave_214').id,self.env.ref('l10n_se_hr_payroll.sick_leave_100').id])])
-    
-        
+
+
     holiday_ids = fields.Many2many(comodel_name="hr.holidays.status",compute="_holiday_ids")
     @api.one
     def _flextime(self):
@@ -67,8 +69,8 @@ class hr_payslip(models.Model):
         self.total_compensary_leave = self.compensary_leave + self.flextime
     compensary_leave = fields.Float(string='Compensary Leave',compute="_compensary_leave")
     total_compensary_leave = fields.Float(string='Total Compensary Leave',compute="_compensary_leave")
-    
-    
+
+
     #~ @api.model
     #~ def get_worked_day_lines(self,contract_ids, date_from, date_to, context=None):
         #~ return super(hr_payslip,self).get_worked_day_lines(contract_ids,date_from,date_to)
@@ -85,7 +87,7 @@ class hr_payslip(models.Model):
         #~ schedule_days_get_date(self, cr, uid, id, days, day_date=None, compute_leaves=False,
                                #~ resource_id=None, default_interval=None, context=None):
         #~ """ Wrapper on _schedule_days: return the beginning/ending datetime of"""
-        
+
         number_of_days = self.flextime
         self.env['hr.holidays'].create({
             'holiday_status_id': self.env.ref("hr_payroll_flex100.compensary_leave").id,
@@ -96,7 +98,7 @@ class hr_payslip(models.Model):
             #~ 'date_from': self.date_from,
             #~ 'date_to': self.date_to,
             })
-        return super(hr_payslip,self).hr_verify_sheet()        
+        return super(hr_payslip,self).hr_verify_sheet()
 
     #~ def refund_sheet(self, cr, uid, ids, context=None):
         #~ mod_obj = self.pool.get('ir.model.data')
@@ -104,7 +106,7 @@ class hr_payslip(models.Model):
             #~ id_copy = self.copy(cr, uid, payslip.id, {'credit_note': True, 'name': _('Refund: ')+payslip.name}, context=context)
             #~ self.signal_workflow(cr, uid, [id_copy], 'hr_verify_sheet')
             #~ self.signal_workflow(cr, uid, [id_copy], 'process_sheet')
-            
+
         #~ form_id = mod_obj.get_object_reference(cr, uid, 'hr_payroll', 'view_hr_payslip_form')
         #~ form_res = form_id and form_id[1] or False
         #~ tree_id = mod_obj.get_object_reference(cr, uid, 'hr_payroll', 'view_hr_payslip_tree')
@@ -122,11 +124,11 @@ class hr_payslip(models.Model):
             #~ 'views': [(tree_res, 'tree'), (form_res, 'form')],
             #~ 'context': {}
         #~ }
-    
- 
+
+
 class hr_holidays(models.Model):
     _inherit='hr.holidays.status'
-    
+
     @api.one
     def _ps_max_leaves(self):
         slip = self.env['hr.payslip'].browse(self._context.get('slip_id',None))
@@ -136,6 +138,6 @@ class hr_holidays(models.Model):
             self.ps_leaves_taken = sum(holiday_ids.filtered(lambda h: h.type == 'remove').mapped('number_of_days_temp'))
     ps_max_leaves = fields.Integer(string='Max Leaves',compute='_ps_max_leaves')
     ps_leaves_taken = fields.Integer(string='Max Leaves',compute='_ps_max_leaves')
-      
-    
+
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

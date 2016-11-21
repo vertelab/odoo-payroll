@@ -36,6 +36,8 @@
                 <body onload="clock()">
                     <div id="time_div" class="pull-right">
                         <h1 id="time" class="text-center"/>
+                        <p id="week_day_d" class="text-center"/>
+                        <p id="week_day_m_y" class="text-center"/>
                         <p id="date" class="text-center"/>
                     </div>
                     <div class="container">
