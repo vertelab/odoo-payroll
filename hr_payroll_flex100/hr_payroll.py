@@ -43,10 +43,18 @@ class hr_attendance(models.Model):
             _logger.error('job_int %s - att %s = %s' % (job_intervals[0][0],datetime.strptime(att[0].name, tools.DEFAULT_SERVER_DATETIME_FORMAT),flex_begin))
             flex_end = datetime.strptime(att[-1].name, tools.DEFAULT_SERVER_DATETIME_FORMAT) - job_intervals[-1][1]
             self.flextime = (flex_begin + flex_end).total_seconds() / 60.0
-        else:
-            self.flextime = 0
-    flextime = fields.Float(compute='_flextime', string='Flex hours (h)')
+    flextime = fields.Float(compute='_flextime', string='Flex Time (m)')
 
+    @api.one
+    def _flex_working_hours(self):
+        flex_working_hours = 0.0
+        if self._check_last_sign_out(self):
+            att = self.env['hr.attendance'].search([('employee_id','=',self.employee_id.id),('name','>',self.name[:10] + ' 00:00:00'),('name','<',self.name[:10] + ' 23:59:59')],order='name')
+            for (start,end) in zip(att,att[1:])[::2]:
+                flex_working_hours += (datetime.strptime(end.name, tools.DEFAULT_SERVER_DATETIME_FORMAT) - datetime.strptime(start.name, tools.DEFAULT_SERVER_DATETIME_FORMAT)).total_seconds() / 60.0 / 60.0
+        self.flex_working_hours = flex_working_hours
+    flex_working_hours = fields.Float(compute='_flex_working_hours', string='Worked Flex (h)')
+>>>>>>> eac9901f79285ca6c4bc9e48e88ff6f2d9f5645b
 
 class hr_payslip(models.Model):
     _inherit = 'hr.payslip'
@@ -55,18 +63,21 @@ class hr_payslip(models.Model):
     def _holiday_ids(self):
         self.holiday_ids = self.env['hr.holidays.status'].search([('active','=',True),('limit','=',False)])
         self.holiday_ids += self.env['hr.holidays.status'].search([('id','in',[self.env.ref('l10n_se_hr_payroll.sick_leave_qualify').id,self.env.ref('l10n_se_hr_payroll.sick_leave_214').id,self.env.ref('l10n_se_hr_payroll.sick_leave_100').id])])
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> eac9901f79285ca6c4bc9e48e88ff6f2d9f5645b
     holiday_ids = fields.Many2many(comodel_name="hr.holidays.status",compute="_holiday_ids")
     @api.one
     def _flextime(self):
-        self.flextime = sum(self.env['hr_timesheet_sheet.sheet'].search([('employee_id','=',self.employee_id.id),('date_from','>=',self.date_from),('date_to','<=',self.date_to)]).mapped("total_difference_schema"))
-    flextime = fields.Float(string='Flex Time',compute="_flextime")
+        self.flextime = sum(self.env['hr_timesheet_sheet.sheet'].search([('employee_id','=',self.employee_id.id),('date_from','>=',self.date_from),('date_to','<=',self.date_to)]).mapped("flextime"))
+    flextime = fields.Float(string='Flex Time (m)',compute="_flextime")
     @api.one
     def _compensary_leave(self):
         holidays = self.env['hr.holidays'].search([('employee_id','=',self.employee_id.id),('holiday_status_id','=',self.env.ref("hr_payroll_flex100.compensary_leave").id)])
         self.compensary_leave = sum(holidays.filtered(lambda h: h.type == ' add').mapped("number_of_days_temp")) - sum(holidays.filtered(lambda h: h.type == 'remove').mapped("number_of_days_temp"))
-        self.total_compensary_leave = self.compensary_leave + self.flextime
+        self.total_compensary_leave = self.compensary_leave + (self.flextime / 60.0 / 24.0)
     compensary_leave = fields.Float(string='Compensary Leave',compute="_compensary_leave")
     total_compensary_leave = fields.Float(string='Total Compensary Leave',compute="_compensary_leave")
 
@@ -87,8 +98,13 @@ class hr_payslip(models.Model):
         #~ schedule_days_get_date(self, cr, uid, id, days, day_date=None, compute_leaves=False,
                                #~ resource_id=None, default_interval=None, context=None):
         #~ """ Wrapper on _schedule_days: return the beginning/ending datetime of"""
+<<<<<<< HEAD
 
         number_of_days = self.flextime
+=======
+
+        number_of_days = self.flextime / 60.0 / 24.0 # minutes to days
+>>>>>>> eac9901f79285ca6c4bc9e48e88ff6f2d9f5645b
         self.env['hr.holidays'].create({
             'holiday_status_id': self.env.ref("hr_payroll_flex100.compensary_leave").id,
             'employee_id': self.employee_id.id,
@@ -124,7 +140,21 @@ class hr_payslip(models.Model):
             #~ 'views': [(tree_res, 'tree'), (form_res, 'form')],
             #~ 'context': {}
         #~ }
+<<<<<<< HEAD
 
+=======
+
+class hr_timesheet_sheet(models.Model):
+    _inherit = "hr_timesheet_sheet.sheet"
+
+    @api.one
+    @api.depends('attendances_ids','attendances_ids.sheet_id')
+    def _flex_working_hours(self):
+        self.flex_working_hours = sum(self.attendances_ids.mapped('flex_working_hours'))
+        self.flextime = sum(self.attendances_ids.mapped('flextime'))
+    flex_working_hours = fields.Float(compute='_flex_working_hours', string='Worked Flex (h)')
+    flextime = fields.Float(compute='_flex_working_hours', string='Flex Time (m)')
+>>>>>>> eac9901f79285ca6c4bc9e48e88ff6f2d9f5645b
 
 class hr_holidays(models.Model):
     _inherit='hr.holidays.status'
