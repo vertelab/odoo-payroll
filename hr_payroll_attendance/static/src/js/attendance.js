@@ -106,23 +106,23 @@ function checkTime(i) {
 }
 function getWeekDay(day) {
     switch(day) {
-        case 0: return 'måndag';
-        case 1: return 'tisdag';
-        case 2: return 'onsdag';
-        case 3: return 'torsdag';
-        case 4: return 'fredag';
-        case 5: return 'lördag';
-        case 6: return 'söndag';
+        case 1: return 'måndag';
+        case 2: return 'tisdag';
+        case 3: return 'onsdag';
+        case 4: return 'torsdag';
+        case 5: return 'fredag';
+        case 6: return 'lördag';
+        case 0: return 'söndag';
     }
 }
 function getMonth(month) {
     switch(month) {
-        case 0: return 'januari';
-        case 1: return 'februari';
-        case 2: return 'mars';
-        case 3: return 'april';
-        case 4: return 'maj';
-        case 5: return 'juni';
+        case 1: return 'januari';
+        case 2: return 'februari';
+        case 3: return 'mars';
+        case 4: return 'april';
+        case 5: return 'maj';
+        case 6: return 'juni';
         case 7: return 'juli';
         case 8: return 'augusti';
         case 9: return 'september';
