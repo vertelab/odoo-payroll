@@ -126,13 +126,13 @@ function checkTime(i) {
 
 function getWeekDay(day) {
     switch(day) {
-        case 1: return 'måndag';
-        case 2: return 'tisdag';
-        case 3: return 'onsdag';
-        case 4: return 'torsdag';
-        case 5: return 'fredag';
-        case 6: return 'lördag';
-        case 0: return 'söndag';
+        case 1: return 'måndagen';
+        case 2: return 'tisdagen';
+        case 3: return 'onsdagen';
+        case 4: return 'torsdagen';
+        case 5: return 'fredagen';
+        case 6: return 'lördagen';
+        case 0: return 'söndagen';
     }
 }
 function getMonth(month) {
