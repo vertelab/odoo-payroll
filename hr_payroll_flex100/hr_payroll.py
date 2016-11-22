@@ -40,7 +40,7 @@ class hr_attendance(models.Model):
                     start_dt=datetime.strptime(self.name, tools.DEFAULT_SERVER_DATETIME_FORMAT).replace(hour=0,minute=0))
             att = self.env['hr.attendance'].search([('employee_id','=',self.employee_id.id),('name','>',self.name[:10] + ' 00:00:00'),('name','<',self.name[:10] + ' 23:59:59')],order='name')
             flex_begin =  job_intervals[0][0] - datetime.strptime(att[0].name, tools.DEFAULT_SERVER_DATETIME_FORMAT)
-            _logger.error('job_int %s - att %s = %s' % (job_intervals[0][0],datetime.strptime(att[0].name, tools.DEFAULT_SERVER_DATETIME_FORMAT),flex_begin))
+            #~ _logger.error('job_int %s - att %s = %s' % (job_intervals[0][0],datetime.strptime(att[0].name, tools.DEFAULT_SERVER_DATETIME_FORMAT),flex_begin))
             flex_end = datetime.strptime(att[-1].name, tools.DEFAULT_SERVER_DATETIME_FORMAT) - job_intervals[-1][1]
             self.flextime = (flex_begin + flex_end).total_seconds() / 60.0
     flextime = fields.Float(compute='_flextime', string='Flex Time (m)')
@@ -48,11 +48,23 @@ class hr_attendance(models.Model):
     @api.one
     def _flex_working_hours(self):
         flex_working_hours = 0.0
+        #~ get_working_hours = 0.0
+        leaves = 0.0
         if self._check_last_sign_out(self):
             att = self.env['hr.attendance'].search([('employee_id','=',self.employee_id.id),('name','>',self.name[:10] + ' 00:00:00'),('name','<',self.name[:10] + ' 23:59:59')],order='name')
             for (start,end) in zip(att,att[1:])[::2]:
+                #~ get_working_hours += self.pool.get('resource.calendar').get_working_hours(self.env.cr, self.env.uid,
+                                                                                            #~ self.employee_id.contract_id.working_hours.id,
+                                                                                            #~ datetime.strptime(start.name, tools.DEFAULT_SERVER_DATETIME_FORMAT),
+                                                                                            #~ datetime.strptime(end.name, tools.DEFAULT_SERVER_DATETIME_FORMAT))
                 flex_working_hours += (datetime.strptime(end.name, tools.DEFAULT_SERVER_DATETIME_FORMAT) - datetime.strptime(start.name, tools.DEFAULT_SERVER_DATETIME_FORMAT)).total_seconds() / 60.0 / 60.0
-        self.flex_working_hours = flex_working_hours
+            job_intervals = self.pool.get('resource.calendar').get_working_intervals_of_day(self.env.cr,self.env.uid,
+                    self.employee_id.contract_id.working_hours.id,
+                    start_dt=datetime.strptime(self.name, tools.DEFAULT_SERVER_DATETIME_FORMAT).replace(hour=0,minute=0))
+            for f,s in zip(job_intervals,job_intervals[1::])[::2]:
+                leaves += (f[1] - s[0]).total_seconds() / 60.0 / 60.0
+        #~ _logger.warn('leaves %s ' % leaves)
+        self.flex_working_hours = flex_working_hours + leaves
     flex_working_hours = fields.Float(compute='_flex_working_hours', string='Worked Flex (h)')
 
 class hr_payslip(models.Model):
@@ -65,8 +77,10 @@ class hr_payslip(models.Model):
     holiday_ids = fields.Many2many(comodel_name="hr.holidays.status",compute="_holiday_ids")
     @api.one
     def _flextime(self):
-        self.flextime = sum(self.env['hr_timesheet_sheet.sheet'].search([('employee_id','=',self.employee_id.id),('date_from','>=',self.date_from),('date_to','<=',self.date_to)]).mapped("flextime"))
+        self.flextime = sum(self.env['hr.attendance'].search([('employee_id','=',self.employee_id.id),('name','>',self.date_from + ' 00:00:00'),('name','<',self.date_to + ' 23:59:59')]).mapped("flextime"))
+        self.flex_working_hours = sum(self.env['hr.attendance'].search([('employee_id','=',self.employee_id.id),('name','>',self.date_from + ' 00:00:00'),('name','<',self.date_to + ' 23:59:59')]).mapped("flex_working_hours"))
     flextime = fields.Float(string='Flex Time (m)',compute="_flextime")
+    flex_working_hours = fields.Float(compute='_flextime', string='Worked Flex (h)')
     @api.one
     def _compensary_leave(self):
         holidays = self.env['hr.holidays'].search([('employee_id','=',self.employee_id.id),('holiday_status_id','=',self.env.ref("hr_payroll_flex100.compensary_leave").id)])
@@ -78,7 +92,81 @@ class hr_payslip(models.Model):
 
     #~ @api.model
     #~ def get_worked_day_lines(self,contract_ids, date_from, date_to, context=None):
+      
         #~ return super(hr_payslip,self).get_worked_day_lines(contract_ids,date_from,date_to)
+
+
+
+    @api.one
+    def Xcompute_sheet(self):
+        super(hr_payslip,self).compute_sheet()
+        work100 = self.worked_days_line_ids.filtered(lambda l: l.code == 'WORK100' or l.code == 'FLEX100')
+        number_of_hours = work100.number_of_hours
+        number_of_days  = work100.number_of_days
+        work100.write({'code': 'WORK100'})
+        work100.write({'number_of_hours': self.flex_working_hours})
+        _logger.warn('hours %s days %s flex %s days %s' % (number_of_hours,number_of_days,self.flex_working_hours,self._get_nbr_of_days()))
+        return True
+
+    def Xget_worked_day_lines(self, cr, uid, contract_ids, date_from, date_to, context=None):
+        """
+        @param contract_ids: list of contract id
+        @return: returns a list of dict containing the input that should be applied for the given contract between date_from and date_to
+        """
+        def was_on_leave(employee_id, datetime_day, context=None):
+            res = False
+            day = datetime_day.strftime("%Y-%m-%d")
+            holiday_ids = self.pool.get('hr.holidays').search(cr, uid, [('state','=','validate'),('employee_id','=',employee_id),('type','=','remove'),('date_from','<=',day),('date_to','>=',day)])
+            if holiday_ids:
+                res = self.pool.get('hr.holidays').browse(cr, uid, holiday_ids, context=context)[0].holiday_status_id.name
+            return res
+
+        res = []
+        for contract in self.pool.get('hr.contract').browse(cr, uid, contract_ids, context=context):
+            if not contract.working_hours:
+                #fill only if the contract as a working schedule linked
+                continue
+            attendances = {
+                 'name': _("Normal Working Days paid at 100%"),
+                 'sequence': 1,
+                 'code': 'WORK100',
+                 'number_of_days': 0.0,
+                 'number_of_hours': 0.0,
+                 'contract_id': contract.id,
+            }
+            leaves = {}
+            day_from = datetime.strptime(date_from,"%Y-%m-%d")
+            day_to = datetime.strptime(date_to,"%Y-%m-%d")
+            nb_of_days = (day_to - day_from).days + 1
+            for day in range(0, nb_of_days):
+                working_hours_on_day = self.pool.get('resource.calendar').working_hours_on_day(cr, uid, contract.working_hours, day_from + timedelta(days=day), context)
+                if working_hours_on_day:
+                    #the employee had to work
+                    leave_type = was_on_leave(contract.employee_id.id, day_from + timedelta(days=day), context=context)
+                    if leave_type:
+                        #if he was on leave, fill the leaves dict
+                        if leave_type in leaves:
+                            leaves[leave_type]['number_of_days'] += 1.0
+                            leaves[leave_type]['number_of_hours'] += working_hours_on_day
+                        else:
+                            leaves[leave_type] = {
+                                'name': leave_type,
+                                'sequence': 5,
+                                'code': leave_type,
+                                'number_of_days': 1.0,
+                                'number_of_hours': working_hours_on_day,
+                                'contract_id': contract.id,
+                            }
+                    else:
+                        #add the input vals to tmp (increment if existing)
+                        attendances['number_of_days'] += 1.0
+                        attendances['number_of_hours'] += working_hours_on_day
+            leaves = [value for key,value in leaves.items()]
+            res += [attendances] + leaves
+        return res
+
+
+
 
     @api.one
     def hr_verify_sheet(self):
@@ -92,6 +180,8 @@ class hr_payslip(models.Model):
         #~ schedule_days_get_date(self, cr, uid, id, days, day_date=None, compute_leaves=False,
                                #~ resource_id=None, default_interval=None, context=None):
         #~ """ Wrapper on _schedule_days: return the beginning/ending datetime of"""
+
+        #raise Warning(self.worked_days_line_ids)
 
         number_of_days = self.flextime / 60.0 / 24.0 # minutes to days
         self.env['hr.holidays'].create({
