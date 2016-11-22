@@ -94,18 +94,9 @@ openerp.jsonRpc("/hr/attendance/" + id, 'call', {
 }
 
 function minute2HourMinute(minute) {
-    hour_minute = new Array(2);
-    if(Math.abs(minute) % 60 === 0 || minute === 0) {
-        hour_minute[0] = minute / 60;
-        hour_minute[1] = 0;
-    }
-    else {
-        hour_minute[0] = Math.floor(minute / 60);
-        if(minute > 0)
-            hour_minute[1] = Math.floor(minute % 60);
-        else
-            hour_minute[1] = -Math.floor(Math.abs(minute) % 60);
-    }
+    var hour_minute = new Array(2);
+    hour_minute[0] = Math.floor(minute / 60);
+    hour_minute[1] = minute > 0 ? Math.floor(minute % 60) : -Math.floor(Math.abs(minute) % 60);
     return hour_minute;
 }
 
