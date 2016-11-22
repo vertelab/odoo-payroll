@@ -49,6 +49,7 @@ class attendanceReport(http.Controller):
         return {'attendance': {
                     'name': attendance.name,
                     'action': attendance.action,
+                    'flex_working_hours': attendance.flex_working_hours,
                     'flextime': attendance.flextime,
                 },
                 'employee': {

@@ -66,6 +66,7 @@
                             <div class="col-md-6 col-sm-6 col-xs-6">
                                 <div id="employee_message" class="col-md-12 col-sm-12 col-xs-12" />
                                 <div id="employee_worked_hour" class="col-md-12 col-sm-12 col-xs-12" />
+                                <div id="employee_flex_time" class="col-md-12 col-sm-12 col-xs-12" />
                                 <div id="employee_time_bank" class="col-md-12 col-sm-12 col-xs-12" />
                             </div>
                         </div>

@@ -1,3 +1,5 @@
+var logTimeOut;
+
 function attendance_data_loop(id) {
     openerp.jsonRpc('/longpolling/poll','call',
     {
@@ -5,7 +7,10 @@ function attendance_data_loop(id) {
         "last":id
     }).then(function(r){
         for(i=0; i<r.length; i++){
-            get_attendance(r[i].message);
+            if(Math.floor(r[i].message) == r[i].message && $.isNumeric(r[i].message))
+                get_attendance(r[i].message);
+            else
+                continue;
         }
         if(r.length>0)
             attendance_data_loop(r[r.length-1].id);
@@ -48,8 +53,6 @@ openerp.jsonRpc("/hr/attendance/come_and_go", 'call', {
     });
 }
 
-var logTimeOut;
-
 function get_attendance(id){
 openerp.jsonRpc("/hr/attendance/" + id, 'call', {
     }).done(function(data){
@@ -65,30 +68,52 @@ openerp.jsonRpc("/hr/attendance/" + id, 'call', {
             $("#employee_message").html("<h2>Welcome!</h2><h2>" + data.employee.name +"</h2>");
         }
         if (data.attendance.action === 'sign_out'){
-            var flexHour;
-            var flexMinute;
+            var flexWorkedHour = 0;
+            var flexWorkedMinute = 0;
+            var flexHour = 0;
+            var flexMinute = 0;
             var timeBankHour = 0;
             var timeBankMinute = 0;
-            if (data.attendance.flextime == false) {
-                flexHour = 0;
-                flexMinute = 0;
+
+            if (data.attendance.flex_working_hours != false) {
+                flexWorkedHour = minute2HourMinute(data.attendance.flex_working_hours)[0];
+                flexWorkedMinute = minute2HourMinute(data.attendance.flex_working_hours)[1];
             }
-            else {
-                flexHour = Math.floor(data.attendance.flextime / 60);
-                flexMinute = Math.floor(data.attendance.flextime % 60);
+            if (data.attendance.flextime != false) {
+                flexHour = minute2HourMinute(data.attendance.flextime)[0];
+                flexMinute = minute2HourMinute(data.attendance.flextime)[1];
             }
+
             $("#employee_message").html("<h2>Goodbye!</h2><h2>" + data.employee.name +"</h2>");
-            $("#employee_worked_hour").html("<h4><strong>You have worked: </strong>" + flexHour + " hours and " + flexMinute +" minutes</h4>");
+            $("#employee_worked_hour").html("<h4><strong>You have worked: </strong>" + flexWorkedHour + " hours and " + flexWorkedMinute +" minutes</h4>");
+            $("#employee_flex_time").html("<h4><strong>Your flex time: </strong>" + flexHour + " hours and " + flexMinute +" minutes</h4>");
             $("#employee_time_bank").html("<h4><strong>Your time bank is: </strong>" + timeBankHour + " hours and " + timeBankMinute +" minutes</h4>");
         }
         logTimeOut = setTimeout("$('#Log_div').fadeOut('slow')", 15000);
     });
 }
 
+function minute2HourMinute(minute) {
+    hour_minute = new Array(2);
+    if(Math.abs(minute) % 60 === 0 || minute === 0) {
+        hour_minute[0] = minute / 60;
+        hour_minute[1] = 0;
+    }
+    else {
+        hour_minute[0] = Math.floor(minute / 60);
+        if(minute > 0)
+            hour_minute[1] = Math.floor(minute % 60);
+        else
+            hour_minute[1] = -Math.floor(Math.abs(minute) % 60);
+    }
+    return hour_minute;
+}
+
 function clearContent(){
     $("#employee_image").empty();
     $("#employee_message").empty();
     $("#employee_worked_hour").empty();
+    $("#employee_flex_time").empty();
     $("#employee_time_bank").empty();
     $('#Log_div').css("display", "unset");
     $('#Log_div').stop();
