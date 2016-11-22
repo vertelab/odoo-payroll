@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
     <data>
-        <template id="hr_attendance_form" name="HR Attendance Form">
+        <template id="hr_attendance_form" name="HR Attendance">
             <html t-att-lang="lang and lang.replace('_', '-')" t-att-data-oe-company-name="res_company.name">
                 <head>
                     <meta charset="utf-8" />

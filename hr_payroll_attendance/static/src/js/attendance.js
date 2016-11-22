@@ -44,9 +44,11 @@ function come_and_go(){
 openerp.jsonRpc("/hr/attendance/come_and_go", 'call', {
     'employee_id': $("#hr_employee").val(),
     }).done(function(data){
-        console.log(data);
+        //~ console.log(data);
     });
 }
+
+var logTimeOut;
 
 function get_attendance(id){
 openerp.jsonRpc("/hr/attendance/" + id, 'call', {
@@ -54,31 +56,47 @@ openerp.jsonRpc("/hr/attendance/" + id, 'call', {
         $("#login").addClass("hidden");
         $("#logout").addClass("hidden");
         $("#attendance_div").load(document.URL +  " #attendance_div");
+        clearContent();
         if (data.employee.img !== null)
             $("#employee_image").html("<img src='data:image/png;base64," + data.employee.img + "''/>");
         if (data.employee.img === null)
             $("#employee_image").html("<img src='/hr_payroll_attendance/static/src/img/icon-user.png'/>");
-        if (data.employee.state === 'present') {
+        if (data.attendance.action === 'sign_in') {
             $("#employee_message").html("<h2>Welcome!</h2><h2>" + data.employee.name +"</h2>");
-            $('#Log_div').delay(2000).fadeOut("slow");
         }
-        if (data.employee.state === 'absent'){
+        if (data.attendance.action === 'sign_out'){
+            var flexHour;
+            var flexMinute;
+            var timeBankHour = 0;
+            var timeBankMinute = 0;
+            if (data.attendance.flextime == false) {
+                flexHour = 0;
+                flexMinute = 0;
+            }
+            else {
+                flexHour = Math.floor(data.attendance.flextime / 60);
+                flexMinute = Math.floor(data.attendance.flextime % 60);
+            }
             $("#employee_message").html("<h2>Goodbye!</h2><h2>" + data.employee.name +"</h2>");
-            $("#employee_worked_hour").html("<h4><strong>Du har idag jobbat: </strong>" + data.attendance.flextime +" minuter</h4>");
-            $("#employee_time_bank").html("<h4><strong>Din tidbank är: </strong>" + "xxx" +" minuter</h4>");
-            $('#Log_div').delay(15000).fadeOut("slow");
+            $("#employee_worked_hour").html("<h4><strong>You have worked: </strong>" + flexHour + " hours and " + flexMinute +" minutes</h4>");
+            $("#employee_time_bank").html("<h4><strong>Your time bank is: </strong>" + timeBankHour + " hours and " + timeBankMinute +" minutes</h4>");
         }
+        logTimeOut = setTimeout("$('#Log_div').fadeOut('slow')", 15000);
     });
 }
 
 function clearContent(){
-    $("employee_image").empty();
-    $("employee_message").empty();
-    $("employee_worked_hour").empty();
-    $("employee_time_bank").empty();
+    $("#employee_image").empty();
+    $("#employee_message").empty();
+    $("#employee_worked_hour").empty();
+    $("#employee_time_bank").empty();
+    $('#Log_div').css("display", "unset");
+    $('#Log_div').stop();
+    clearTimeout(logTimeOut);
 }
 
 $('#Log_div').click(function () {
+    clearContent();
     $(this).css("display", "none");
 });
 
@@ -99,20 +117,22 @@ function clock() {
     $("#date").text(year + "-" + month + "-" + day);
     var time = setTimeout(clock, 500);
 }
+
 function checkTime(i) {
     if (i < 10)
         i = "0" + i;
     return i;
 }
+
 function getWeekDay(day) {
     switch(day) {
-        case 1: return 'måndag';
-        case 2: return 'tisdag';
-        case 3: return 'onsdag';
-        case 4: return 'torsdag';
-        case 5: return 'fredag';
-        case 6: return 'lördag';
-        case 0: return 'söndag';
+        case 1: return 'måndagen';
+        case 2: return 'tisdagen';
+        case 3: return 'onsdagen';
+        case 4: return 'torsdagen';
+        case 5: return 'fredagen';
+        case 6: return 'lördagen';
+        case 0: return 'söndagen';
     }
 }
 function getMonth(month) {

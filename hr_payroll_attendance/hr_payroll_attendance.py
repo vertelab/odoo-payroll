@@ -31,7 +31,7 @@ class attendanceReport(http.Controller):
 
     @http.route(['/hr/attendance'], type='http', auth="user", website=True)
     def attendance(self, employees=None, **post):
-        return request.website.render("hr_payroll_attendance.hr_attendance_form", {'employees': request.env['hr.employee'].search([('active', '=', True),('id', '!=', 1)]),})
+        return request.website.render("hr_payroll_attendance.hr_attendance_form", {'employees': request.env['hr.employee'].search([('active', '=', True),('id', '!=', request.env.ref('hr.employee').id)]),})
 
     @http.route(['/hr/attendance/report'], type='json', auth="user", website=True)
     def attendance_report(self, employee=None, **kw):
