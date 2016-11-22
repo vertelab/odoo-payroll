@@ -67,8 +67,8 @@ openerp.jsonRpc("/hr/attendance/" + id, 'call', {
         if (data.attendance.action === 'sign_out'){
             var flexHour;
             var flexMinute;
-            var timeBankHour;
-            var timeBankMinute;
+            var timeBankHour = 0;
+            var timeBankMinute = 0;
             if (data.attendance.flextime == false) {
                 flexHour = 0;
                 flexMinute = 0;
