@@ -46,6 +46,19 @@
       </field>
     </record>
     
+    <record id="view_hr_payslip_form" model="ir.ui.view">
+      <field name="name">hr.payslip.form.schema</field>
+      <field name="model">hr.payslip</field>
+      <field name="inherit_id" ref="hr_payroll_schema.view_hr_payslip_form" />
+      <field name="arch" type="xml">
+        <field  name="schema_number_of_days" position="before">
+              <field name="compensary_leave"/>
+              <field name="flextime"/>
+              <field name="total_compensary_leave"/>
+        </field>
+      </field>
+    </record>
+    
     </data>
 </openerp>
 

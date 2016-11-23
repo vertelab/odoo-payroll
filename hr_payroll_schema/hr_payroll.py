@@ -131,7 +131,6 @@ class hr_payslip(models.Model):
         for day in range(0, (fields.Date.from_string(slip.date_to) - fields.Date.from_string(slip.date_from)).days + 1):
             #~ working_hours_on_day = self.pool.get('resource.calendar').working_hours_on_day(self.env.cr, self.env.uid, slip.employee_id.contract_id.working_hours.id, fields.Date.from_string(slip.date_from) + timedelta(days=day), self.env.context)
             working_hours_on_day = slip.employee_id.contract_id.working_hours.get_working_hours_of_date(start_dt=fields.Datetime.from_string(slip.date_from) + timedelta(days=day))[0]
-            _logger.warn('working_h_on day %s' %working_hours_on_day )
             if working_hours_on_day:
                 nbr += 1.0
         return nbr
@@ -149,10 +148,13 @@ class hr_payslip(models.Model):
     schema_number_of_days = fields.Float(string="Schema numer of days", compute='_schema_number_of_days')
     @api.one
     def _percent_number_of_days(self):
-        work100 = self.worked_days_line_ids.filtered(lambda l: l.code == 'WORK100').mapped('number_of_days')
+        work100 = sum(self.worked_days_line_ids.filtered(lambda l: l.code == 'WORK100').mapped('number_of_days'))
         if work100 and work100 < self.schema_number_of_days:
-            self.percent_number_of_days = self.worked_days_line_ids.filtered(lambda l: l.code == 'WORK100').mapped('number_of_days') / self.schema_number_of_days
-        self.percent_number_of_days = 1.0
+            self.percent_number_of_days = work100 / self.schema_number_of_days
+        else:
+            self.percent_number_of_days = 1.0
+        _logger.warn('working_h_on day %s' % work100 )
+
     percent_number_of_days = fields.Float(string="Percent numer of days", compute='_percent_number_of_days')
     
     @api.multi
