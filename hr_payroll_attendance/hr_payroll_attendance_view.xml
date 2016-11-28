@@ -44,7 +44,7 @@
                         <div id="attendance_div" class="col-md-12 col-sm-12 col-xs-12">
                             <div class="col-md-6 col-sm-6 col-xs-6">
                                 <div class="form-group">
-                                    <select id="hr_employee" class="form-control selectpicker dropdown dropdown_attendance" data-style="btn-primary" onchange="employee_state()">
+                                    <select id="hr_employee" class="form-control selectpicker dropdown dropdown_attendance" data-style="btn-primary" onchange="employee_state(); employee_project()">
                                         <option value="" selected="checked">
                                             <span>-- Choose Employee --</span>
                                         </option>
@@ -54,6 +54,8 @@
                                             </option>
                                         </t>
                                     </select>
+                                    <div id="employee_projects"/>
+
                                 </div>
                             </div>
                             <div class="col-md-6 col-sm-6 col-xs-6 text-center">

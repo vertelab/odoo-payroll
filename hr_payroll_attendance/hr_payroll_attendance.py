@@ -27,6 +27,11 @@ import time
 import logging
 _logger = logging.getLogger(__name__)
 
+class hr_attendance(models.Model):
+    _inherit = 'hr.attendance'
+
+    project_id = fields.Many2one(comodel_name='project.project', string='Project')
+
 class attendanceReport(http.Controller):
 
     @http.route(['/hr/attendance'], type='http', auth="user", website=True)
@@ -37,6 +42,14 @@ class attendanceReport(http.Controller):
     def attendance_report(self, employee=None, **kw):
         state = request.env['hr.employee'].search_read([('id', '=', int(employee))], ['state'])[0]['state']
         return state
+
+    @http.route(['/hr/attendance/employee_project'], type='json', auth="user", website=True)
+    def employee_project(self, employee=None, **kw):
+        projects = request.env['project.project'].search([('members', 'in', request.env['hr.employee'].browse(int(employee)).user_id.id)]).mapped(lambda p : {'id': p.id, 'name': p.name})
+        if len(projects) > 0:
+            return {'projects': projects}
+        else:
+            return {}
 
     @http.route(['/hr/attendance/come_and_go'], type='json', auth="user", website=True)
     def attendance_comeandgo(self, employee_id=None, **kw):

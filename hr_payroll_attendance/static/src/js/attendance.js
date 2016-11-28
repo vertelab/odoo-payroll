@@ -44,6 +44,26 @@ function employee_state(){
     }
 }
 
+function employee_project(){
+    if ($("#hr_employee").val() != '') {
+        openerp.jsonRpc("/hr/attendance/employee_project", 'call', {
+            'employee': $("#hr_employee").val(),
+        }).done(function(data){
+            console.log(Object.keys(data).length);
+            console.log(data);
+            if('projects' in data) {
+                html_content = "<select id='hr_employee_project' class='form-control selectpicker dropdown dropdown_attendance' data-style='btn-primary'>";
+                for(i=0; i<data['projects'].length; i++) {
+                    html_content += "<option value=" + data['projects'][i].id + ">";
+                    html_content += "<span>" + data['projects'][i].name + "</span></option>";
+                }
+                html_content += "</select>";
+                $("#employee_projects").html(html_content);
+            }
+        });
+    }
+}
+
 /* Come and Go */
 function come_and_go(){
 openerp.jsonRpc("/hr/attendance/come_and_go", 'call', {

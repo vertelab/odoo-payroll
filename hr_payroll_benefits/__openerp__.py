@@ -24,13 +24,13 @@
 'summary': 'Extends contract with benefits',
 'category': 'hr',
 'description': """Extends the contract with benefits for use in rules
-    
-	In rules you can use benefits like this both in conditions and computation:
+
+    In rules you can use benefits like this both in conditions and computation:
        return = contract.benefit_value('car')
 """,
 'author': 'Vertel AB',
 'website': 'http://www.vertel.se',
 'depends': ['hr_payroll'],
-'data': ['payslip_view.xml'],
+'data': ['payslip_view.xml', 'security/ir.model.access.csv',],
 'installable': True,
 }
