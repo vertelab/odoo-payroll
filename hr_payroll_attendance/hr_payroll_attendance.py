@@ -41,8 +41,12 @@ class attendanceReport(http.Controller):
     @http.route(['/hr/attendance/come_and_go'], type='json', auth="user", website=True)
     def attendance_comeandgo(self, employee_id=None, **kw):
         employee = request.env['hr.employee'].browse(int(employee_id))
-        employee.attendance_action_change()
-        return {}
+        try:
+            employee.attendance_action_change()
+        except Exception as e:
+            _logger.warn(e)
+            return ': '.join(e)
+        return None
 
     @http.route(['/hr/attendance/<model("hr.attendance"):attendance>'], type='json', auth="user", website=True)
     def get_attendance(self, attendance=None, **kw):

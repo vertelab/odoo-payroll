@@ -49,7 +49,11 @@ function come_and_go(){
 openerp.jsonRpc("/hr/attendance/come_and_go", 'call', {
     'employee_id': $("#hr_employee").val(),
     }).done(function(data){
-        //~ console.log(data);
+        if (data != null) {
+            clearContent();
+            $("#employee_message_error").html("<h2 style='color: #f00;'>" + data +"</h2>");
+            $('#Log_div').delay(15000).fadeOut('slow');
+        }
     });
 }
 
@@ -103,6 +107,7 @@ function minute2HourMinute(minute) {
 function clearContent(){
     $("#employee_image").empty();
     $("#employee_message").empty();
+    $("#employee_message_error").empty();
     $("#employee_worked_hour").empty();
     $("#employee_flex_time").empty();
     $("#employee_time_bank").empty();
