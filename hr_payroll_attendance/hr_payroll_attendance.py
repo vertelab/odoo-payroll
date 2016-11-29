@@ -33,6 +33,37 @@ class hr_attendance(models.Model):
     project_id = fields.Many2one(comodel_name='project.project', string='Project')
     # project_work_time calculate time betweet two attendances
 
+    @api.model
+    def auto_log_out(self):
+        employees = request.env['hr.employee'].search([('active', '=', True), ('id', '!=', request.env.ref('hr.employee').id)])
+        for e in employees:
+            if e.state == 'present':
+                if e.contract_id:
+                    hours_to = {a.dayofweek: a.hour_to for a in e.contract_id.working_hours.attendance_ids}
+                    now = datetime.now()
+                    yesterday = (datetime(now.year, now.month, now.day) - timedelta(days = 1) + timedelta(minutes = (hours_to[str(now.weekday())]* 60))).strftime('%Y-%m-%d %H:%M:%S')
+                    e.with_context({'action_date': yesterday}).attendance_action_change()
+                    self.env['mail.message'].create({
+                        'body': _("You've been automatically signed out on' %s\nIf this sign out time is incorrect, please contact your supervisor." % (yesterday)),
+                        'subject': _("Auto sign out"),
+                        'author_id': self.env.ref('hr.employee').user_id.partner_id.id,
+                        'res_id': e.id,
+                        'model': e._name,
+                        'subtype_id': self.env.ref('mail.mt_comment').id,
+                        'partner_ids': [(6, 0, [e.user_id.partner_id.id])],
+                        'type': 'notification',})
+                    if e.parent_id:
+                        self.env['mail.message'].create({
+                            'body': _("%s has been automatically signed out on' %s\n" % (e.name, yesterday)),
+                            'subject': _("Employee auto sign out"),
+                            'author_id': self.env.ref('hr.employee').user_id.partner_id.id,
+                            'res_id': e.parent_id.id,
+                            'model': e._name,
+                            'subtype_id': self.env.ref('mail.mt_comment').id,
+                            'partner_ids': [(6, 0, [e.parent_id.user_id.partner_id.id])],
+                            'type': 'notification',})
+        return None
+
 class attendanceReport(http.Controller):
 
     @http.route(['/hr/attendance'], type='http', auth="user", website=True)
@@ -84,7 +115,6 @@ class attendanceReport(http.Controller):
                     'general_account_id': request.env['hr.analytic.timesheet'].with_context(user_id = employee.user_id.id, employee_id = employee.id)._getGeneralAccount(),
                     'journal_id': request.env['hr.analytic.timesheet'].with_context(user_id = employee.user_id.id, employee_id = employee.id)._getAnalyticJournal(),
                 })
-                _logger.warn(timesheet)
         except Exception as e:
             return ': '.join(e)
         return None

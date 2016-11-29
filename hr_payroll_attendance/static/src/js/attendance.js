@@ -72,11 +72,9 @@ openerp.jsonRpc("/hr/attendance/come_and_go", 'call', {
     'project_id': $("#hr_employee_project").val(),
     }).done(function(data){
         if (data != undefined) {
-            if (data.startsWith("Warn")) {
-                clearContent();
-                $("#employee_message_error").html("<h2 style='color: #f00;'>" + data +"</h2>");
-                $('#Log_div').delay(15000).fadeOut('slow');
-            }
+            clearContent();
+            $("#employee_message_error").html("<h2 style='color: #f00;'>" + data +"</h2>");
+            $('#Log_div').delay(15000).fadeOut('slow');
         }
     });
 }
