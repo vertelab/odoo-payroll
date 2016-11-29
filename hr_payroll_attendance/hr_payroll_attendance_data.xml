@@ -23,13 +23,14 @@ env['bus.bus'].sendone('attendance',object.id)
 
     <record model="ir.cron" id="auto_log_out">
       <field name="name">Automatically Log Out All Employees In Midnight</field>
-      <field name="user_id" ref="hr.employee"/>
+      <field name="user_id" ref="base.user_root"/>
       <field name="nextcall" eval="time.strftime('%s-%0d-%0d 00:00:00' %(DateTime.today().year, DateTime.today().month, DateTime.today().day + 1))"/>
       <field name="model">hr.attendance</field>
       <field name="function">auto_log_out</field>
       <field name="interval_type">days</field>
       <field name="numbercall">-1</field>
       <field name="doall" eval="True"/>
+      <field name="active" eval="True"/>
     </record>
 
   </data>
