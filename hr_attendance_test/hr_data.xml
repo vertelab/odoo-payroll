@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+    <!-- server action -->
+    <record model="ir.actions.server" id="test_attendance_year">
+      <field name="name">Test Attendance Calendar Year</field>
+      <field name="state">code</field>
+      <field name="condition" eval="True" />
+      <field name="model_id" ref="hr.model_hr_employee" />
+      <field name="code">
+for o in object.browse(context.get('active_ids', [])):
+    o.test_attendance_calendar_year()
+      </field>
+    </record>
+    <record model="ir.values" id="actions_test_attendance_year">
+      <field name="name">Test Attendans Year</field>
+      <field name="model">hr.employee</field>
+      <field name="key2">client_action_multi</field>
+      <field name="value" eval="'ir.actions.server,%d' % test_attendance_year" />
+    </record>
+    <!-- until today -->
+    <record model="ir.actions.server" id="test_attendance_2today">
+      <field name="name">Test Attendance Until Today</field>
+      <field name="state">code</field>
+      <field name="condition" eval="True" />
+      <field name="model_id" ref="hr.model_hr_employee" />
+      <field name="code">
+for o in object.browse(context.get('active_ids', [])):
+    o.test_attendance2today()
+      </field>
+    </record>
+    <record model="ir.values" id="actions_test_attendance_2today">
+      <field name="name">Test Attendans 2d</field>
+      <field name="model">hr.employee</field>
+      <field name="key2">client_action_multi</field>
+      <field name="value" eval="'ir.actions.server,%d' % test_attendance_2today" />
+    </record>
+  </data>
+</openerp>
