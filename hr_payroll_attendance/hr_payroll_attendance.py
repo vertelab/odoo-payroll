@@ -31,12 +31,13 @@ class hr_attendance(models.Model):
     _inherit = 'hr.attendance'
 
     project_id = fields.Many2one(comodel_name='project.project', string='Project')
+    # project_work_time calculate time betweet two attendances
 
 class attendanceReport(http.Controller):
 
     @http.route(['/hr/attendance'], type='http', auth="user", website=True)
     def attendance(self, employees=None, **post):
-        return request.website.render("hr_payroll_attendance.hr_attendance_form", {'employees': request.env['hr.employee'].search([('active', '=', True),('id', '!=', request.env.ref('hr.employee').id)]),})
+        return request.website.render("hr_payroll_attendance.hr_attendance_form", {'employees': request.env['hr.employee'].search([('active', '=', True), ('id', '!=', request.env.ref('hr.employee').id)]),})
 
     @http.route(['/hr/attendance/report'], type='json', auth="user", website=True)
     def attendance_report(self, employee=None, **kw):
@@ -45,19 +46,46 @@ class attendanceReport(http.Controller):
 
     @http.route(['/hr/attendance/employee_project'], type='json', auth="user", website=True)
     def employee_project(self, employee=None, **kw):
-        projects = request.env['project.project'].search([('members', 'in', request.env['hr.employee'].browse(int(employee)).user_id.id)]).mapped(lambda p : {'id': p.id, 'name': p.name})
-        if len(projects) > 0:
-            return {'projects': projects}
+        employee = request.env['hr.employee'].browse(int(employee))
+        if employee.user_id and employee.state == 'absent':
+            projects = request.env['project.project'].search([('members', '=', employee.user_id.id)]).mapped(lambda p : {'id': p.id, 'name': p.name})
+            if len(projects) > 0:
+                return {'projects': projects}
+            else:
+                return {}
         else:
             return {}
 
     @http.route(['/hr/attendance/come_and_go'], type='json', auth="user", website=True)
-    def attendance_comeandgo(self, employee_id=None, **kw):
+    def attendance_comeandgo(self, employee_id=None, project_id=None, **kw):
         employee = request.env['hr.employee'].browse(int(employee_id))
         try:
             employee.attendance_action_change()
+            attendances = request.env['hr.attendance'].search([('employee_id', '=', employee.id), ('action', '!=', 'action')], limit=2, order='name desc')
+            last_attendance = sec_last_attendance = None
+            if len(attendances) == 2:
+                last_attendance = attendances[0]
+                sec_last_attendance = attendances[1]
+                if last_attendance.action == sec_last_attendance.action:
+                    raise Warning(_('You cannot %s twice' %last_attendance.action))
+            else:
+                last_attendance = attendances[0]
+            if last_attendance.action == 'sign_in' and project_id:
+                last_attendance.project_id = int(project_id)
+            elif last_attendance.action == 'sign_out' and sec_last_attendance.action == 'sign_in' and sec_last_attendance.project_id:
+                timesheet = request.env['hr.analytic.timesheet'].create({
+                    'date': last_attendance.name[:10],
+                    'account_id': sec_last_attendance.project_id.analytic_account_id.id,
+                    'name': '/',
+                    'unit_amount': (fields.Datetime.from_string(last_attendance.name) - fields.Datetime.from_string(sec_last_attendance.name)).total_seconds() / 3600.0,
+                    'user_id': employee.user_id.id,
+                    'product_id': request.env['hr.analytic.timesheet'].with_context(user_id = employee.user_id.id, employee_id = employee.id)._getEmployeeProduct(),
+                    'product_uom_id': request.env['hr.analytic.timesheet'].with_context(user_id = employee.user_id.id, employee_id = employee.id)._getEmployeeUnit(),
+                    'general_account_id': request.env['hr.analytic.timesheet'].with_context(user_id = employee.user_id.id, employee_id = employee.id)._getGeneralAccount(),
+                    'journal_id': request.env['hr.analytic.timesheet'].with_context(user_id = employee.user_id.id, employee_id = employee.id)._getAnalyticJournal(),
+                })
+                _logger.warn(timesheet)
         except Exception as e:
-            _logger.warn(e)
             return ': '.join(e)
         return None
 
@@ -75,17 +103,5 @@ class attendanceReport(http.Controller):
                     'state': attendance.employee_id.state,
                 }
             }
-
-    #~ @http.route(['/hr/attendance/source'], type='http', auth="public", website=True)
-    #~ def attendance_source(self, employee=None, **post):
-        #~ while True:
-            #~ employee_login = request.env['hr.employee'].search([('state', '=', 'present')])
-            #~ while employee_login - request.env['hr.employee'].search([('state', '=', 'present')]):
-                #~ # send to client
-                #~ headers=[('Content-Type', 'text/plain; charset=utf-8')]
-                #~ r = werkzeug.wrappers.Response(request_id, headers=headers)
-                #~ break
-        #~ state = request.env['hr.employee'].browse(int(employee)).state
-        #~ return state
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

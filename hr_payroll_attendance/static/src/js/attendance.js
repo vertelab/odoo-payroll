@@ -49,10 +49,9 @@ function employee_project(){
         openerp.jsonRpc("/hr/attendance/employee_project", 'call', {
             'employee': $("#hr_employee").val(),
         }).done(function(data){
-            console.log(Object.keys(data).length);
-            console.log(data);
             if('projects' in data) {
-                html_content = "<select id='hr_employee_project' class='form-control selectpicker dropdown dropdown_attendance' data-style='btn-primary'>";
+                var html_content = "<select id='hr_employee_project' class='form-control selectpicker dropdown dropdown_attendance' data-style='btn-primary'>";
+                html_content += "<option value='' selected='checked'><span> -- Inget projekt -- </span></option>";
                 for(i=0; i<data['projects'].length; i++) {
                     html_content += "<option value=" + data['projects'][i].id + ">";
                     html_content += "<span>" + data['projects'][i].name + "</span></option>";
@@ -60,6 +59,8 @@ function employee_project(){
                 html_content += "</select>";
                 $("#employee_projects").html(html_content);
             }
+            else
+                $("#employee_projects").empty();
         });
     }
 }
@@ -68,11 +69,14 @@ function employee_project(){
 function come_and_go(){
 openerp.jsonRpc("/hr/attendance/come_and_go", 'call', {
     'employee_id': $("#hr_employee").val(),
+    'project_id': $("#hr_employee_project").val(),
     }).done(function(data){
-        if (data != null) {
-            clearContent();
-            $("#employee_message_error").html("<h2 style='color: #f00;'>" + data +"</h2>");
-            $('#Log_div').delay(15000).fadeOut('slow');
+        if (data != undefined) {
+            if (data.startsWith("Warn")) {
+                clearContent();
+                $("#employee_message_error").html("<h2 style='color: #f00;'>" + data +"</h2>");
+                $('#Log_div').delay(15000).fadeOut('slow');
+            }
         }
     });
 }
@@ -94,33 +98,28 @@ openerp.jsonRpc("/hr/attendance/" + id, 'call', {
         if (data.attendance.action === 'sign_out'){
             var flexWorkedHour = 0;
             var flexWorkedMinute = 0;
-            var flexHour = 0;
-            var flexMinute = 0;
             var timeBankHour = 0;
             var timeBankMinute = 0;
+            var flextime = data.attendance.flextime ? data.attendance.flextime : 0;
 
             if (data.attendance.flex_working_hours != false) {
-                flexWorkedHour = minute2HourMinute(data.attendance.flex_working_hours)[0];
-                flexWorkedMinute = minute2HourMinute(data.attendance.flex_working_hours)[1];
-            }
-            if (data.attendance.flextime != false) {
-                flexHour = minute2HourMinute(data.attendance.flextime)[0];
-                flexMinute = minute2HourMinute(data.attendance.flextime)[1];
+                flexWorkedHour = hour2HourMinute(data.attendance.flex_working_hours)[0];
+                flexWorkedMinute = hour2HourMinute(data.attendance.flex_working_hours)[1];
             }
 
             $("#employee_message").html("<h2>Goodbye!</h2><h2>" + data.employee.name +"</h2>");
-            $("#employee_worked_hour").html("<h4><strong>You have worked: </strong>" + flexWorkedHour + " hours and " + flexWorkedMinute +" minutes</h4>");
-            $("#employee_flex_time").html("<h4><strong>Your flex time: </strong>" + flexHour + " hours and " + flexMinute +" minutes</h4>");
+            $("#employee_worked_hour").html("<h4><strong>Worked Flex: </strong>" + flexWorkedHour + " hours and " + flexWorkedMinute +" minutes</h4>");
+            $("#employee_flex_time").html("<h4><strong>Flex Time: </strong>" + flextime + " minutes</h4>");
             $("#employee_time_bank").html("<h4><strong>Your time bank is: </strong>" + timeBankHour + " hours and " + timeBankMinute +" minutes</h4>");
         }
         logTimeOut = setTimeout("$('#Log_div').fadeOut('slow')", 15000);
     });
 }
 
-function minute2HourMinute(minute) {
+function hour2HourMinute(hour) {
     var hour_minute = new Array(2);
-    hour_minute[0] = Math.floor(minute / 60);
-    hour_minute[1] = minute > 0 ? Math.floor(minute % 60) : -Math.floor(Math.abs(minute) % 60);
+    hour_minute[0] = Math.floor(hour);
+    hour_minute[1] = hour > 0 ? Math.floor(hour % 1 * 60.0) : -Math.floor(Math.abs(hour) % 1 * 60.0);
     return hour_minute;
 }
 
