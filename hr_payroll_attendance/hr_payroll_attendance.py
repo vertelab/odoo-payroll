@@ -22,7 +22,9 @@
 from openerp import models, fields, api, _, http, tools
 from openerp.http import request
 from datetime import datetime, timedelta
+import pytz
 import time
+
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -33,6 +35,12 @@ class hr_attendance(models.Model):
     project_id = fields.Many2one(comodel_name='project.project', string='Project')
     # project_work_time calculate time betweet two attendances
 
+    def convert2utz(self, employee, lo_dt): #convert user's local timezone to UTC
+        lo_tzone = self.env.ref('base.user_root').tz
+        if employee.user_id.tz:
+            lo_tzone = employee.user_id.tz
+        return pytz.timezone(lo_tzone).localize(lo_dt).astimezone(pytz.utc)
+
     @api.model
     def auto_log_out(self):
         employees = request.env['hr.employee'].search([('active', '=', True), ('id', '!=', request.env.ref('hr.employee').id)])
@@ -41,7 +49,7 @@ class hr_attendance(models.Model):
                 if e.contract_id:
                     hours_to = {a.dayofweek: a.hour_to for a in e.contract_id.working_hours.attendance_ids}
                     now = datetime.now()
-                    yesterday = (datetime(now.year, now.month, now.day) - timedelta(days = 1) + timedelta(minutes = (hours_to[str(now.weekday())]* 60))).strftime('%Y-%m-%d %H:%M:%S')
+                    yesterday = self.convert2utz(e, (datetime(now.year, now.month, now.day) - timedelta(days = 1) + timedelta(minutes = (hours_to[str(now.weekday())]* 60)))).strftime('%Y-%m-%d %H:%M:%S')
                     e.with_context({'action_date': yesterday}).attendance_action_change()
                     self.env['mail.message'].create({
                         'body': _("You've been automatically signed out on' %s\nIf this sign out time is incorrect, please contact your supervisor." % (yesterday)),
