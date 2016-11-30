@@ -107,16 +107,16 @@ class hr_attendance(models.Model):
             eightday_sick = request.env['hr.holidays'].search([('date_from', '>', (today - timedelta(days=8)).strftime('%Y-%m-%d 00:00:00')), ('date_from', '<', (today - timedelta(days=8)).strftime('%Y-%m-%d 23:59:59')), ('state', '=', 'validate'), ('type', '=', 'remove'), ('holiday_status_id', 'in', [self.env.ref('l10n_se_hr_payroll.sick_leave_qualify').id, self.env.ref('l10n_se_hr_payroll.sick_leave_214').id]), ('employee_id', '=', e.id)])
             nineday_sick = request.env['hr.holidays'].search([('date_from', '<', (today - timedelta(days=8)).strftime('%Y-%m-%d 00:00:00')), ('date_to', '>', (today - timedelta(days=8)).strftime('%Y-%m-%d 00:00:00')), ('state', '=', 'validate'), ('type', '=', 'remove'), ('holiday_status_id', 'in', [self.env.ref('l10n_se_hr_payroll.sick_leave_qualify').id, self.env.ref('l10n_se_hr_payroll.sick_leave_214').id]), ('employee_id', '=', e.id)])
             if len(eightday_sick) > 0 and len(nineday_sick) == 0: #send notification when it's only 8th sick day
-                if e.user_id:
-                    self.env['mail.message'].create({
-                        'body': _("You have been sick for more than 7 days"),
-                        'subject': _("You have been sick for more than 7 days"),
-                        'author_id': self.env.ref('hr.employee').user_id.partner_id.id,
-                        'res_id': e.id,
-                        'model': e._name,
-                        'subtype_id': self.env.ref('mail.mt_comment').id,
-                        'partner_ids': [(6, 0, [e.user_id.partner_id.id])],
-                        'type': 'notification',})
+                #~ if e.user_id:
+                    #~ self.env['mail.message'].create({
+                        #~ 'body': _("You have been sick for more than 7 days"),
+                        #~ 'subject': _("You have been sick for more than 7 days"),
+                        #~ 'author_id': self.env.ref('hr.employee').user_id.partner_id.id,
+                        #~ 'res_id': e.id,
+                        #~ 'model': e._name,
+                        #~ 'subtype_id': self.env.ref('mail.mt_comment').id,
+                        #~ 'partner_ids': [(6, 0, [e.user_id.partner_id.id])],
+                        #~ 'type': 'notification',})
                 if e.parent_id and e.parent_id.user_id:
                     self.env['mail.message'].create({
                         'body': _("Your employee %s has been sick for more than 7 days" %e.name),
