@@ -46,7 +46,7 @@ class hr_attendance(models.Model):
         employees = request.env['hr.employee'].search([('active', '=', True), ('id', '!=', request.env.ref('hr.employee').id)])
         for e in employees:
             if e.state == 'present':
-                if e.contract_id:
+                if e.contract_id and e.user_id:
                     hours_to = {a.dayofweek: a.hour_to for a in e.contract_id.working_hours.attendance_ids}
                     now = datetime.now()
                     yesterday = self.convert2utz(e, (datetime(now.year, now.month, now.day) - timedelta(days = 1) + timedelta(minutes = (hours_to[str(now.weekday())]* 60)))).strftime('%Y-%m-%d %H:%M:%S')
