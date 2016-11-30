@@ -27,6 +27,33 @@ env['bus.bus'].sendone('attendance',object.id)
       <field name="nextcall" eval="time.strftime('%s-%0d-%0d 00:00:00' %(DateTime.today().year, DateTime.today().month, DateTime.today().day + 1))"/>
       <field name="model">hr.attendance</field>
       <field name="function">auto_log_out</field>
+      <field name="interval_number">1</field>
+      <field name="interval_type">days</field>
+      <field name="numbercall">-1</field>
+      <field name="doall" eval="True"/>
+      <field name="active" eval="True"/>
+    </record>
+
+    <record model="ir.cron" id="absent_notification">
+      <field name="name">Send message to absent employees</field>
+      <field name="user_id" ref="base.user_root"/>
+      <field name="nextcall" eval="time.strftime('%s-%0d-%0d 09:00:00' %(DateTime.today().year, DateTime.today().month, DateTime.today().day + 1))"/>
+      <field name="model">hr.attendance</field>
+      <field name="function">absent_notification</field>
+      <field name="interval_number">1</field>
+      <field name="interval_type">days</field>
+      <field name="numbercall">-1</field>
+      <field name="doall" eval="True"/>
+      <field name="active" eval="True"/>
+    </record>
+
+    <record model="ir.cron" id="sick_notification">
+      <field name="name">Send message to employees has been sick over 7 days</field>
+      <field name="user_id" ref="base.user_root"/>
+      <field name="nextcall" eval="time.strftime('%s-%0d-%0d 09:00:00' %(DateTime.today().year, DateTime.today().month, DateTime.today().day + 1))"/>
+      <field name="model">hr.attendance</field>
+      <field name="function">sick_notification</field>
+      <field name="interval_number">1</field>
       <field name="interval_type">days</field>
       <field name="numbercall">-1</field>
       <field name="doall" eval="True"/>
