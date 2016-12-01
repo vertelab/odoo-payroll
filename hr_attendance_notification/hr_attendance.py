@@ -33,7 +33,7 @@ class hr_attendance(models.Model):
 
     @api.model
     def auto_log_out(self): #auto log out in midnight
-        employees = self.env['hr.employee'].search([('active', '=', True), ('state', '=', 'present'), ('id', '!=', self.env.ref('hr.employee').id)])
+        employees = self.env['hr.employee'].search([('active', '=', True), ('id', '!=', self.env.ref('hr.employee').id)]).filtered(lambda e: e.state == 'present')
         if len(employees) > 0:
             _logger.warn('Employees to logout %s' %employees)
         for e in employees:
@@ -88,6 +88,8 @@ class hr_attendance(models.Model):
                                 'subtype_id': self.env.ref('mail.mt_comment').id,
                                 'partner_ids': [(6, 0, [e.parent_id.user_id.partner_id.id])],
                                 'type': 'notification',})
+                    else:
+                        continue
         return None
 
     @api.model
