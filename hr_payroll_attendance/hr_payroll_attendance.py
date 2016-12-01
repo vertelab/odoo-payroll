@@ -56,7 +56,7 @@ class hr_attendance(models.Model):
                     _logger.warn(': '.join(ex))
                     continue
                 self.env['mail.message'].create({
-                    'body': _("You've been automatically signed out on' %s\nIf this sign out time is incorrect, please contact your supervisor." % (yesterday_utc)),
+                    'body': _("You've been automatically signed out on %s\nIf this sign out time is incorrect, please contact your supervisor." % (yesterday_utc)),
                     'subject': _("Auto sign out"),
                     'author_id': self.env.ref('hr.employee').user_id.partner_id.id,
                     'res_id': e.id,
@@ -66,7 +66,7 @@ class hr_attendance(models.Model):
                     'type': 'notification',})
                 if e.parent_id:
                     self.env['mail.message'].create({
-                        'body': _("%s has been automatically signed out on' %s\n" % (e.name, yesterday_utc)),
+                        'body': _("%s has been automatically signed out on %s\n" % (e.name, yesterday_utc)),
                         'subject': _("Employee auto sign out"),
                         'author_id': self.env.ref('hr.employee').user_id.partner_id.id,
                         'res_id': e.parent_id.id,
