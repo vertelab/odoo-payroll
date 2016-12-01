@@ -49,7 +49,11 @@ class hr_attendance(models.Model):
                 hours_to = {a.dayofweek: a.hour_to for a in e.contract_id.working_hours.attendance_ids}
                 now = datetime.now()
                 yesterday = self.convert2utz(e, (datetime(now.year, now.month, now.day) - timedelta(days = 1) + timedelta(minutes = (hours_to[str(now.weekday())]* 60)))).strftime('%Y-%m-%d %H:%M:%S')
-                e.with_context({'action_date': yesterday}).attendance_action_change()
+                try:
+                    e.with_context({'action_date': yesterday}).attendance_action_change()
+                except Exception as ex:
+                    _logger.warn(': '.join(ex))
+                    continue
                 self.env['mail.message'].create({
                     'body': _("You've been automatically signed out on' %s\nIf this sign out time is incorrect, please contact your supervisor." % (yesterday)),
                     'subject': _("Auto sign out"),
