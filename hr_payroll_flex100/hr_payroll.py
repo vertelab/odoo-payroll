@@ -195,7 +195,7 @@ class hr_payslip(models.Model):
             'employee_id': self.employee_id.id,
             'type': 'add' if number_of_days > 0.0 else 'remove' ,
             'state': 'validate',
-            'number_of_days_temp': number_of_days,
+            'number_of_days_temp': abs(number_of_days),
             #~ 'date_from': self.date_from,
             #~ 'date_to': self.date_to,
             })
@@ -250,5 +250,18 @@ class hr_holidays(models.Model):
     ps_max_leaves = fields.Integer(string='Max Leaves',compute='_ps_max_leaves')
     ps_leaves_taken = fields.Integer(string='Max Leaves',compute='_ps_max_leaves')
 
+class hr_holidays_status(models.Model):
+    _inherit = "hr.holidays.status"
+    
+    @api.multi
+    def name_get(self):
+        """Add flex time to name."""
+        res = super(hr_holidays_status, self).name_get()
+        for hs in self:
+            if hs == self.env.ref("hr_payroll_flex100.compensary_leave"):
+                for i in range(0, len(res)):
+                    if res[i][0] == hs.id:
+                        res[i] = (hs.id, res[i][1] + ('  (%g/%g)' % ((hs.leaves_taken or 0.0) * 24 * 60, (hs.max_leaves or 0.0) * 24 * 60)))
+        return res
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
