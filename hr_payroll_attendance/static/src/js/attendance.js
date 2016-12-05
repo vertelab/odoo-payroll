@@ -107,7 +107,7 @@ openerp.jsonRpc("/hr/attendance/" + id, 'call', {
 
             $("#employee_message").html("<h2>Goodbye!</h2><h2>" + data.employee.name +"</h2>");
             $("#employee_worked_hour").html("<h4><strong>Worked Flex: </strong>" + flexWorkedHour + " hours and " + flexWorkedMinute +" minutes</h4>");
-            $("#employee_flex_time").html("<h4><strong>Flex Time: </strong>" + flextime + " minutes</h4>");
+            $("#employee_flex_time").html("<h4><strong>Flex Time: </strong>" + Math.floor(flextime % 1) + " minutes</h4>");
             $("#employee_time_bank").html("<h4><strong>Your time bank is: </strong>" + timeBankHour + " hours and " + timeBankMinute +" minutes</h4>");
         }
         logTimeOut = setTimeout("$('#Log_div').fadeOut('slow')", 15000);
