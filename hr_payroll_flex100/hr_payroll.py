@@ -28,6 +28,11 @@ from datetime import datetime, timedelta
 import logging
 _logger = logging.getLogger(__name__)
 
+class hr_contract(models.Model):
+    _inherit = 'hr.contract'
+
+    flextime = fields.Boolean('Flextime',help="This is a flextime-contract")
+
 
 class hr_attendance(models.Model):
     _inherit = 'hr.attendance'
