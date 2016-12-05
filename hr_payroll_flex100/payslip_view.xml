@@ -27,5 +27,19 @@
         </page>
       </field>
     </record>
+    <template id="payslip_document" inherit_id="l10n_se_hr_payroll.payslip_document">
+        <xpath expr="//table[@id='tidssaldon']" position="replace">
+            <table class="table table-bordered table-responsive">
+                <tbody>
+                    <tr>
+                        <td><strong>Tidssaldon</strong></td>
+                    </tr>
+                    <tr>
+                        <td><span class="pull-left">Komptid</span><span class="pull-right"><t t-esc="o.compensary_leave" /> minut(er)</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </xpath>
+    </template>
   </data>
 </openerp>
