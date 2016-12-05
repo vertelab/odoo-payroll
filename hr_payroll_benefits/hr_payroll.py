@@ -44,13 +44,4 @@ class hr_contract_benefit(models.Model):
     desc = fields.Char(string="Description")
     value = fields.Float(string="Value",digits_compute=dp.get_precision('Payroll'),)
 
-
-
-class hr_payslip(models.Model):
-    _inherit = 'hr.payslip'
-
-    @api.multi
-    def benefit_value(self,code):
-        return sum(self.employee_id.contract_id.benefit_ids.filtered(lambda b: b.name == code).mapped('value'))
-
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

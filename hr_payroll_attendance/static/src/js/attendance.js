@@ -72,11 +72,9 @@ openerp.jsonRpc("/hr/attendance/come_and_go", 'call', {
     'project_id': $("#hr_employee_project").val(),
     }).done(function(data){
         if (data != undefined) {
-            if (data.startsWith("Warn")) {
-                clearContent();
-                $("#employee_message_error").html("<h2 style='color: #f00;'>" + data +"</h2>");
-                $('#Log_div').delay(15000).fadeOut('slow');
-            }
+            clearContent();
+            $("#employee_message_error").html("<h2 style='color: #f00;'>" + data +"</h2>");
+            $('#Log_div').delay(15000).fadeOut('slow');
         }
     });
 }
@@ -109,7 +107,7 @@ openerp.jsonRpc("/hr/attendance/" + id, 'call', {
 
             $("#employee_message").html("<h2>Goodbye!</h2><h2>" + data.employee.name +"</h2>");
             $("#employee_worked_hour").html("<h4><strong>Worked Flex: </strong>" + flexWorkedHour + " hours and " + flexWorkedMinute +" minutes</h4>");
-            $("#employee_flex_time").html("<h4><strong>Flex Time: </strong>" + flextime + " minutes</h4>");
+            $("#employee_flex_time").html("<h4><strong>Flex Time: </strong>" + Math.floor(flextime % 1) + " minutes</h4>");
             $("#employee_time_bank").html("<h4><strong>Your time bank is: </strong>" + timeBankHour + " hours and " + timeBankMinute +" minutes</h4>");
         }
         logTimeOut = setTimeout("$('#Log_div').fadeOut('slow')", 15000);

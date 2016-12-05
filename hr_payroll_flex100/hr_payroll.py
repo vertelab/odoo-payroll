@@ -44,10 +44,11 @@ class hr_attendance(models.Model):
                     self.employee_id.contract_id.working_hours.id,
                     start_dt=datetime.strptime(self.name, tools.DEFAULT_SERVER_DATETIME_FORMAT).replace(hour=0,minute=0))
             att = self.env['hr.attendance'].search([('employee_id','=',self.employee_id.id),('name','>',self.name[:10] + ' 00:00:00'),('name','<',self.name[:10] + ' 23:59:59')],order='name')
-            flex_begin =  job_intervals[0][0] - datetime.strptime(att[0].name, tools.DEFAULT_SERVER_DATETIME_FORMAT)
-            #~ _logger.error('job_int %s - att %s = %s' % (job_intervals[0][0],datetime.strptime(att[0].name, tools.DEFAULT_SERVER_DATETIME_FORMAT),flex_begin))
-            flex_end = datetime.strptime(att[-1].name, tools.DEFAULT_SERVER_DATETIME_FORMAT) - job_intervals[-1][1]
-            self.flextime = (flex_begin + flex_end).total_seconds() / 60.0
+            if len(job_intervals) > 0:
+                flex_begin =  job_intervals[0][0] - datetime.strptime(att[0].name, tools.DEFAULT_SERVER_DATETIME_FORMAT)
+                #~ _logger.error('job_int %s - att %s = %s' % (job_intervals[0][0],datetime.strptime(att[0].name, tools.DEFAULT_SERVER_DATETIME_FORMAT),flex_begin))
+                flex_end = datetime.strptime(att[-1].name, tools.DEFAULT_SERVER_DATETIME_FORMAT) - job_intervals[-1][1]
+                self.flextime = (flex_begin + flex_end).total_seconds() / 60.0
     flextime = fields.Float(compute='_flextime', string='Flex Time (m)')
 
     @api.one
@@ -97,7 +98,7 @@ class hr_payslip(models.Model):
 
     #~ @api.model
     #~ def get_worked_day_lines(self,contract_ids, date_from, date_to, context=None):
-      
+
         #~ return super(hr_payslip,self).get_worked_day_lines(contract_ids,date_from,date_to)
 
 

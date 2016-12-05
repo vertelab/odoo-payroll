@@ -22,7 +22,9 @@
 from openerp import models, fields, api, _, http, tools
 from openerp.http import request
 from datetime import datetime, timedelta
+import pytz
 import time
+
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -32,6 +34,104 @@ class hr_attendance(models.Model):
 
     project_id = fields.Many2one(comodel_name='project.project', string='Project')
     # project_work_time calculate time betweet two attendances
+
+    def convert2utz(self, employee, lo_dt): #convert user's local timezone to UTC
+        lo_tzone = self.env.ref('base.user_root').tz
+        if employee.user_id.tz:
+            lo_tzone = employee.user_id.tz
+        return pytz.timezone(lo_tzone).localize(lo_dt).astimezone(pytz.utc)
+
+    @api.model
+    def auto_log_out(self): #auto log out in midnight
+        employees = self.env['hr.employee'].search([('active', '=', True), ('state', '=', 'present'), ('id', '!=', self.env.ref('hr.employee').id)])
+        for e in employees:
+            if e.contract_id and e.user_id:
+                hours_to = {a.dayofweek: a.hour_to for a in e.contract_id.working_hours.attendance_ids}
+                now = datetime.now()
+                yesterday_utc = datetime(now.year, now.month, now.day) - timedelta(days = 1) + timedelta(minutes = (hours_to[str(now.weekday())]* 60))
+                yesterday = self.convert2utz(e, yesterday_utc).strftime('%Y-%m-%d %H:%M:%S')
+                try:
+                    e.with_context({'action_date': yesterday}).attendance_action_change()
+                except Exception as ex:
+                    _logger.warn(': '.join(ex))
+                    continue
+                self.env['mail.message'].create({
+                    'body': _("You've been automatically signed out on %s\nIf this sign out time is incorrect, please contact your supervisor." % (yesterday_utc)),
+                    'subject': _("Auto sign out"),
+                    'author_id': self.env.ref('hr.employee').user_id.partner_id.id,
+                    'res_id': e.id,
+                    'model': e._name,
+                    'subtype_id': self.env.ref('mail.mt_comment').id,
+                    'partner_ids': [(6, 0, [e.user_id.partner_id.id])],
+                    'type': 'notification',})
+                if e.parent_id:
+                    self.env['mail.message'].create({
+                        'body': _("%s has been automatically signed out on %s\n" % (e.name, yesterday_utc)),
+                        'subject': _("Employee auto sign out"),
+                        'author_id': self.env.ref('hr.employee').user_id.partner_id.id,
+                        'res_id': e.parent_id.id,
+                        'model': e._name,
+                        'subtype_id': self.env.ref('mail.mt_comment').id,
+                        'partner_ids': [(6, 0, [e.parent_id.user_id.partner_id.id])],
+                        'type': 'notification',})
+        return None
+
+    @api.model
+    def absent_notification(self): #send notification to employee and manager when employee is absent without leave request
+        now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        employees = self.env['hr.employee'].search([('active', '=', True), ('state', '=', 'absent'), ('id', '!=', self.env.ref('hr.employee').id)])
+        employees_on_vacation = request.env['hr.holidays'].search([('date_from', '<', now), ('date_to', '>=', now), ('state', '=', 'validate'), ('type', '=', 'remove')]).mapped('employee_id')
+        employees -= employees_on_vacation
+        for e in employees:
+            if e.user_id:
+                self.env['mail.message'].create({
+                    'body': _("Time to work!"),
+                    'subject': _("Time to work!"),
+                    'author_id': self.env.ref('hr.employee').user_id.partner_id.id,
+                    'res_id': e.id,
+                    'model': e._name,
+                    'subtype_id': self.env.ref('mail.mt_comment').id,
+                    'partner_ids': [(6, 0, [e.user_id.partner_id.id])],
+                    'type': 'notification',})
+            if e.parent_id and e.parent_id.user_id:
+                self.env['mail.message'].create({
+                    'body': _("Your employee %s is not at work" %e.name),
+                    'subject': _("Your employee %s is not at work" %e.name),
+                    'author_id': self.env.ref('hr.employee').user_id.partner_id.id,
+                    'res_id': e.parent_id.id,
+                    'model': e._name,
+                    'subtype_id': self.env.ref('mail.mt_comment').id,
+                    'partner_ids': [(6, 0, [e.parent_id.user_id.partner_id.id])],
+                    'type': 'notification',})
+
+    @api.model
+    def sick_notification(self): #send notification to employee and manager when employee is absent after 7 sick days
+        today = datetime.now()
+        employees_sick = request.env['hr.holidays'].search([('date_from', '<', today.strftime('%Y-%m-%d')), ('date_to', '>=', today.strftime('%Y-%m-%d')), ('state', '=', 'validate'), ('type', '=', 'remove'), ]).mapped('employee_id')
+        for e in employees_sick:
+            eightday_sick = request.env['hr.holidays'].search([('date_from', '>', (today - timedelta(days=8)).strftime('%Y-%m-%d 00:00:00')), ('date_from', '<', (today - timedelta(days=8)).strftime('%Y-%m-%d 23:59:59')), ('state', '=', 'validate'), ('type', '=', 'remove'), ('holiday_status_id', 'in', [self.env.ref('l10n_se_hr_payroll.sick_leave_qualify').id, self.env.ref('l10n_se_hr_payroll.sick_leave_214').id]), ('employee_id', '=', e.id)])
+            nineday_sick = request.env['hr.holidays'].search([('date_from', '<', (today - timedelta(days=8)).strftime('%Y-%m-%d 00:00:00')), ('date_to', '>', (today - timedelta(days=8)).strftime('%Y-%m-%d 00:00:00')), ('state', '=', 'validate'), ('type', '=', 'remove'), ('holiday_status_id', 'in', [self.env.ref('l10n_se_hr_payroll.sick_leave_qualify').id, self.env.ref('l10n_se_hr_payroll.sick_leave_214').id]), ('employee_id', '=', e.id)])
+            if len(eightday_sick) > 0 and len(nineday_sick) == 0: #send notification when it's only 8th sick day
+                #~ if e.user_id:
+                    #~ self.env['mail.message'].create({
+                        #~ 'body': _("You have been sick for more than 7 days"),
+                        #~ 'subject': _("You have been sick for more than 7 days"),
+                        #~ 'author_id': self.env.ref('hr.employee').user_id.partner_id.id,
+                        #~ 'res_id': e.id,
+                        #~ 'model': e._name,
+                        #~ 'subtype_id': self.env.ref('mail.mt_comment').id,
+                        #~ 'partner_ids': [(6, 0, [e.user_id.partner_id.id])],
+                        #~ 'type': 'notification',})
+                if e.parent_id and e.parent_id.user_id:
+                    self.env['mail.message'].create({
+                        'body': _("Your employee %s has been sick for more than 7 days" %e.name),
+                        'subject': _("Your employee %s has been sick for more than 7 days" %e.name),
+                        'author_id': self.env.ref('hr.employee').user_id.partner_id.id,
+                        'res_id': e.parent_id.id,
+                        'model': e._name,
+                        'subtype_id': self.env.ref('mail.mt_comment').id,
+                        'partner_ids': [(6, 0, [e.parent_id.user_id.partner_id.id])],
+                        'type': 'notification',})
 
 class attendanceReport(http.Controller):
 
@@ -84,7 +184,6 @@ class attendanceReport(http.Controller):
                     'general_account_id': request.env['hr.analytic.timesheet'].with_context(user_id = employee.user_id.id, employee_id = employee.id)._getGeneralAccount(),
                     'journal_id': request.env['hr.analytic.timesheet'].with_context(user_id = employee.user_id.id, employee_id = employee.id)._getAnalyticJournal(),
                 })
-                _logger.warn(timesheet)
         except Exception as e:
             return ': '.join(e)
         return None
