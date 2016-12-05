@@ -34,6 +34,8 @@ from openerp.tools import (
 import logging
 _logger = logging.getLogger(__name__)
 
+
+
 class hr_attendance(models.Model):
     #_inherit = ['hr.attendance', 'mail.thread']
     _inherit = 'hr.attendance'
@@ -137,15 +139,18 @@ class hr_payslip(models.Model):
 
     @api.one
     def _schema_number_of_days(self):
-        nbr = 0.0
+        nbr = nbr_hours = 0.0
         for day in range(0, (fields.Date.from_string(self.date_to) - fields.Date.from_string(self.date_from)).days + 1):
             #~ working_hours_on_day = self.pool.get('resource.calendar').working_hours_on_day(self.env.cr, self.env.uid, slip.employee_id.contract_id.working_hours.id, fields.Date.from_string(slip.date_from) + timedelta(days=day), self.env.context)
             working_hours_on_day = self.employee_id.contract_id.working_hours.get_working_hours_of_date(start_dt=fields.Datetime.from_string(self.date_from) + timedelta(days=day))[0]
             _logger.warn('working_h_on day %s' %working_hours_on_day )
             if working_hours_on_day:
                 nbr += 1.0
+                nbr_hours += working_hours_on_day
         self.schema_number_of_days = nbr
+        self.schema_number_of_hours = nbr_hours
     schema_number_of_days = fields.Float(string="Schema numer of days", compute='_schema_number_of_days')
+    schema_number_of_hours = fields.Float(string="Schema numer of hours", compute='_schema_number_of_days')
     @api.one
     def _percent_number_of_days(self):
         work100 = sum(self.worked_days_line_ids.filtered(lambda l: l.code == 'WORK100').mapped('number_of_days'))
@@ -226,5 +231,10 @@ class hr_payslip(models.Model):
             #~ res += [attendances] + leaves
         #~ return res
 
+
+class hr_contract_type(models.Model):
+    _inherit = 'hr.contract.type'
+
+    work_time = fields.Selection([('schema','Schema'),('schema_hour','Hourly Schema'),('nec_hour','When Necessary')],string='Work Time',help="Type of work time")
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

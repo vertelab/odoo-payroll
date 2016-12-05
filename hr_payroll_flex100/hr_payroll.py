@@ -28,10 +28,6 @@ from datetime import datetime, timedelta
 import logging
 _logger = logging.getLogger(__name__)
 
-class hr_contract(models.Model):
-    _inherit = 'hr.contract'
-
-    flextime = fields.Boolean('Flextime',help="This is a flextime-contract")
 
 
 class hr_attendance(models.Model):
@@ -263,5 +259,11 @@ class hr_holidays_status(models.Model):
                     if res[i][0] == hs.id:
                         res[i] = (hs.id, res[i][1] + ('  (%g/%g)' % ((hs.leaves_taken or 0.0) * 24 * 60, (hs.max_leaves or 0.0) * 24 * 60)))
         return res
+
+class hr_contract_type(models.Model):
+    _inherit = 'hr.contract.type'
+
+    work_time = fields.Selection(selection_add=[('flex','Flex Time')])
+
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
