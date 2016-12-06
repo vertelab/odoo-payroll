@@ -29,6 +29,6 @@
 'author': 'Vertel AB',
 'website': 'http://www.vertel.se',
 'depends': ['hr_timesheet_sheet','hr_attendance'],
-'data': ['hr_timesheet_sheet_view.xml'],
+'data': ['hr_timesheet_sheet_view.xml','hr_salary_rule_data.xml'],
 'installable': True,
 }

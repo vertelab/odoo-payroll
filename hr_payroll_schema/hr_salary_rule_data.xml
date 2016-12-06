@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data noupdate="1">
+  
+    <record id="hr_salary_rule-schemajust" model="hr.salary.rule">
+      <field name="category_id" ref="hr_payroll.DED" />
+      <field name="code">schema-just</field>
+      <field name="salary_art">141</field>
+      <field name="name">Schema Justification</field>
+      <field name="sequence">300</field>
+      <field name="appears_on_payslip">True</field>
+      <field name="condition_select">python</field>
+      <field name="condition_python">result = contract.type.work_type == 'schema' and worked_days.WORK100.payslip_id.percent_number_of_days &lt; 1.0</field>
+      <field name="amount_select">code</field>
+      <field name="amount_python_compute">	
+result_rate = 100.0 - (worked_days.WORK100.payslip_id.percent_number_of_days * 100.0)
+result = contract.wage
+</field>
+      <field name="quantity">1</field>
+      <field name="note">Schema Justification</field>
+    </record>
+
+<!--
+    <record id="hr_salary_rule-schemahour" model="hr.salary.rule">
+      <field name="category_id" ref="hr_payroll.AWL" />
+      <field name="code">schema-hour</field>
+      <field name="salary_art">141</field>
+      <field name="name">Schema Hour</field>
+      <field name="sequence">300</field>
+      <field name="appears_on_payslip">True</field>
+      <field name="condition_select">python</field>
+      <field name="condition_python">result = contract.type.work_type == 'schema_hour'</field>
+      <field name="amount_select">code</field>
+      <field name="amount_python_compute">
+contract.logthis(payslip.prej)
+contract.logthis(worked_days.WORK100.payslip_id.percent_number_of_days)
+contract.logthis('schema_number_of_days: ' + worked_days.WORK100.payslip_id.name)
+#contract.logthis('schema_number_of_days: ' + worked_days.WORK100.payslip_id.schema_number_of_days)
+#contract.logthis('schema_number_of_hours: ' + worked_days.WORK100.payslip_id.schema_number_of_hours)
+#contract.logthis('number_of_hours: ' + worked_days.WORK100.number_of_hours)
+
+result = contract.wage * 0.92</field>
+      <field name="quantity">1</field>
+      <field name="note">Worked hours in schema</field>
+    </record>
+-->
+  </data>  
+  
+</openerp>

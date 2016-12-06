@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data noupdate="1">
+    <record id="hr_salary_rule-nechour" model="hr.salary.rule">
+      <field name="category_id" ref="hr_payroll.BASIC" />
+      <field name="code">nec-hour</field>
+      <field name="salary_art">141</field>
+      <field name="name">Hour wage When Necessary</field>
+      <field name="sequence">300</field>
+      <field name="appears_on_payslip">True</field>
+      <field name="condition_select">python</field>
+      <field name="condition_python">result = contract.type.work_type == 'nec_hour'</field>
+      <field name="amount_select">code</field>
+      <field name="amount_python_compute">
+result_qty = worked_days.WORK100.payslip_id.attendance_number_of_hours
+result = contract.benefit_value('nec_hour')</field>
+      <field name="quantity">1</field>
+      <field name="note">Calculate hourly wage using benefit nec_hour</field>
+    </record>
+  </data>  
+</openerp>
