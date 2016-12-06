@@ -2,7 +2,7 @@
 ##############################################################################
 #
 # OpenERP, Open Source Management Solution, third party addon
-# Copyright (C) 2016- Vertel AB (<http://vertel.se>).
+# Copyright (C) 2004-2015 Vertel AB (<http://vertel.se>).
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -18,17 +18,5 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-{
-'name': 'Payroll Schema',
-'version': '0.1',
-'summary': 'Extends hr.attendance with nomalized days using resource schema',
-'category': 'hr',
-'description': """Extends hr.attendance with nomalized days using resource schema
 
-""",
-'author': 'Vertel AB',
-'website': 'http://www.vertel.se',
-'depends': ['hr_timesheet_sheet','hr_attendance','hr_contract_work_time'],
-'data': ['hr_timesheet_sheet_view.xml','hr_salary_rule_data.xml'],
-'installable': True,
-}
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

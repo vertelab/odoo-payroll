@@ -19,16 +19,15 @@
 #
 ##############################################################################
 {
-'name': 'Payroll Schema',
+'name': 'Payroll Contract Type WorkTime',
 'version': '0.1',
-'summary': 'Extends hr.attendance with nomalized days using resource schema',
+'summary': 'Extends hr.contract.type with a selection of WorkTime',
 'category': 'hr',
-'description': """Extends hr.attendance with nomalized days using resource schema
-
+'description': """Extends hr.contract.type with a selection of WorkTime
 """,
 'author': 'Vertel AB',
 'website': 'http://www.vertel.se',
-'depends': ['hr_timesheet_sheet','hr_attendance','hr_contract_work_time'],
-'data': ['hr_timesheet_sheet_view.xml','hr_salary_rule_data.xml'],
+'depends': ['hr_contract'],
+'data': ['hr_contract_view.xml'],
 'installable': True,
 }

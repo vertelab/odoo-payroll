@@ -28,7 +28,7 @@
 Financed by Dermanord-Svensk Hudvård AB""",
 'author': 'Vertel AB',
 'website': 'http://www.vertel.se',
-'depends': ['hr_payroll','hr_payroll_schema'],
+'depends': ['hr_payroll','hr_payroll_schema','hr_contract_work_time'],
 'data': ['payslip_view.xml','hr_holidays_data.xml','hr_payroll_view.xml'],
 'installable': True,
 }

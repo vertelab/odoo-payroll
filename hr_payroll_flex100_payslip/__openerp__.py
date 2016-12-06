@@ -2,7 +2,7 @@
 ##############################################################################
 #
 # OpenERP, Open Source Management Solution, third party addon
-# Copyright (C) 2016- Vertel AB (<http://vertel.se>).
+# Copyright (C) 2004-2016 Vertel AB (<http://vertel.se>).
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -19,16 +19,20 @@
 #
 ##############################################################################
 {
-'name': 'Payroll Schema',
-'version': '0.1',
-'summary': 'Extends hr.attendance with nomalized days using resource schema',
-'category': 'hr',
-'description': """Extends hr.attendance with nomalized days using resource schema
-
-""",
-'author': 'Vertel AB',
-'website': 'http://www.vertel.se',
-'depends': ['hr_timesheet_sheet','hr_attendance','hr_contract_work_time'],
-'data': ['hr_timesheet_sheet_view.xml','hr_salary_rule_data.xml'],
-'installable': True,
+    'name': 'Swedish - Flex100 Payslip',
+    'category': 'Localization',
+    'author': 'Vertel AB',
+    'depends': ['l10n_se_hr_payroll','hr_payroll_flex100'],
+    'version': '1.1',
+    'description': """
+Swedish Payslip additions for Flex100
+    """,
+    'website': 'http://www.vertel.se',
+    'data':[        
+        'hr_payroll_payslip_report.xml',
+    ],
+    'auto_install': True,
+    'installable': True,
 }
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
