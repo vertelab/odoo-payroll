@@ -60,6 +60,7 @@
         <page string="Worked Days &amp; Inputs" position="after">
           <page string="Time funds">
             <group>
+              <field name="work_time"/>
               <field name="schema_number_of_days" />
               <field name="percent_number_of_days" />
             </group>

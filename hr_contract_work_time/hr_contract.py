@@ -26,7 +26,7 @@ _logger = logging.getLogger(__name__)
 
 class hr_payslip(models.Model): 
     _inherit = 'hr.payslip' 
-    work_time = fields.Selection(related = 'contract_id.work_time')
+    work_time = fields.Selection(related = 'contract_id.type_id.work_time')
 
 
 class hr_contract_type(models.Model):

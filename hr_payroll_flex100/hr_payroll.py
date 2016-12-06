@@ -79,13 +79,14 @@ class hr_payslip(models.Model):
     holiday_ids = fields.Many2many(comodel_name="hr.holidays.status",compute="_holiday_ids")
     @api.one
     def _flextime(self):
-        self.flextime = sum(self.env['hr.attendance'].search([('employee_id','=',self.employee_id.id),('name','>',self.date_from + ' 00:00:00'),('name','<',self.date_to + ' 23:59:59')]).mapped("flextime"))
+        self.flextime = sum(self.env['hr.attendance'].search([('employee_id', '=',self.employee_id.id), ('name', '>', self.date_from + ' 00:00:00'), ('name', '<', self.date_to + ' 23:59:59')]).mapped("flextime"))
         self.flex_working_hours = sum(self.env['hr.attendance'].search([('employee_id','=',self.employee_id.id),('name','>',self.date_from + ' 00:00:00'),('name','<',self.date_to + ' 23:59:59')]).mapped("flex_working_hours"))
     flextime = fields.Float(string='Flex Time (m)',compute="_flextime")
     flex_working_hours = fields.Float(compute='_flextime', string='Worked Flex (h)')
     @api.one
     def _compensary_leave(self):
-        holidays = self.env['hr.holidays'].search([('employee_id','=',self.employee_id.id),('holiday_status_id','=',self.env.ref("hr_payroll_flex100.compensary_leave").id)])
+        # TODO: Fix issues with leaves spanning two or more months.
+        holidays = self.env['hr.holidays'].search([('employee_id', '=', self.employee_id.id), ('holiday_status_id', '=', self.env.ref("hr_payroll_flex100.compensary_leave").id), ('date_to', '<', self.date_to + ' 23:59:59')])
         self.compensary_leave = sum(holidays.filtered(lambda h: h.type == ' add').mapped("number_of_days_temp")) - sum(holidays.filtered(lambda h: h.type == 'remove').mapped("number_of_days_temp"))
         self.total_compensary_leave = self.compensary_leave + (self.flextime / 60.0 / 24.0)
     compensary_leave = fields.Float(string='Compensary Leave',compute="_compensary_leave")
@@ -184,16 +185,22 @@ class hr_payslip(models.Model):
         #~ """ Wrapper on _schedule_days: return the beginning/ending datetime of"""
 
         #raise Warning(self.worked_days_line_ids)
-
         number_of_days = self.flextime / 60.0 / 24.0 # minutes to days
-        self.env['hr.holidays'].create({
-            'holiday_status_id': self.env.ref("hr_payroll_flex100.compensary_leave").id,
-            'employee_id': self.employee_id.id,
-            'type': 'add' if number_of_days > 0.0 else 'remove' ,
-            'state': 'validate',
-            'number_of_days_temp': abs(number_of_days),
-            #~ 'date_from': self.date_from,
-            #~ 'date_to': self.date_to,
+        if self.employee_id.flex_holiday_id:
+            number_of_days += (-1.0 if self.employee_id.flex_holiday_id.type == 'remove' else 1.0) * self.employee_id.flex_holiday_id.number_of_days_temp
+            self.employee_id.flex_holiday_id.write({
+                'type': 'add' if number_of_days > 0.0 else 'remove' ,
+                'number_of_days_temp': abs(number_of_days),
+            })
+        else:
+            self.employee_id.flex_holiday_id = self.env['hr.holidays'].create({
+                'holiday_status_id': self.env.ref("hr_payroll_flex100.compensary_leave").id,
+                'employee_id': self.employee_id.id,
+                'type': 'add' if number_of_days > 0.0 else 'remove' ,
+                'state': 'validate',
+                'number_of_days_temp': abs(number_of_days),
+                #~ 'date_from': self.date_from,
+                #~ 'date_to': self.date_to,
             })
         return super(hr_payslip,self).hr_verify_sheet()
 
@@ -221,6 +228,11 @@ class hr_payslip(models.Model):
             #~ 'views': [(tree_res, 'tree'), (form_res, 'form')],
             #~ 'context': {}
         #~ }
+
+class hr_employee(models.Model):
+    _inherit = 'hr.employee'
+    
+    flex_holiday_id = fields.Many2one(comodel_name='hr.holidays', string='Flex Time Bank')
 
 class hr_timesheet_sheet(models.Model):
     _inherit = "hr_timesheet_sheet.sheet"
