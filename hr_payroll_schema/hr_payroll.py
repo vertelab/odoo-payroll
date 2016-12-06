@@ -235,6 +235,6 @@ class hr_payslip(models.Model):
 class hr_contract_type(models.Model):
     _inherit = 'hr.contract.type'
 
-    work_time = fields.Selection(selection_add=[('schema','Schema'),('schema_hour','Hourly Schema')])
+    work_time = fields.Selection(selection_add=[('schema','Schema')])
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
