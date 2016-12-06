@@ -27,7 +27,7 @@
 """,
 'author': 'Vertel AB',
 'website': 'http://www.vertel.se',
-'depends': ['hr_contract'],
+'depends': ['hr_contract', 'hr_payroll'],
 'data': ['hr_contract_view.xml'],
 'installable': True,
 }
