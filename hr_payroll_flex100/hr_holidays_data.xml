@@ -7,7 +7,7 @@
     <record model="hr.holidays.status" id="compensary_leave">
       <field name="name" eval="'Compensary Leave'" />
       <field name="color_name">black</field>
-      <field name="limit" eval="False"/>
+      <field name="limit" eval="True"/> <!-- Set to true to allow negative flex total -->
     </record>
     
     
