@@ -29,5 +29,27 @@ class hr_holidays_status(models.Model):
     _inherit = "hr.holidays.status"
     _order = "sequence, name"
     sequence = fields.Integer(string="Seq")
-    
+
+#~ class hr_payslip(models.Model):
+    #~ _inherit = 'hr.payslip'
+
+    #~ def legal_non_vacation(self):
+        #~ return [
+            #~ self.env.ref('hr_holidays.holiday_status_comp').id,
+            #~ self.env.ref('hr_holidays.holiday_status_sl').id,
+            #~ self.env.ref('hr_payroll_flex100.compensary_leave').id,
+            #~ self.env.ref('l10n_se_hr_holidays.holiday_status_cl3').id,
+            #~ self.env.ref('l10n_se_hr_payroll.sick_leave_100').id,
+            #~ self.env.ref('l10n_se_hr_payroll.sick_leave_214').id,
+            #~ self.env.ref('l10n_se_hr_payroll.sick_leave_qualify').id
+            #~ ]
+
+    #~ @api.model
+    #~ def get_legal_leaves(self):
+        #~ return self.with_context({'employee_id' : self.employee_id.id}).holiday_ids.filtered(lambda h: h.remaining_leaves > 0 and h.holiday_status_id.id not in self.legal_non_vacation()).sorted(key=lambda s: s.holiday_status_id.sequence, s.holiday_status_id.name)
+
+    #~ @api.model
+    #~ def get_legal_leaves(self):
+        #~ return self.with_context({'employee_id' : self.employee_id.id}).holiday_ids.filtered(lambda h: h.remaining_leaves > 0 and h.holiday_status_id.id not in self.legal_non_vacation())
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
