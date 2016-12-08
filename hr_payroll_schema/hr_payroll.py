@@ -47,18 +47,16 @@ class hr_attendance(models.Model):
 
     @api.one
     def _working_hours_on_day(self): # working hours on the contract
-        contract = self.employee_id.contract_ids[0] if self.employee_id and self.employee_id.contract_ids else False
-        if contract and self._check_last_sign_out(self):
+        if self.employee_id.contract_id and self._check_last_sign_out(self):
             self.working_hours_on_day = self.pool.get('resource.calendar').working_hours_on_day(self.env.cr, self.env.uid,
-                contract.working_hours, fields.Datetime.from_string(self.name))
+                self.employee_id.contract_id.working_hours, fields.Datetime.from_string(self.name))
         else:
             self.working_hours_on_day = 0.0
     working_hours_on_day = fields.Float(compute='_working_hours_on_day', string='Planned Hours')
 
     @api.one
     def _get_working_hours(self): # worked hours in schedule
-        contract = self.employee_id.contract_ids[0] if self.employee_id and self.employee_id.contract_ids else False
-        if contract and self._check_last_sign_out(self):
+        if self.employee_id.contract_id and self._check_last_sign_out(self):
             att = self.env['hr.attendance'].search([('employee_id','=',self.employee_id.id),('name','>',self.name[:10] + ' 00:00:00'),('name','<',self.name[:10] + ' 23:59:59')],order='name')
             for (start,end) in zip(att,att[1:])[::2]:
                 self.get_working_hours += self.pool.get('resource.calendar').get_working_hours(self.env.cr, self.env.uid,
@@ -68,7 +66,7 @@ class hr_attendance(models.Model):
         else:
             self.get_working_hours = 0.0
     get_working_hours = fields.Float(compute='_get_working_hours', string='Worked in schedule (h)')
-    
+
     @api.one
     def _timesheet_amount(self):
         if self.employee_id and self.employee_id.user_id and self._check_last_sign_out(self):
@@ -78,7 +76,7 @@ class hr_attendance(models.Model):
 
 class hr_analytic_timesheet(models.Model):
     _inherit = 'hr.analytic.timesheet'
-    
+
     @api.model
     def get_day_amount(self,date,employee):
         time = self.env['hr.analytic.timesheet'].search([('user_id','=',employee.user_id.id),('date','=',date)])
@@ -94,15 +92,15 @@ class hr_analytic_timesheet(models.Model):
     timesheet_amount = fields.Float(compute="_timesheet_amount",string="Reported time")
     timesheet_amount_invoiceable = fields.Float(compute="_timesheet_amount",string="Reported time (invoiceable)")
 
-    
+
 class hr_timesheet_sheet(models.Model):
     _inherit = "hr_timesheet_sheet.sheet"
-    
+
     @api.one
     @api.depends('attendances_ids','attendances_ids.sheet_id')
     def _total_attendance_schema(self):
         self.total_attendance_schema = sum(self.attendances_ids.mapped('get_working_hours'))
-        self.total_difference_schema = self.total_attendance_schema - sum(self.attendances_ids.mapped('working_hours_on_day')) 
+        self.total_difference_schema = self.total_attendance_schema - sum(self.attendances_ids.mapped('working_hours_on_day'))
     total_attendance_schema = fields.Float(compute='_total_attendance_schema',string="Attendance (Schema)",store=True)
     total_difference_schema = fields.Float(compute='_total_attendance_schema',string="Difference (Schema)",store=True)
 
@@ -113,15 +111,15 @@ class hr_timesheet_sheet(models.Model):
         self.timesheet_amount_invoiceable = sum(self.timesheet_ids.mapped("timesheet_amount_invoiceable"))
     timesheet_amount = fields.Float(compute="_timesheet_amount",string="Reported time")
     timesheet_amount_invoiceable = fields.Float(compute="_timesheet_amount",string="Reported time (invoiceable)")
-    
+
 
 
 class hr_payslip_worked_days(models.Model):
-    
+
     _inherit = 'hr.payslip.worked_days'
-    
+
     schema_number_of_days = fields.Float(string="Schema numer of days")
-    
+
 
 class hr_payslip(models.Model):
     _inherit = 'hr.payslip'
@@ -140,13 +138,14 @@ class hr_payslip(models.Model):
     @api.one
     def _schema_number_of_days(self):
         nbr = nbr_hours = 0.0
-        for day in range(0, (fields.Date.from_string(self.date_to) - fields.Date.from_string(self.date_from)).days + 1):
-            #~ working_hours_on_day = self.pool.get('resource.calendar').working_hours_on_day(self.env.cr, self.env.uid, slip.employee_id.contract_id.working_hours.id, fields.Date.from_string(slip.date_from) + timedelta(days=day), self.env.context)
-            working_hours_on_day = self.employee_id.contract_id.working_hours.get_working_hours_of_date(start_dt=fields.Datetime.from_string(self.date_from) + timedelta(days=day))[0]
-            _logger.warn('working_h_on day %s' %working_hours_on_day )
-            if working_hours_on_day:
-                nbr += 1.0
-                nbr_hours += working_hours_on_day
+        if self.employee_id.contract_id:
+            for day in range(0, (fields.Date.from_string(self.date_to) - fields.Date.from_string(self.date_from)).days + 1):
+                #~ working_hours_on_day = self.pool.get('resource.calendar').working_hours_on_day(self.env.cr, self.env.uid, slip.employee_id.contract_id.working_hours.id, fields.Date.from_string(slip.date_from) + timedelta(days=day), self.env.context)
+                working_hours_on_day = self.employee_id.contract_id.working_hours.get_working_hours_of_date(start_dt=fields.Datetime.from_string(self.date_from) + timedelta(days=day))[0]
+                _logger.warn('working_h_on day %s' %working_hours_on_day )
+                if working_hours_on_day:
+                    nbr += 1.0
+                    nbr_hours += working_hours_on_day
         self.schema_number_of_days = nbr
         self.schema_number_of_hours = nbr_hours
     schema_number_of_days = fields.Float(string="Schema numer of days", compute='_schema_number_of_days')
@@ -161,7 +160,7 @@ class hr_payslip(models.Model):
         _logger.warn('working_h_on day %s' % work100 )
 
     percent_number_of_days = fields.Float(string="Percent numer of days", compute='_percent_number_of_days')
-    
+
     @api.multi
     def get_schema_number_of_days(self):
         return 32.0
@@ -174,7 +173,7 @@ class hr_payslip(models.Model):
                 r['schema_number_of_days'] = 32.0
         #~ raise Warning(res)
         return res
-        
+
         #~ """
         #~ @param contract_ids: list of contract id
         #~ @return: returns a list of dict containing the input that should be applied for the given contract between date_from and date_to
