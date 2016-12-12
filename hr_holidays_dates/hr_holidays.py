@@ -20,27 +20,30 @@
 ##############################################################################
 
 from openerp import models, fields, api, _
+from datetime import timedelta 
 
 import logging
 _logger = logging.getLogger(__name__)
+
 
 class hr_holidays(models.Model):
     _inherit = "hr.holidays"
  
     
     @api.multi
-    def onchange_employee(self, employee_id):
+    def onchange_employee(self, employee_id,date_from, date_to):
         result = super(hr_holidays, self).onchange_employee(employee_id)
         employee = self.env['hr.employee'].browse(employee_id)
         if employee.contract_id and employee.contract_id.working_hours:
             hours_from = {a[0]: a[1] for a in reversed(employee.contract_id.working_hours.attendance_ids.sorted(key=lambda a: a.hour_from).mapped(lambda a: (a.dayofweek,a.hour_from)))}
-            #result['value']['date_from'] =  hours_from['0']
+            raise Warning(date_from,date_from[:10],fields.Date.from_string(date_from) + timedelta(hours=hours_from['0']))
+            result['value']['date_from'] =  fields.Datetime.to_string(fields.Date.from_string(date_from[10:0]+ timedelta(hours=hours_from['0'])) 
             hours_to={a.dayofweek: a.hour_to for a in employee.contract_id.working_hours.attendance_ids}
-            #result['value']['date_to'] = hours_to['0']
+            result['value']['date_to'] = fields.Datetime.to_string(fields.Date.from_string(date_to[10:0]) + hours_to['0']) 
         return result
          
     @api.multi
-    def onchange_date_from(self,date_to, date_from):
+    def onchange_date_from(self,employee_id,date_to, date_from):
         if date_from and not date_to:
             raise Warning(self.employee_id)
             hours_to={a.dayofweek: a.hour_to for a in self.contract_id.working_hours.attendance_ids}
