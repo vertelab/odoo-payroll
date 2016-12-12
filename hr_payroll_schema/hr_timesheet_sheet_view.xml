@@ -17,7 +17,7 @@
       </field>
     </record>
     <!--employee attendance form view-->
-    <record id="view_he_attendance_form" model="ir.ui.view">
+    <record id="view_hr_attendance_form" model="ir.ui.view">
       <field name="name">hr.employercert.attendance.form</field>
       <field name="model">hr.attendance</field>
       <field name="inherit_id" ref="hr_attendance.view_attendance_form" />
@@ -40,15 +40,16 @@
       </field>
     </record>
     <record id="hr_timesheet_sheet_form" model="ir.ui.view">
-      <field name="name">hr.timesheet.sheet.form,schema</field>
+      <field name="name">hr.timesheet.sheet.form.schema</field>
       <field name="model">hr_timesheet_sheet.sheet</field>
       <field name="inherit_id" ref="hr_timesheet_sheet.hr_timesheet_sheet_form" />
       <field name="arch" type="xml">
         <field name="total_difference" position="after">
-          <field name="total_attendance_schema" />
-          <field name="total_difference_schema" />
-          <field name="timesheet_amount" />
-          <field name="timesheet_amount_invoiceable" />
+            <field name="work_time" invisible="1"/>
+            <field name="total_attendance_schema" attrs="{'invisible': [('work_time', '!=', 'schema')]}"/>
+            <field name="total_difference_schema" attrs="{'invisible': [('work_time', '!=', 'schema')]}"/>
+            <field name="timesheet_amount" attrs="{'invisible': [('work_time', '!=', 'schema')]}"/>
+            <field name="timesheet_amount_invoiceable" attrs="{'invisible': [('work_time', '!=', 'schema')]}"/>
         </field>
       </field>
     </record>

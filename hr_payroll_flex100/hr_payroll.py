@@ -85,7 +85,6 @@ class hr_payslip(models.Model):
     flex_working_hours = fields.Float(compute='_flextime', string='Worked Flex (h)')
     @api.one
     def _compensary_leave(self):
-        _logger.warn('\n\n\nbuu\n\n\n')
         # TODO: Fix issues with leaves spanning two or more months.
         if self.state == 'draft':
             holidays = self.env['hr.holidays'].search([('employee_id', '=', self.employee_id.id), ('holiday_status_id', '=', self.env.ref("hr_payroll_flex100.compensary_leave").id), ('date_to', '<', self.date_to + ' 23:59:59')])
@@ -93,7 +92,7 @@ class hr_payslip(models.Model):
         self.total_compensary_leave = self.compensary_leave + (self.flextime / 60.0 / 24.0)
     compensary_leave = fields.Float(string='Compensary Leave') #,compute="_compensary_leave", store=True)
     total_compensary_leave = fields.Float(string='Total Compensary Leave',compute="_compensary_leave")
-    
+
 
 
     #~ @api.model
@@ -218,9 +217,9 @@ class hr_payslip(models.Model):
 
 class hr_employee(models.Model):
     _inherit = 'hr.employee'
-    
+
     flex_holiday_id = fields.Many2one(comodel_name='hr.holidays', string='Flex Time Bank')
-    
+
     def set_flex_time_pot(self, days, date = fields.Datetime.now()):
         date_to = fields.Datetime.from_string('1970-01-01 00:00:00') + timedelta(days = days)
         if self.flex_holiday_id:
@@ -253,6 +252,11 @@ class hr_timesheet_sheet(models.Model):
     flex_working_hours = fields.Float(compute='_flex_working_hours', string='Worked Flex (h)')
     flextime = fields.Float(compute='_flex_working_hours', string='Flex Time (m)')
 
+    @api.one
+    def _compensary_leave(self):
+        self.compensary_leave = self.with_context({'employee_id': self.employee_id.id}).env.ref("hr_payroll_flex100.compensary_leave").remaining_leaves
+    compensary_leave = fields.Float(string='Compensary Leave (d)', compute='_compensary_leave')
+
 class hr_holidays(models.Model):
     _inherit='hr.holidays.status'
 
@@ -268,7 +272,7 @@ class hr_holidays(models.Model):
 
 class hr_holidays_status(models.Model):
     _inherit = "hr.holidays.status"
-    
+
     @api.multi
     def name_get(self):
         """Add flex time to name."""
