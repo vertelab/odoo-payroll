@@ -61,4 +61,22 @@ class hr_payslip(models.Model):
                 })
         return super(hr_payslip, self).process_sheet()
 
+class hr_timesheet_sheet(models.Model):
+    _inherit = "hr_timesheet_sheet.sheet"
+
+    @api.one
+    def _employee_fund(self):
+        self.employee_fund = self.employee_id.contract_id.employee_fund
+    employee_fund = fields.Many2one(comodel_name='account.analytic.account', string='Employee Fund', compute='_employee_fund')
+    @api.one
+    def _employee_fund_balance(self):
+        self.employee_fund_balance = self.employee_id.contract_id.employee_fund_balance
+    employee_fund_balance = fields.Float(string='Balance', compute='_employee_fund_balance')
+    @api.one
+    def _employee_fund_name(self):
+        self.employee_fund_name = self.employee_id.contract_id.employee_fund_name
+    employee_fund_name = fields.Char(string='Name', compute='_employee_fund_name')
+    company_currency = fields.Many2one(related='company_id.currency_id')
+
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
