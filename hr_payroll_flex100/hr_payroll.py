@@ -54,24 +54,31 @@ class hr_attendance(models.Model):
         leaves = 0.0
         if self._check_last_sign_out(self):
             att = self.env['hr.attendance'].search([('employee_id','=',self.employee_id.id),('name','>',self.name[:10] + ' 00:00:00'),('name','<',self.name[:10] + ' 23:59:59')],order='name')
-            for (start,end) in zip(att,att[1:])[::2]:
+            #~ for (start, end) in zip(att, att[1:])[::2]:
                 #~ get_working_hours += self.pool.get('resource.calendar').get_working_hours(self.env.cr, self.env.uid,
                                                                                             #~ self.employee_id.contract_id.working_hours.id,
                                                                                             #~ datetime.strptime(start.name, tools.DEFAULT_SERVER_DATETIME_FORMAT),
                                                                                             #~ datetime.strptime(end.name, tools.DEFAULT_SERVER_DATETIME_FORMAT))
-                flex_working_hours += (fields.Datetime.from_string(end.name) - fields.Datetime.from_string(start.name)).total_seconds() / 3600.0
-            job_intervals = self.pool.get('resource.calendar').get_working_intervals_of_day(self.env.cr,self.env.uid,
-                    self.employee_id.contract_id.working_hours.id,
-                    start_dt=fields.Datetime.from_string(self.name).replace(hour=0,minute=0))
-            last = ()
-            for i in job_intervals:
-                if not last:
-                    last = i
-                    continue
-                leaves += (i[0] - last[1]).total_seconds()
-                last = i
-            _logger.warn('%s ---------- ' %(flex_working_hours))
-        self.flex_working_hours = flex_working_hours - leaves / 3600.0
+                #~ flex_working_hours += (fields.Datetime.from_string(end.name) - fields.Datetime.from_string(start.name)).total_seconds() / 3600.0
+            #~ for (start, end) in zip(att[::2], att[1::2]):
+                #~ flex_working_hours += (fields.Datetime.from_string(end.name) - fields.Datetime.from_string(start.name)).total_seconds() / 3600.0
+            if self.flextime > 0.0:
+                self.flex_working_hours = self.get_working_hours + self.flextime
+            elif self.flextime == 0.0:
+                self.flex_working_hours = self.working_hours_on_day
+            elif self.flextime < 0.0:
+                self.working_hours_on_day + self.flextime
+            #~ job_intervals = self.pool.get('resource.calendar').get_working_intervals_of_day(self.env.cr,self.env.uid,
+                    #~ self.employee_id.contract_id.working_hours.id,
+                    #~ start_dt=fields.Datetime.from_string(self.name).replace(hour=0,minute=0))
+            #~ last = ()
+            #~ for i in job_intervals:
+                #~ if not last:
+                    #~ last = i
+                    #~ continue
+                #~ leaves += (i[0] - last[1]).total_seconds()
+                #~ last = i
+        #~ self.flex_working_hours = flex_working_hours - leaves / 3600.0
     flex_working_hours = fields.Float(compute='_flex_working_hours', string='Worked Flex (h)')
 
     @api.one
