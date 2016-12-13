@@ -70,6 +70,7 @@ class hr_attendance(models.Model):
                     continue
                 leaves += (i[0] - last[1]).total_seconds()
                 last = i
+            _logger.warn('%s ---------- ' %(flex_working_hours))
         self.flex_working_hours = flex_working_hours - leaves / 3600.0
     flex_working_hours = fields.Float(compute='_flex_working_hours', string='Worked Flex (h)')
 
