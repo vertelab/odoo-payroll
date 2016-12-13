@@ -44,8 +44,8 @@ class hr_attendance(models.Model):
                 flex_begin =  job_intervals[0][0] - datetime.strptime(att[0].name, tools.DEFAULT_SERVER_DATETIME_FORMAT)
                 #~ _logger.error('job_int %s - att %s = %s' % (job_intervals[0][0],datetime.strptime(att[0].name, tools.DEFAULT_SERVER_DATETIME_FORMAT),flex_begin))
                 flex_end = datetime.strptime(att[-1].name, tools.DEFAULT_SERVER_DATETIME_FORMAT) - job_intervals[-1][1]
-                self.flextime = (flex_begin + flex_end).total_seconds() / 60.0
-    flextime = fields.Float(compute='_flextime', string='Flex Time (m)')
+                self.flextime = round((flex_begin + flex_end).total_seconds() / 60.0)
+    flextime = fields.Integer(compute='_flextime', string='Flex Time (m)')
 
     @api.one
     def _flex_working_hours(self):
@@ -59,15 +59,39 @@ class hr_attendance(models.Model):
                                                                                             #~ self.employee_id.contract_id.working_hours.id,
                                                                                             #~ datetime.strptime(start.name, tools.DEFAULT_SERVER_DATETIME_FORMAT),
                                                                                             #~ datetime.strptime(end.name, tools.DEFAULT_SERVER_DATETIME_FORMAT))
-                flex_working_hours += (datetime.strptime(end.name, tools.DEFAULT_SERVER_DATETIME_FORMAT) - datetime.strptime(start.name, tools.DEFAULT_SERVER_DATETIME_FORMAT)).total_seconds() / 60.0 / 60.0
+                flex_working_hours += (fields.Datetime.from_string(end.name) - fields.Datetime.from_string(start.name)).total_seconds() / 3600.0
             job_intervals = self.pool.get('resource.calendar').get_working_intervals_of_day(self.env.cr,self.env.uid,
                     self.employee_id.contract_id.working_hours.id,
-                    start_dt=datetime.strptime(self.name, tools.DEFAULT_SERVER_DATETIME_FORMAT).replace(hour=0,minute=0))
-            for f,s in zip(job_intervals,job_intervals[1::])[::2]:
-                leaves += (f[1] - s[0]).total_seconds() / 60.0 / 60.0
-        #~ _logger.warn('leaves %s ' % leaves)
-        self.flex_working_hours = flex_working_hours + leaves
+                    start_dt=fields.Datetime.from_string(self.name).replace(hour=0,minute=0))
+            last = ()
+            for i in job_intervals:
+                if not last:
+                    last = i
+                    continue
+                leaves += (i[0] - last[1]).total_seconds()
+                last = i
+        self.flex_working_hours = flex_working_hours - leaves / 3600.0
     flex_working_hours = fields.Float(compute='_flex_working_hours', string='Worked Flex (h)')
+
+    @api.one
+    def _flextime_month(self):
+        year = datetime.now().year
+        month = datetime.now().month
+        date_start = datetime(year, month, 1)
+        if month == 12:
+            year += 1
+            month = 1
+        else:
+            month += 1
+        date_end = datetime(year, month, 1) - timedelta(days=1)
+        self.flextime_month = round(sum(self.search([('employee_id', '=',self.employee_id.id), ('name', '>', fields.Date.to_string(date_start) + ' 00:00:00'), ('name', '<', fields.Date.to_string(date_end) + ' 23:59:59')]).mapped("flextime")))
+    flextime_month = fields.Integer(compute="_flextime_month")
+
+    @api.one
+    def _compensary_leave(self):
+        self.compensary_leave = self.with_context({'employee_id': self.employee_id.id}).env.ref("hr_payroll_flex100.compensary_leave").remaining_leaves
+    compensary_leave = fields.Float(compute='_compensary_leave')
+
 
 class hr_payslip(models.Model):
     _inherit = 'hr.payslip'
@@ -85,7 +109,6 @@ class hr_payslip(models.Model):
     flex_working_hours = fields.Float(compute='_flextime', string='Worked Flex (h)')
     @api.one
     def _compensary_leave(self):
-        _logger.warn('\n\n\nbuu\n\n\n')
         # TODO: Fix issues with leaves spanning two or more months.
         if self.state == 'draft':
             holidays = self.env['hr.holidays'].search([('employee_id', '=', self.employee_id.id), ('holiday_status_id', '=', self.env.ref("hr_payroll_flex100.compensary_leave").id), ('date_to', '<', self.date_to + ' 23:59:59')])
@@ -93,7 +116,7 @@ class hr_payslip(models.Model):
         self.total_compensary_leave = self.compensary_leave + (self.flextime / 60.0 / 24.0)
     compensary_leave = fields.Float(string='Compensary Leave') #,compute="_compensary_leave", store=True)
     total_compensary_leave = fields.Float(string='Total Compensary Leave',compute="_compensary_leave")
-    
+
 
 
     #~ @api.model
@@ -218,9 +241,9 @@ class hr_payslip(models.Model):
 
 class hr_employee(models.Model):
     _inherit = 'hr.employee'
-    
+
     flex_holiday_id = fields.Many2one(comodel_name='hr.holidays', string='Flex Time Bank')
-    
+
     def set_flex_time_pot(self, days, date = fields.Datetime.now()):
         date_to = fields.Datetime.from_string('1970-01-01 00:00:00') + timedelta(days = days)
         if self.flex_holiday_id:
@@ -253,6 +276,11 @@ class hr_timesheet_sheet(models.Model):
     flex_working_hours = fields.Float(compute='_flex_working_hours', string='Worked Flex (h)')
     flextime = fields.Float(compute='_flex_working_hours', string='Flex Time (m)')
 
+    @api.one
+    def _compensary_leave(self):
+        self.compensary_leave = self.with_context({'employee_id': self.employee_id.id}).env.ref("hr_payroll_flex100.compensary_leave").remaining_leaves
+    compensary_leave = fields.Float(string='Compensary Leave (d)', compute='_compensary_leave')
+
 class hr_holidays(models.Model):
     _inherit='hr.holidays.status'
 
@@ -268,7 +296,7 @@ class hr_holidays(models.Model):
 
 class hr_holidays_status(models.Model):
     _inherit = "hr.holidays.status"
-    
+
     @api.multi
     def name_get(self):
         """Add flex time to name."""
