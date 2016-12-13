@@ -105,7 +105,7 @@ openerp.jsonRpc("/hr/attendance/" + id, 'call', {
             $("#employee_message").html("<h2>Goodbye!</h2><h2>" + data.employee.name +"</h2>");
             $("#employee_worked_hour").html("<h4><strong>Worked Hours: </strong>" + workedHour + " hours and " + workedMinute +" minutes</h4>");
             if(data.attendance.work_time === 'flex'){
-                $("#employee_flex_time").html("<h4><strong>Flex Time: </strong>" + data.attendance.flextime + " minutes</h4><h4><strong>Compensary Leave: </strong>" + data.attendance.compensary_leave + " days</h4><h4><strong>Accumulated Flex Time This Month: </strong>" + data.attendance.flextime_month + " minutes</h4>");
+                $("#employee_flex_time").html("<h4><strong>Flex Time: </strong>" + data.attendance.flextime + " minutes</h4><h4><strong>Flex Time This Month: </strong>" + data.attendance.flextime_month + " minutes</h4><h4><strong>Compensary Leave: </strong>" + data.attendance.compensary_leave + " days</h4>");
             }
         }
         logTimeOut = setTimeout("$('#Log_div').fadeOut('slow')", 15000);
