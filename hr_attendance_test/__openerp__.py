@@ -22,7 +22,7 @@
     'name': 'Attendance Test Data',
     'category': 'hr',
     'author': 'Vertel AB',
-    'depends': ['hr_attendance','hr_holidays'],
+    'depends': ['hr_attendance', 'l10n_se_hr_holidays'],
     'version': '1.2',
     'description': """
 Generating test data for employees
