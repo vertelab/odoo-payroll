@@ -245,7 +245,7 @@ class hr_employee(models.Model):
     flex_holiday_id = fields.Many2one(comodel_name='hr.holidays', string='Flex Time Bank')
 
     def set_flex_time_pot(self, days, date = fields.Datetime.now()):
-        date_to = fields.Datetime.from_string('1970-01-01 00:00:00') + timedelta(days = days)
+        date_to = fields.Datetime.from_string('1970-01-01 00:00:00') + timedelta(days = abs(days))
         if self.flex_holiday_id:
             self.flex_holiday_id.write({
                 'name': 'Time Bank for %s (%s)' % (self.name, date),
