@@ -67,7 +67,7 @@ class hr_attendance(models.Model):
             elif self.flextime == 0.0:
                 self.flex_working_hours = self.working_hours_on_day
             elif self.flextime < 0.0:
-                self.working_hours_on_day + self.flextime / 60.0
+                self.flex_working_hours = self.working_hours_on_day + self.flextime / 60.0
             #~ job_intervals = self.pool.get('resource.calendar').get_working_intervals_of_day(self.env.cr,self.env.uid,
                     #~ self.employee_id.contract_id.working_hours.id,
                     #~ start_dt=fields.Datetime.from_string(self.name).replace(hour=0,minute=0))
