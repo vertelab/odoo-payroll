@@ -44,6 +44,8 @@ class hr_attendance(models.Model):
     @api.model
     def auto_log_out(self): #auto log out in midnight
         employees = self.env['hr.employee'].search([('active', '=', True), ('state', '=', 'present'), ('id', '!=', self.env.ref('hr.employee').id)])
+        if len(employees) > 0:
+            _logger.warn('Employees to logout %s' %employees)
         for e in employees:
             if e.contract_id and e.user_id:
                 hours_to = {a.dayofweek: a.hour_to for a in e.contract_id.working_hours.attendance_ids}
@@ -51,12 +53,31 @@ class hr_attendance(models.Model):
                 yesterday_utc = datetime(now.year, now.month, now.day) - timedelta(days = 1) + timedelta(minutes = (hours_to[str(now.weekday())]* 60))
                 yesterday = self.convert2utz(e, yesterday_utc).strftime('%Y-%m-%d %H:%M:%S')
                 try:
-                    e.with_context({'action_date': yesterday}).attendance_action_change()
+                    e.with_context({'action_date': yesterday, 'action': 'sign_out'}).attendance_action_change()
                 except Exception as ex:
                     _logger.warn(': '.join(ex))
+                    self.env['mail.message'].create({
+                        'body': _("Error!\n%s\nSystem tried to signed out on %s (%s)\n Current status: %s" % (ex, yesterday_utc, yesterday, e.state)),
+                        'subject': _("Error Auto sign out"),
+                        'author_id': self.env.ref('hr.employee').user_id.partner_id.id,
+                        'res_id': e.id,
+                        'model': e._name,
+                        'subtype_id': self.env.ref('mail.mt_comment').id,
+                        'partner_ids': [(6, 0, [e.user_id.partner_id.id])],
+                        'type': 'notification',})
+                    if e.parent_id:
+                        self.env['mail.message'].create({
+                            'body': _("Error!\n%s\n%sSystem tried to automatically signed out on %s\n" % (ex, e.name, yesterday_utc)),
+                            'subject': _("Error Employee auto sign out"),
+                            'author_id': self.env.ref('hr.employee').user_id.partner_id.id,
+                            'res_id': e.parent_id.id,
+                            'model': e._name,
+                            'subtype_id': self.env.ref('mail.mt_comment').id,
+                            'partner_ids': [(6, 0, [e.parent_id.user_id.partner_id.id])],
+                            'type': 'notification',})
                     continue
                 self.env['mail.message'].create({
-                    'body': _("You've been automatically signed out on %s\nIf this sign out time is incorrect, please contact your supervisor." % (yesterday_utc)),
+                    'body': _("You've been automatically signed out on %s (%s)\nIf this sign out time is incorrect, please contact your supervisor. Current status: %s" % (yesterday_utc, yesterday, e.state)),
                     'subject': _("Auto sign out"),
                     'author_id': self.env.ref('hr.employee').user_id.partner_id.id,
                     'res_id': e.id,
