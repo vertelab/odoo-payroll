@@ -63,11 +63,11 @@ class hr_attendance(models.Model):
             #~ for (start, end) in zip(att[::2], att[1::2]):
                 #~ flex_working_hours += (fields.Datetime.from_string(end.name) - fields.Datetime.from_string(start.name)).total_seconds() / 3600.0
             if self.flextime > 0.0:
-                self.flex_working_hours = self.get_working_hours + self.flextime
+                self.flex_working_hours = self.get_working_hours + self.flextime / 60.0
             elif self.flextime == 0.0:
                 self.flex_working_hours = self.working_hours_on_day
             elif self.flextime < 0.0:
-                self.working_hours_on_day + self.flextime
+                self.working_hours_on_day + self.flextime / 60.0
             #~ job_intervals = self.pool.get('resource.calendar').get_working_intervals_of_day(self.env.cr,self.env.uid,
                     #~ self.employee_id.contract_id.working_hours.id,
                     #~ start_dt=fields.Datetime.from_string(self.name).replace(hour=0,minute=0))
