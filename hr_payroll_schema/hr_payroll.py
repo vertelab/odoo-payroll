@@ -163,8 +163,10 @@ class hr_payslip(models.Model):
     percent_number_of_days = fields.Float(string="Percent numer of days", compute='_percent_number_of_days')
 
     @api.multi
-    def get_schema_number_of_days(self):
-        return 32.0
+    def _slip_number_of_days(self):
+        self.slip_number_of_days = sum(self.worked_days_line_ids.mapped('number_of_days'))
+    slip_number_of_days = fields.Float(computed="_slip_number_of_days")
+        
     
     @api.model
     def get_worked_day_lines(self, contract_ids, date_from, date_to):
