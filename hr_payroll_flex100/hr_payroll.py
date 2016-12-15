@@ -107,11 +107,6 @@ class hr_payslip(models.Model):
     _inherit = 'hr.payslip'
 
     @api.one
-    def _holiday_ids(self):
-        self.holiday_ids = self.env['hr.holidays.status'].search([('active','=',True),('limit','=',False)])
-        self.holiday_ids += self.env['hr.holidays.status'].search([('id','in',[self.env.ref('l10n_se_hr_payroll.sick_leave_qualify').id,self.env.ref('l10n_se_hr_payroll.sick_leave_214').id,self.env.ref('l10n_se_hr_payroll.sick_leave_100').id])])
-    holiday_ids = fields.Many2many(comodel_name="hr.holidays.status",compute="_holiday_ids")
-    @api.one
     def _flextime(self):
         self.flextime = sum(self.env['hr.attendance'].search([('employee_id', '=',self.employee_id.id), ('name', '>', self.date_from + ' 00:00:00'), ('name', '<', self.date_to + ' 23:59:59')]).mapped("flextime"))
         self.flex_working_hours = sum(self.env['hr.attendance'].search([('employee_id','=',self.employee_id.id),('name','>',self.date_from + ' 00:00:00'),('name','<',self.date_to + ' 23:59:59')]).mapped("flex_working_hours"))

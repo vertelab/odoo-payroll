@@ -3,14 +3,14 @@
   <data noupdate="1">
 
 
-    <!-- Compensary leave -->    
-    <record model="hr.holidays.status" id="compensary_leave">
+    <!-- Compensary leave -->
+    <record model="hr.holidays.status" id="hr_holidays.holiday_status_comp">
       <field name="name" eval="'Compensary Leave'" />
       <field name="color_name">black</field>
       <field name="limit" eval="True"/> <!-- Set to true to allow negative flex total -->
     </record>
-    
-    
-   
+
+
+
   </data>
 </openerp>
