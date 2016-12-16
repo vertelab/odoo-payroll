@@ -29,7 +29,7 @@
 """,
 'author': 'Vertel AB',
 'website': 'http://www.vertel.se',
-'depends': ['hr_contract_work_time','hr_payroll_benefit'],
+'depends': ['hr_contract_work_time'],
 'data': ['hr_salary_rule_data.xml'],
 'installable': True,
 }
