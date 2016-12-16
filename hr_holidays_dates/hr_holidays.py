@@ -28,26 +28,44 @@ _logger = logging.getLogger(__name__)
 
 class hr_holidays(models.Model):
     _inherit = "hr.holidays"
- 
     
-    @api.multi
-    def onchange_employee(self, employee_id,date_from, date_to):
-        result = super(hr_holidays, self).onchange_employee(employee_id)
-        employee = self.env['hr.employee'].browse(employee_id)
+    @api.cr_uid_ids
+    def onchange_employee(self, cr, uid, ids, employee_id, date_to = None, date_from = None):
+        _logger.warn('\n%s\n%s\n%s\n' % (employee_id, date_from, date_to))
+        env = api.Environment(cr, uid, {})
+        result = super(hr_holidays, self).onchange_employee(cr, uid, ids, employee_id)
+        employee = env['hr.employee'].browse(employee_id)
         if employee.contract_id and employee.contract_id.working_hours:
-            hours_from = {a[0]: a[1] for a in reversed(employee.contract_id.working_hours.attendance_ids.sorted(key=lambda a: a.hour_from).mapped(lambda a: (a.dayofweek,a.hour_from)))}
-            raise Warning(date_from,date_from[:10],fields.Date.from_string(date_from) + timedelta(hours=hours_from['0']))
-            result['value']['date_from'] =  fields.Datetime.to_string(fields.Date.from_string(date_from[10:0]+ timedelta(hours=hours_from['0'])) 
-            hours_to={a.dayofweek: a.hour_to for a in employee.contract_id.working_hours.attendance_ids}
-            result['value']['date_to'] = fields.Datetime.to_string(fields.Date.from_string(date_to[10:0]) + hours_to['0']) 
+            hours_from = {a[0]: a[1] for a in reversed(employee.contract_id.working_hours.attendance_ids.sorted(key = lambda a: a.hour_from).mapped(lambda a: (a.dayofweek, a.hour_from)))}
+            _logger.warn(hours_from)
+            #~ raise Warning(date_from,date_from[:10],fields.Date.from_string(date_from) + timedelta(hours=hours_from['0']))
+            if date_from:
+                result['value']['date_from'] =  fields.Datetime.to_string(fields.Date.from_string(date_from[10:0] + timedelta(hours = hours_from['0']))) 
+            hours_to = {a.dayofweek: a.hour_to for a in employee.contract_id.working_hours.attendance_ids}
+            if date_to:
+                result['value']['date_to'] = fields.Datetime.to_string(fields.Date.from_string(date_to[10:0]) + hours_to['0']) 
         return result
          
-    @api.multi
-    def onchange_date_from(self,employee_id,date_to, date_from):
+    @api.cr_uid_ids
+    def onchange_date_from(self, cr, uid, ids, date_to, date_from, employee_id = []):
+        env = api.Environment(cr, uid, {})
+        employee = env['hr.holidays'].browse(employee_id)
+        _logger.warn('\n%s\n%s\n%s\n' % (employee_id, date_from, date_to))
         if date_from and not date_to:
-            raise Warning(self.employee_id)
             hours_to={a.dayofweek: a.hour_to for a in self.contract_id.working_hours.attendance_ids}
-        result = super(hr_holidays, self).onchange_date_from(self,date_to, date_from)
+        result = super(hr_holidays, self).onchange_date_from(cr, uid, ids, date_to, date_from)
+        return result
+        
+    @api.cr_uid_ids
+    def onchange_date_from(self, cr, uid, ids, date_to, date_from, employee_id = []):
+        #~ env = api.Environment(cr, uid, {})
+        #~ employee_id = env['hr.holidays'].browse(ids)
+        #~ _logger.warn('\n%s\n%s\n%s\n' % (employee_id, date_from, date_to))
+        #~ raise Warning()
+        #~ if date_from and not date_to:
+            #~ hours_to={a.dayofweek: a.hour_to for a in self.contract_id.working_hours.attendance_ids}
+        result = super(hr_holidays, self).onchange_date_from(cr, uid, ids, date_to, date_from)
+        return result
         
         
     #~ def onchange_date_from(self, cr, uid, ids, date_to, date_from):
