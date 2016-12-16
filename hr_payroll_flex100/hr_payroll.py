@@ -54,23 +54,25 @@ class hr_attendance(models.Model):
         leaves = 0.0
         if self._check_last_sign_out(self):
             att = self.env['hr.attendance'].search([('employee_id','=',self.employee_id.id),('name','>',self.name[:10] + ' 00:00:00'),('name','<',self.name[:10] + ' 23:59:59')],order='name')
+            job_intervals = self.pool.get('resource.calendar').get_working_intervals_of_day(self.env.cr,self.env.uid, self.employee_id.contract_id.working_hours.id, start_dt=fields.Datetime.from_string(self.name).replace(hour=0,minute=0))
+            if len(job_intervals) > 0:
+                if self.flextime > 0.0: #if got positive flex time, worked flex = worked on schedule + flex time
+                    self.flex_working_hours = self.get_working_hours + self.flextime / 60.0
+                elif self.flextime < 0.0: #if got negative flex time, worked flex = planned hours + flex time
+                    self.flex_working_hours = self.working_hours_on_day + self.flextime / 60.0
+                elif self.flextime == 0.0: #if got 0 flex time
+                    if fields.Datetime.from_string(att[0].name) < job_intervals[0][0] or fields.Datetime.from_string(att[-1].name) > job_intervals[-1][-1]: #if extra worked time is out of schedule, so fill up missed hours in schedule
+                        self.flex_working_hours = self.working_hours_on_day
+                    elif fields.Datetime.from_string(att[0].name) >= job_intervals[0][0] or fields.Datetime.from_string(att[-1].name) <= job_intervals[-1][-1]: #if not, take worked hours in schedule
+                        self.flex_working_hours = self.get_working_hours
+
             #~ for (start, end) in zip(att, att[1:])[::2]:
                 #~ get_working_hours += self.pool.get('resource.calendar').get_working_hours(self.env.cr, self.env.uid,
                                                                                             #~ self.employee_id.contract_id.working_hours.id,
                                                                                             #~ datetime.strptime(start.name, tools.DEFAULT_SERVER_DATETIME_FORMAT),
                                                                                             #~ datetime.strptime(end.name, tools.DEFAULT_SERVER_DATETIME_FORMAT))
                 #~ flex_working_hours += (fields.Datetime.from_string(end.name) - fields.Datetime.from_string(start.name)).total_seconds() / 3600.0
-            #~ for (start, end) in zip(att[::2], att[1::2]):
-                #~ flex_working_hours += (fields.Datetime.from_string(end.name) - fields.Datetime.from_string(start.name)).total_seconds() / 3600.0
-            if self.flextime > 0.0:
-                self.flex_working_hours = self.get_working_hours + self.flextime
-            elif self.flextime == 0.0:
-                self.flex_working_hours = self.working_hours_on_day
-            elif self.flextime < 0.0:
-                self.working_hours_on_day + self.flextime
-            #~ job_intervals = self.pool.get('resource.calendar').get_working_intervals_of_day(self.env.cr,self.env.uid,
-                    #~ self.employee_id.contract_id.working_hours.id,
-                    #~ start_dt=fields.Datetime.from_string(self.name).replace(hour=0,minute=0))
+
             #~ last = ()
             #~ for i in job_intervals:
                 #~ if not last:
@@ -104,11 +106,6 @@ class hr_attendance(models.Model):
 class hr_payslip(models.Model):
     _inherit = 'hr.payslip'
 
-    @api.one
-    def _holiday_ids(self):
-        self.holiday_ids = self.env['hr.holidays.status'].search([('active','=',True),('limit','=',False)])
-        self.holiday_ids += self.env['hr.holidays.status'].search([('id','in',[self.env.ref('l10n_se_hr_payroll.sick_leave_qualify').id,self.env.ref('l10n_se_hr_payroll.sick_leave_214').id,self.env.ref('l10n_se_hr_payroll.sick_leave_100').id])])
-    holiday_ids = fields.Many2many(comodel_name="hr.holidays.status",compute="_holiday_ids")
     @api.one
     def _flextime(self):
         self.flextime = sum(self.env['hr.attendance'].search([('employee_id', '=',self.employee_id.id), ('name', '>', self.date_from + ' 00:00:00'), ('name', '<', self.date_to + ' 23:59:59')]).mapped("flextime"))

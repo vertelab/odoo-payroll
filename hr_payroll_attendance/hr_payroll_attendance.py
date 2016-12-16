@@ -47,7 +47,7 @@ class hr_attendance(models.Model):
         if len(employees) > 0:
             _logger.warn('Employees to logout %s' %employees)
         for e in employees:
-            if e.contract_id and e.user_id:
+            if e.contract_id and e.user_id and self.search([('employee_id', '=', e.id)], order='id')[-1].action == 'sign_in':
                 hours_to = {a.dayofweek: a.hour_to for a in e.contract_id.working_hours.attendance_ids}
                 now = datetime.now()
                 yesterday_utc = datetime(now.year, now.month, now.day) - timedelta(days = 1) + timedelta(minutes = (hours_to[str(now.weekday())]* 60))
