@@ -29,7 +29,7 @@ class hr_payslip(models.Model):
 
     @api.one
     def _attendance_working_hours(self):
-        self.attendance_number_of_hours = sum(self.env['hr.attendance'].search([('employee_id','=',self.employee_id.id),('name','>',self.date_from + ' 00:00:00'),('name','<',self.date_to + ' 23:59:59')]).mapped("get_working_hours"))
+        self.attendance_working_hours = sum(self.env['hr.attendance'].search([('employee_id','=',self.employee_id.id),('name','>',self.date_from + ' 00:00:00'),('name','<',self.date_to + ' 23:59:59')]).mapped("get_working_hours"))
     attendance_working_hours = fields.Float(string='Attendance Schema Time',compute="_attendance_working_hours")
 
 
