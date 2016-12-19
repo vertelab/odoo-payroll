@@ -18,7 +18,7 @@
     </record>
     <!--employee attendance form view-->
     <record id="view_hr_attendance_form" model="ir.ui.view">
-      <field name="name">hr.employercert.attendance.form</field>
+      <field name="name">hr.attendance.schema.form</field>
       <field name="model">hr.attendance</field>
       <field name="inherit_id" ref="hr_attendance.view_attendance_form" />
       <field name="arch" type="xml">
