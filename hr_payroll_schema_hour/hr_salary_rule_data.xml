@@ -3,7 +3,6 @@
   <data noupdate="1">
 
     <record id="hr_salary_rule-schemahour" model="hr.salary.rule">
-      <field name="parent_rule_id" ref="l10n_se_hr_payroll.hr_salary_rule_category-BAS" />
       <field name="category_id" ref="l10n_se_hr_payroll.hr_salary_rule_category-BAS" />
       <field name="code">schema-hour</field>
       <field name="salary_art">300</field>
