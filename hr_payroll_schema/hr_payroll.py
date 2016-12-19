@@ -112,7 +112,7 @@ class hr_timesheet_sheet(models.Model):
     timesheet_amount = fields.Float(compute="_timesheet_amount",string="Reported time")
     timesheet_amount_invoiceable = fields.Float(compute="_timesheet_amount",string="Reported time (invoiceable)")
 
-    work_time = fields.Selection(related='employee_id.contract_id.type_id.work_time')
+    work_time = fields.Selection(related='employee_id.contract_id.type_id.work_time', related_sudo=True)
 
 class hr_payslip_worked_days(models.Model):
 
