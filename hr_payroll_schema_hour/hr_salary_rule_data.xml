@@ -3,17 +3,18 @@
   <data noupdate="1">
 
     <record id="hr_salary_rule-schemahour" model="hr.salary.rule">
-      <field name="category_id" ref="hr_payroll.BASIC" />
+      <field name="parent_rule_id" ref="l10n_se_hr_payroll.hr_salary_rule_category-BAS" />
+      <field name="category_id" ref="l10n_se_hr_payroll.hr_salary_rule_category-BAS" />
       <field name="code">schema-hour</field>
       <field name="salary_art">300</field>
       <field name="name">Schema Hour Salary</field>
-      <field name="sequence">300</field>
+      <field name="sequence">30</field>
       <field name="appears_on_payslip" eval="True"/>
       <field name="condition_select">python</field>
-      <field name="condition_python">result = contract.type_id.work_time == 'schema-hour'</field>
+      <field name="condition_python">result = contract.type_id.work_time == 'schema_hour'</field>
       <field name="amount_select">code</field>
       <field name="amount_python_compute">
-result_qty = worked_days.WORK100.payslip_id.attendance_working_hours * 100.0)
+result_qty = worked_days.WORK100.payslip_id.attendance_working_hours
 result = contract.wage / 160
     </field>
       <field name="quantity">1</field>
