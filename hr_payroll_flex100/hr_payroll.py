@@ -35,9 +35,9 @@ class hr_attendance(models.Model):
 
     @api.one
     def _flextime(self):
-        if self.employee_id.contract_id and self._check_last_sign_out(self):
+        if self.employee_id.sudo().contract_id and self._check_last_sign_out(self):
             job_intervals = self.pool.get('resource.calendar').get_working_intervals_of_day(self.env.cr,self.env.uid,
-                    self.employee_id.contract_id.working_hours.id,
+                    self.employee_id.sudo().contract_id.working_hours.id,
                     start_dt=datetime.strptime(self.name, tools.DEFAULT_SERVER_DATETIME_FORMAT).replace(hour=0,minute=0))
             att = self.env['hr.attendance'].search([('employee_id','=',self.employee_id.id),('name','>',self.name[:10] + ' 00:00:00'),('name','<',self.name[:10] + ' 23:59:59')],order='name')
             if len(job_intervals) > 0:
@@ -54,7 +54,7 @@ class hr_attendance(models.Model):
         leaves = 0.0
         if self._check_last_sign_out(self):
             att = self.env['hr.attendance'].search([('employee_id','=',self.employee_id.id),('name','>',self.name[:10] + ' 00:00:00'),('name','<',self.name[:10] + ' 23:59:59')],order='name')
-            job_intervals = self.pool.get('resource.calendar').get_working_intervals_of_day(self.env.cr,self.env.uid, self.employee_id.contract_id.working_hours.id, start_dt=fields.Datetime.from_string(self.name).replace(hour=0,minute=0))
+            job_intervals = self.pool.get('resource.calendar').get_working_intervals_of_day(self.env.cr,self.env.uid, self.employee_id.sudo().contract_id.working_hours.id, start_dt=fields.Datetime.from_string(self.name).replace(hour=0,minute=0))
             if len(job_intervals) > 0:
                 if self.flextime > 0.0: #if got positive flex time, worked flex = worked on schedule + flex time
                     self.flex_working_hours = self.get_working_hours + self.flextime / 60.0
