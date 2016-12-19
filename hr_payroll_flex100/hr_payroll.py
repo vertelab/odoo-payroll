@@ -36,14 +36,18 @@ class hr_attendance(models.Model):
     @api.one
     def _flextime(self):
         if self.employee_id.sudo().contract_id and self._check_last_sign_out(self):
+            today = fields.Datetime.from_string(self.name).replace(hour=0, minute=0, microsecond=0)
+            tomorrow = fields.Datetime.to_string(today + timedelta(days=1))
+            leaves = self.employee_id.sudo().contract_id.working_hours.get_leave_intervals(resource_id=self.employee_id.id)[0]
+            for holiday in self.env['hr.holidays'].search([('date_from', '>=', fields.Datetime.to_string(today)),('date_to', '<', tomorrow)]):
+                leaves.append((fields.Datetime.from_string(holiday.date_from), fields.Datetime.from_string(holiday.date_to)))
             job_intervals = self.pool.get('resource.calendar').get_working_intervals_of_day(self.env.cr,self.env.uid,
                     self.employee_id.sudo().contract_id.working_hours.id,
-                    start_dt=datetime.strptime(self.name, tools.DEFAULT_SERVER_DATETIME_FORMAT).replace(hour=0,minute=0))
+                    start_dt=today, leaves=leaves)
             att = self.env['hr.attendance'].search([('employee_id','=',self.employee_id.id),('name','>',self.name[:10] + ' 00:00:00'),('name','<',self.name[:10] + ' 23:59:59')],order='name')
             if len(job_intervals) > 0:
-                flex_begin =  job_intervals[0][0] - datetime.strptime(att[0].name, tools.DEFAULT_SERVER_DATETIME_FORMAT)
-                #~ _logger.error('job_int %s - att %s = %s' % (job_intervals[0][0],datetime.strptime(att[0].name, tools.DEFAULT_SERVER_DATETIME_FORMAT),flex_begin))
-                flex_end = datetime.strptime(att[-1].name, tools.DEFAULT_SERVER_DATETIME_FORMAT) - job_intervals[-1][1]
+                flex_begin =  job_intervals[0][0] - fields.Datetime.from_string(att[0].name)
+                flex_end = fields.Datetime.from_string(att[-1].name) - job_intervals[-1][1]
                 self.flextime = round((flex_begin + flex_end).total_seconds() / 60.0)
     flextime = fields.Integer(compute='_flextime', string='Flex Time (m)')
 
@@ -99,7 +103,7 @@ class hr_attendance(models.Model):
 
     @api.one
     def _compensary_leave(self):
-        self.compensary_leave = self.with_context({'employee_id': self.employee_id.id}).env.ref("hr_payroll_flex100.compensary_leave").remaining_leaves
+        self.compensary_leave = self.with_context({'employee_id': self.employee_id.id}).env.ref("hr_holidays.holiday_status_comp").remaining_leaves
     compensary_leave = fields.Float(compute='_compensary_leave')
 
 
@@ -116,7 +120,7 @@ class hr_payslip(models.Model):
     def _compensary_leave(self):
         # TODO: Fix issues with leaves spanning two or more months.
         if self.state == 'draft':
-            holidays = self.env['hr.holidays'].search([('employee_id', '=', self.employee_id.id), ('holiday_status_id', '=', self.env.ref("hr_payroll_flex100.compensary_leave").id), ('date_to', '<', self.date_to + ' 23:59:59')])
+            holidays = self.env['hr.holidays'].search([('employee_id', '=', self.employee_id.id), ('holiday_status_id', '=', self.env.ref("hr_holidays.holiday_status_comp").id), ('date_to', '<', self.date_to + ' 23:59:59')])
             self.write({'compensary_leave': sum(holidays.filtered(lambda h: h.type == 'add').mapped("number_of_days_temp")) - sum(holidays.filtered(lambda h: h.type == 'remove').mapped("number_of_days_temp"))})
         self.total_compensary_leave = self.compensary_leave + (self.flextime / 60.0 / 24.0)
     compensary_leave = fields.Float(string='Compensary Leave') #,compute="_compensary_leave", store=True)
@@ -261,7 +265,7 @@ class hr_employee(models.Model):
         else:
             self.flex_holiday_id = self.env['hr.holidays'].create({
                 'name': 'Time Bank for %s (%s)' % (self.name, date),
-                'holiday_status_id': self.env.ref("hr_payroll_flex100.compensary_leave").id,
+                'holiday_status_id': self.env.ref("hr_holidays.holiday_status_comp").id,
                 'employee_id': self.id,
                 'type': 'add' if days > 0.0 else 'remove' ,
                 'state': 'validate',
@@ -283,7 +287,7 @@ class hr_timesheet_sheet(models.Model):
 
     @api.one
     def _compensary_leave(self):
-        self.compensary_leave = self.with_context({'employee_id': self.employee_id.id}).env.ref("hr_payroll_flex100.compensary_leave").remaining_leaves
+        self.compensary_leave = self.with_context({'employee_id': self.employee_id.id}).env.ref("hr_holidays.holiday_status_comp").remaining_leaves
     compensary_leave = fields.Float(string='Compensary Leave (d)', compute='_compensary_leave')
 
 class hr_holidays(models.Model):
@@ -307,7 +311,7 @@ class hr_holidays_status(models.Model):
         """Add flex time to name."""
         res = super(hr_holidays_status, self).name_get()
         for hs in self:
-            if hs == self.env.ref("hr_payroll_flex100.compensary_leave"):
+            if hs == self.env.ref("hr_holidays.holiday_status_comp"):
                 for i in range(0, len(res)):
                     if res[i][0] == hs.id:
                         res[i] = (hs.id, res[i][1] + ('  (%g/%g)' % ((hs.leaves_taken or 0.0) * 24 * 60, (hs.max_leaves or 0.0) * 24 * 60)))
