@@ -30,7 +30,7 @@ _logger = logging.getLogger(__name__)
 
 from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT
 import datetime
-from datetime import timedelta 
+from datetime import timedelta
 
 import openerp.addons.decimal_precision as dp
 
@@ -40,31 +40,31 @@ class hr_employee(models.Model):
 
     @api.one
     def test_attendance(self,startdate,nbr_days):
-        
-        
-        
+
+
+
         #~ raise Warning(self.contract_id.working_hours.attendance_ids.mapped('dayofweek','hour_from'))
         self.env['hr.attendance'].search([('employee_id','=',self.id)]).unlink()
         self.env['hr.holidays'].search([('employee_id','=',self.id)]).write({'state':'draft'})
         self.env['hr.holidays'].search([('employee_id','=',self.id)]).unlink()
-        
+
         self.env['hr.payslip'].search([('employee_id','=',self.id)]).write({'state': 'draft'})
         self.env['hr.payslip'].search([('employee_id','=',self.id)]).unlink()
-        
+
         hours_from = {a[0]: a[1] for a in reversed(self.contract_id.working_hours.attendance_ids.sorted(key=lambda a: a.hour_from).mapped(lambda a: (a.dayofweek,a.hour_from)))}
         #~ hours_from={a.dayofweek: a.hour_from for a in self.contract_id.working_hours.attendance_ids.sorted(key=lambda r: r.dayofweek,r.hour_from)}
         hours_to={a.dayofweek: a.hour_to for a in self.contract_id.working_hours.attendance_ids}
         _logger.warn(' from %s to %s ' % (hours_from,hours_to))
-        
+
         year = startdate.year
-        
+
         self.env['hr.holidays'].create({
                 'employee_id': self.id,
                 'date_from': datetime.datetime(year,7,1).strftime('%Y-%m-%d'),
                 'date_to': datetime.datetime(year,7,24).strftime('%Y-%m-%d'),
                 'state': 'validate',
                 'type': 'remove',
-                'holiday_status_id': self.env.ref('l10n_se_hr_holidays.holiday_status_cl1').id, 
+                'holiday_status_id': self.env.ref('l10n_se_hr_holidays.holiday_status_cl1').id,
                     'number_of_days': 25.0,
             })
         for i in range(3):
@@ -75,10 +75,10 @@ class hr_employee(models.Model):
                     'date_to': (date + timedelta(hours=20)).strftime('%Y-%m-%d %H:%M'),
                     'state': 'validate',
                     'type': 'remove',
-                    'holiday_status_id': self.env.ref('l10n_se_hr_payroll.sick_leave_qualify').id, 
+                    'holiday_status_id': self.env.ref('l10n_se_hr_holidays.sick_leave_qualify').id,
                     'number_of_days': 1.0,
                 })
-        
+
         date = startdate
         for day in range(nbr_days):
             date += timedelta(days=1)
@@ -94,7 +94,7 @@ class hr_employee(models.Model):
         year = datetime.datetime.now().year
         date = datetime.datetime(year, 1, 1)
         self.test_attendance(date,365)
-                
+
     @api.one
     def test_attendance2today(self):
         year = datetime.datetime.now().year
