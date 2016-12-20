@@ -28,7 +28,7 @@
 """,
 'author': 'Vertel AB',
 'website': 'http://www.vertel.se',
-'depends': ['hr_payroll_schema','hr_contract_hour_salary'],
+'depends': ['hr_payroll_schema'],
 'data': ['hr_salary_rule_data.xml'],
 'installable': True,
 }
