@@ -2,41 +2,7 @@
 <openerp>
   <data noupdate="1">
 
-    <record id="hr_salary_rule-schemahour" model="hr.salary.rule">
-      <field name="parent_rule_id" ref="l10n_se_hr_payroll.hr_salary_rule_category-BAS" />
-      <field name="category_id" ref="l10n_se_hr_payroll.hr_salary_rule_category-BAS" />
-      <field name="code">schema-hour</field>
-      <field name="salary_art">300</field>
-      <field name="name">Schema Hour Salary</field>
-      <field name="sequence">30</field>
-      <field name="appears_on_payslip" eval="True"/>
-      <field name="condition_select">python</field>
-      <field name="condition_python">result = contract.type_id.work_time == 'schema_hour'</field>
-      <field name="amount_select">code</field>
-      <field name="amount_python_compute">
-result_qty = worked_days.WORK100.payslip_id.attendance_working_hours
-result = contract.wage / 160
-    </field>
-      <field name="quantity">1</field>
-      <field name="note">Schema Hour Salary</field>
-    </record>
 
-    <record id="hr_salary_rule-prej-tim" model="hr.salary.rule">
-      <field name="parent_rule_id" ref="l10n_se_hr_payroll.hr_salary_rule-pre" />
-      <field name="category_id" ref="l10n_se_hr_payroll.hr_salary_rule_category-NETAVG" />
-      <field name="code">prej-tim</field>
-      <field name="salary_art">s100</field>
-      <field name="name">Preliminärskatt (Timlön)</field>
-      <field name="sequence">690</field>
-      <field name="appears_on_payslip" eval="True"/>
-      <field name="condition_select">python</field>
-      <field name="condition_python">result = contract.type_id.work_time == 'schema_hour'</field>
-      <field name="amount_select">code</field>
-      <field name="amount_python_compute">
-result = categories.BRUTTO * 0.3 if not contract.prel_tax_amount else contract.prel_tax_amount
-</field>
-      <field name="quantity">1</field>
-    </record>
 
   </data>
 </openerp>
