@@ -35,10 +35,14 @@ class hr_attendance(models.Model):
 
     @api.one
     def _flextime(self):
-        if self.employee_id.sudo().contract_id and self._check_last_sign_out(self):
+        if self.employee_id.sudo().contract_id and self._check_last_sign_out(self) and self.employee_id.sudo().contract_id.working_hours:
             today = fields.Datetime.from_string(self.name).replace(hour=0, minute=0, microsecond=0)
             tomorrow = fields.Datetime.to_string(today + timedelta(days=1))
-            leaves = self.employee_id.sudo().contract_id.working_hours.get_leave_intervals(resource_id=self.employee_id.id)[0]
+            if self.employee_id.user_id:
+                resource = self.env['resource.resource'].search([('resource_type', '=', 'user'), ('user_id', '=', self.employee_id.user_id.id)])
+            else:
+                resource = None
+            leaves = self.employee_id.sudo().contract_id.working_hours.get_leave_intervals(resource_id = resource and resource.id or None)[0]
             for holiday in self.env['hr.holidays'].search([('date_from', '>=', fields.Datetime.to_string(today)),('date_to', '<', tomorrow)]):
                 leaves.append((fields.Datetime.from_string(holiday.date_from), fields.Datetime.from_string(holiday.date_to)))
             job_intervals = self.pool.get('resource.calendar').get_working_intervals_of_day(self.env.cr,self.env.uid,

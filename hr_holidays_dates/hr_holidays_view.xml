@@ -16,10 +16,10 @@
           <attribute name="on_change">onchange_date_to(date_to, date_from, employee_id)</attribute>
         </field>
         <field name="number_of_days_temp" position="attributes">
-          <attribute name="invisible">1</attribute>
+          <attribute name="attrs">{'invisible': [('type', '!=', 'add')]}</attribute>
         </field>
         <field name="number_of_days_temp" position="after">
-          <field name="number_of_days_temp_show" class="oe_inline"/>
+          <field name="number_of_days_temp_show" class="oe_inline" attrs="{'invisible': [('type', '=', 'add')]}"/>
         </field>
       </field>
     </record>
