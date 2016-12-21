@@ -51,19 +51,21 @@ class hr_holidays(models.Model):
                 fields.Datetime.from_string(self.date_to))[0]
     
     def _get_default_date_from(self, employee, date_from):
-        date = fields.Datetime.from_string(date_from)
-        date = date.replace(hour=0, minute=0, second=0, microsecond=0)
-        intervals = employee.sudo().contract_id.working_hours.get_working_intervals_of_day(date)[0]
-        return  intervals and fields.Datetime.to_string(intervals[0][0]) or date_from
+        if employee and employee.sudo().contract_id and employee.sudo().contract_id.working_hours and date_from:
+            date = fields.Datetime.from_string(date_from)
+            date = date.replace(hour=0, minute=0, second=0, microsecond=0)
+            intervals = employee.sudo().contract_id.working_hours.get_working_intervals_of_day(date)[0]
+            return  intervals and fields.Datetime.to_string(intervals[0][0]) or date_from
     
     def _get_default_date_to(self, employee, date_to):
-        date = fields.Datetime.from_string(date_to)
-        date = date.replace(hour=0, minute=0, second=0, microsecond=0)
-        intervals = employee.sudo().contract_id.working_hours.get_working_intervals_of_day(date)[0]
-        return  intervals and fields.Datetime.to_string(intervals[-1][-1]) or date_to
+        if employee and employee.sudo().contract_id and employee.sudo().contract_id.working_hours and date_to:
+            date = fields.Datetime.from_string(date_to)
+            date = date.replace(hour=0, minute=0, second=0, microsecond=0)
+            intervals = employee.sudo().contract_id.working_hours.get_working_intervals_of_day(date)[0]
+            return  intervals and fields.Datetime.to_string(intervals[-1][-1]) or date_to
     
     def _get_number_of_days_temp(self, employee, date_from, date_to):
-        if employee and employee.sudo().contract_id and employee.sudo().contract_id.working_hours:
+        if employee and employee.sudo().contract_id and employee.sudo().contract_id.working_hours and date_from and date_to:
             hours = employee.sudo().contract_id.working_hours.get_working_hours_of_date(fields.Datetime.from_string(date_from), fields.Datetime.from_string(date_to))[0]
             hours_on_day = employee.sudo().contract_id.working_hours.get_working_hours_of_date(fields.Datetime.from_string(date_from).replace(hour = 0, minute = 0))[0]
             if hours_on_day != 0:
@@ -76,10 +78,12 @@ class hr_holidays(models.Model):
         result = super(hr_holidays, self).onchange_employee(cr, uid, ids, employee_id)
         employee = env['hr.employee'].browse(employee_id)
         if employee.sudo().contract_id and employee.sudo().contract_id.working_hours:
+            date_from = self._get_default_date_from(employee, date_from)
             if date_from:
-                result['value']['date_from'] = self._get_default_date_from(employee, date_from)
+                result['value']['date_from'] = date_from
+            date_to = self._get_default_date_to(employee, date_to)
             if date_to:
-                result['value']['date_to'] = self._get_default_date_to(employee, date_to)
+                result['value']['date_to'] = date_to
         return result
          
     @api.cr_uid_ids
