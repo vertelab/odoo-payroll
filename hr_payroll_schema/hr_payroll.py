@@ -150,15 +150,19 @@ class hr_payslip(models.Model):
         self.schema_number_of_hours = nbr_hours
     schema_number_of_days = fields.Float(string="Schema numer of days", compute='_schema_number_of_days')
     schema_number_of_hours = fields.Float(string="Schema numer of hours", compute='_schema_number_of_days')
-    
+
+    @api.one
+    def _get_working_hours(self): # worked hours in schedule
+        self.get_working_hours = sum(self.env['hr.attendance'].search([('employee_id','=',self.employee_id.id),('name','>',self.date_from),('name','<',self.date_to)]).mapped('get_working_hours'))
+    get_working_hours = fields.Float(compute='_get_working_hours', string='Worked in schedule (h)')
+
     @api.one
     def _percent_number_of_days(self):
-        work100 = sum(self.worked_days_line_ids.filtered(lambda l: l.code == 'WORK100').mapped('number_of_days'))
-        if work100 and work100 < self.schema_number_of_days:
-            self.percent_number_of_days = work100 / self.schema_number_of_days
+        work100 = sum(self.worked_days_line_ids.filtered(lambda l: l.code == 'WORK100').mapped('number_of_hours'))
+        if work100 and self.get_working_hours < work100:
+            self.percent_number_of_days = self.get_working_hours / work100
         else:
             self.percent_number_of_days = 1.0
-        _logger.warn('working_h_on day %s' % work100 )
 
     percent_number_of_days = fields.Float(string="Percent numer of days", compute='_percent_number_of_days')
 
@@ -166,8 +170,8 @@ class hr_payslip(models.Model):
     def _slip_number_of_days(self):
         self.slip_number_of_days = sum(self.worked_days_line_ids.mapped('number_of_days'))
     slip_number_of_days = fields.Float(computed="_slip_number_of_days")
-        
-    
+
+
     @api.model
     def get_worked_day_lines(self, contract_ids, date_from, date_to):
         """
