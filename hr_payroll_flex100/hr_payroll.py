@@ -120,6 +120,11 @@ class hr_payslip(models.Model):
         self.flex_working_hours = sum(self.env['hr.attendance'].search([('employee_id','=',self.employee_id.id),('name','>',self.date_from + ' 00:00:00'),('name','<',self.date_to + ' 23:59:59')]).mapped("flex_working_hours"))
     flextime = fields.Float(string='Flex Time (m)',compute="_flextime")
     flex_working_hours = fields.Float(compute='_flextime', string='Worked Flex (h)')
+
+    @api.one
+    def _flex_working_days(self):
+        self.flex_working_days = len(self.env['hr.attendance'].search([('employee_id', '=',self.employee_id.id), ('name', '>', self.date_from + ' 00:00:00'), ('name', '<', self.date_to + ' 23:59:59')]).filtered(lambda a: a._check_last_sign_out(a) == True))
+    flex_working_days = fields.Float(compute='_flex_working_days', string='Flex Worked Days')
     @api.one
     def _compensary_leave(self):
         # TODO: Fix issues with leaves spanning two or more months.

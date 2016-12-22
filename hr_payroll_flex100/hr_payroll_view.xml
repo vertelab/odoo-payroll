@@ -53,9 +53,11 @@
       <field name="inherit_id" ref="hr_payroll_schema.view_hr_payslip_form" />
       <field name="arch" type="xml">
         <field name="schema_number_of_days" position="before">
-              <field name="compensary_leave"/>
-              <field name="flextime"/>
-              <field name="total_compensary_leave"/>
+              <field name="compensary_leave" attrs="{'invisible': [('work_time', '!=', 'flex')]}"/>
+              <field name="flextime" attrs="{'invisible': [('work_time', '!=', 'flex')]}"/>
+              <field name="total_compensary_leave" attrs="{'invisible': [('work_time', '!=', 'flex')]}"/>
+              <field name="flex_working_hours" attrs="{'invisible': [('work_time', '!=', 'flex')]}"/>
+              <field name="flex_working_days" attrs="{'invisible': [('work_time', '!=', 'flex')]}"/>
         </field>
       </field>
     </record>
