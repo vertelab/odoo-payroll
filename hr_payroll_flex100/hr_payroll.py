@@ -331,5 +331,6 @@ class hr_contract_type(models.Model):
 
     work_time = fields.Selection(selection_add=[('flex','Flex Time')])
 
-
+class hr_holidays_earning(models.Model):
+    _name = "hr.holidays.earning"
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
