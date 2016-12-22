@@ -59,7 +59,7 @@ function employee_id(rfid){
             }
         });
     }
-    else if ($("#hr_employee").val() != ""){
+    if ($("#hr_employee").val() != ""){
         employee_state($("#hr_employee").val());
     }
 }
