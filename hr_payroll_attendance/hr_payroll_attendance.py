@@ -165,7 +165,11 @@ class attendanceReport(http.Controller):
 
     @http.route(['/hr/attendance/employee'], type='json', auth="user", website=True)
     def attendance_report(self, rfid=None, **kw):
-        return request.env['hr.employee'].search([('rfid', '=', rfid)])[0].id
+        e = request.env['hr.employee'].search([('rfid', '=', rfid)])
+        if len(e) > 0:
+            return e[0].id
+        else
+            return ''
 
     @http.route(['/hr/attendance/state'], type='json', auth="user", website=True)
     def attendance_state(self, employee=None, **kw):
