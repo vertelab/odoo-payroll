@@ -17,22 +17,67 @@ function attendance_data_loop(id) {
         else
             attendance_data_loop(id);
         }, function(r) {
-            attendance_data_loop(id);
+            setTimeout(function() {
+                attendance_data_loop(id);
+            }, 5000)
+
         }
     )
 };
 attendance_data_loop(0);
 
-function employee_state(){
-    if ($("#hr_employee").val() != '') {
-        openerp.jsonRpc("/hr/attendance/report", 'call', {
-            'employee': $("#hr_employee").val(),
+//http://www.deadosaurus.com/detect-a-usb-barcode-scanner-with-javascript
+$(document).ready(function() {
+    var pressed = false;
+    var chars = [];
+    $(window).keypress(function(e) {
+        if (e.which >= 48 && e.which <= 57) {
+            chars.push(String.fromCharCode(e.which));
+        }
+        console.log(e.which + ":" + chars.join("|"));
+        if (pressed == false) {
+            setTimeout(function(){
+                if (chars.length >= 10) {
+                    var barcode = chars.join("");
+                    console.log("Barcode Scanned: " + barcode);
+                    employee_id(barcode);
+                }
+                chars = [];
+                pressed = false;
+            },500);
+        }
+        pressed = true;
+    });
+});
+
+function employee_id(rfid){
+    if (rfid != "") {
+        openerp.jsonRpc("/hr/attendance/employee", 'call', {
+            'rfid': rfid,
         }).done(function(data){
-            if(data == "present") {
+            if(data != "") {
+                employee_state(data);
+            }
+        });
+    }
+    if ($("#hr_employee").val() != ""){
+        employee_state($("#hr_employee").val());
+    }
+}
+
+function employee_state(id){
+    if (id != "") {
+        openerp.jsonRpc("/hr/attendance/state", 'call', {
+            'employee': id,
+        }).done(function(data){
+            if(data['state'] == "present") {
+                $("#hr_employee").val(data['id']);
                 $("#login").addClass("hidden");
                 $("#logout").removeClass("hidden");
             }
-            if(data == "absent") {
+            if(data['state'] == "absent") {
+                $("#hr_employee").val(data['id']);
+                employee_project(data['id']);
                 $("#login").removeClass("hidden");
                 $("#logout").addClass("hidden");
             }
@@ -44,10 +89,10 @@ function employee_state(){
     }
 }
 
-function employee_project(){
-    if ($("#hr_employee").val() != '') {
+function employee_project(id){
+    if (id != "")  {
         openerp.jsonRpc("/hr/attendance/employee_project", 'call', {
-            'employee': $("#hr_employee").val(),
+            'employee': id,
         }).done(function(data){
             if('projects' in data) {
                 var html_content = "<select id='hr_employee_project' class='form-control selectpicker dropdown dropdown_attendance' data-style='btn-primary'>";
@@ -120,6 +165,7 @@ function hour2HourMinute(hour) {
 }
 
 function clearContent(){
+    $("#hr_employee").empty();
     $("#employee_image").empty();
     $("#employee_message").empty();
     $("#employee_message_error").empty();
