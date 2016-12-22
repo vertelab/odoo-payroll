@@ -24,6 +24,7 @@ import openerp.tools
 from datetime import datetime, timedelta
 import time
 import re
+from openerp import SUPERUSER_ID
 
 from openerp.tools import (
     DEFAULT_SERVER_DATE_FORMAT,
@@ -47,20 +48,20 @@ class hr_attendance(models.Model):
 
     @api.one
     def _working_hours_on_day(self): # working hours on the contract
-        if self.employee_id.contract_id and self._check_last_sign_out(self):
-            self.working_hours_on_day = self.pool.get('resource.calendar').working_hours_on_day(self.env.cr, self.env.uid,
-                self.employee_id.contract_id.working_hours, fields.Datetime.from_string(self.name))
+        if self.employee_id.sudo().contract_id and self._check_last_sign_out(self):
+            self.working_hours_on_day = self.pool.get('resource.calendar').working_hours_on_day(self.env.cr, SUPERUSER_ID,
+                self.employee_id.sudo().contract_id.working_hours, fields.Datetime.from_string(self.name))
         else:
             self.working_hours_on_day = 0.0
     working_hours_on_day = fields.Float(compute='_working_hours_on_day', string='Planned Hours')
 
     @api.one
     def _get_working_hours(self): # worked hours in schedule
-        if self.employee_id.contract_id and self._check_last_sign_out(self):
+        if self.employee_id.sudo().contract_id and self._check_last_sign_out(self):
             att = self.env['hr.attendance'].search([('employee_id','=',self.employee_id.id),('name','>',self.name[:10] + ' 00:00:00'),('name','<',self.name[:10] + ' 23:59:59')],order='name')
             for (start,end) in zip(att,att[1:])[::2]:
-                self.get_working_hours += self.pool.get('resource.calendar').get_working_hours(self.env.cr, self.env.uid,
-                self.employee_id.contract_id.working_hours.id,
+                self.get_working_hours += self.pool.get('resource.calendar').get_working_hours(self.env.cr, SUPERUSER_ID,
+                self.employee_id.sudo().contract_id.working_hours.id,
                     datetime.strptime(start.name, tools.DEFAULT_SERVER_DATETIME_FORMAT),
                     datetime.strptime(end.name, tools.DEFAULT_SERVER_DATETIME_FORMAT))
         else:
@@ -112,7 +113,7 @@ class hr_timesheet_sheet(models.Model):
     timesheet_amount = fields.Float(compute="_timesheet_amount",string="Reported time")
     timesheet_amount_invoiceable = fields.Float(compute="_timesheet_amount",string="Reported time (invoiceable)")
 
-    work_time = fields.Selection(related='employee_id.contract_id.type_id.work_time', related_sudo=True)
+    work_time = fields.Selection(related='employee_id.contract_id.type_id.work_time', related_sudo=True, readonly=True)
 
 class hr_payslip_worked_days(models.Model):
 
@@ -130,7 +131,7 @@ class hr_payslip(models.Model):
         nbr = 0.0
         for day in range(0, (fields.Date.from_string(slip.date_to) - fields.Date.from_string(slip.date_from)).days + 1):
             #~ working_hours_on_day = self.pool.get('resource.calendar').working_hours_on_day(self.env.cr, self.env.uid, slip.employee_id.contract_id.working_hours.id, fields.Date.from_string(slip.date_from) + timedelta(days=day), self.env.context)
-            working_hours_on_day = slip.employee_id.contract_id.working_hours.get_working_hours_of_date(start_dt=fields.Datetime.from_string(slip.date_from) + timedelta(days=day))[0]
+            working_hours_on_day = slip.employee_id.sudo().contract_id.working_hours.get_working_hours_of_date(start_dt=fields.Datetime.from_string(slip.date_from) + timedelta(days=day))[0]
             if working_hours_on_day:
                 nbr += 1.0
         return nbr
@@ -138,10 +139,10 @@ class hr_payslip(models.Model):
     @api.one
     def _schema_number_of_days(self):
         nbr = nbr_hours = 0.0
-        if self.employee_id.contract_id:
+        if self.employee_id.sudo().contract_id:
             for day in range(0, (fields.Date.from_string(self.date_to) - fields.Date.from_string(self.date_from)).days + 1):
                 #~ working_hours_on_day = self.pool.get('resource.calendar').working_hours_on_day(self.env.cr, self.env.uid, slip.employee_id.contract_id.working_hours.id, fields.Date.from_string(slip.date_from) + timedelta(days=day), self.env.context)
-                working_hours_on_day = self.employee_id.contract_id.working_hours.get_working_hours_of_date(start_dt=fields.Datetime.from_string(self.date_from) + timedelta(days=day))[0]
+                working_hours_on_day = self.employee_id.sudo().contract_id.working_hours.get_working_hours_of_date(start_dt=fields.Datetime.from_string(self.date_from) + timedelta(days=day))[0]
                 _logger.warn('working_h_on day %s' %working_hours_on_day )
                 if working_hours_on_day:
                     nbr += 1.0
@@ -188,7 +189,7 @@ class hr_payslip(models.Model):
             return res
 
         res = []
-        for contract in self.pool.get('hr.contract').browse(cr, uid, contract_ids, context=context):
+        for contract in self.pool.get('hr.contract').browse(cr, SUPERUSER_ID, contract_ids, context=context):
             if not contract.working_hours:
                 #fill only if the contract as a working schedule linked
                 continue
