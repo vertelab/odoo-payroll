@@ -17,7 +17,10 @@ function attendance_data_loop(id) {
         else
             attendance_data_loop(id);
         }, function(r) {
-            attendance_data_loop(id);
+            setTimeout(function() {
+                attendance_data_loop(id);
+            }, 5000)
+            
         }
     )
 };
