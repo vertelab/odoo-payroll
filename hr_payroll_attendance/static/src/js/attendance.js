@@ -26,6 +26,7 @@ function attendance_data_loop(id) {
 };
 attendance_data_loop(0);
 
+//http://www.deadosaurus.com/detect-a-usb-barcode-scanner-with-javascript
 $(document).ready(function() {
     var pressed = false;
     var chars = [];
