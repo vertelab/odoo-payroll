@@ -6,6 +6,12 @@
       <field name="model">hr.holidays</field>
       <field name="inherit_id" ref="hr_holidays.edit_holiday_new" />
       <field name="arch" type="xml">
+          <field name="holiday_status_id" position="attributes">
+          <attribute name="context">{'employee_id':employee_id}</attribute>
+
+
+        </field>
+          
         <field name="employee_id" position="attributes">
           <attribute name="on_change">onchange_employee(employee_id, date_to, date_from)</attribute>
         </field>
