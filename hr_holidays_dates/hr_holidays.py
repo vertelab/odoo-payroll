@@ -20,7 +20,9 @@
 ##############################################################################
 
 from openerp import models, fields, api, _
-from datetime import timedelta 
+from datetime import timedelta
+from openerp.exceptions import except_orm, Warning, RedirectWarning
+
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -35,6 +37,11 @@ class hr_holidays(models.Model):
     @api.one
     def _get_number_of_days_temp_show(self):
         self.number_of_days_temp_show = self.number_of_days_temp
+    
+    #~ @api.one
+    #~ @api.onchange('holiday_status_id')
+    #~ def onchange_holiday_status_id(self):
+        #~ raise Warning('Hello')
     
     @api.one
     @api.onchange('number_of_days_temp')
@@ -110,5 +117,11 @@ class hr_holidays(models.Model):
             if date_from and date_to and result['value'].get('number_of_days_temp', 2) <= 1.0:
                 result['value']['number_of_days_temp'] = self._get_number_of_days_temp(employee, date_from, date_to)
         return result
+    
+    @api.model
+    def create(self,values):
+        #~ if values.get('holiday_status_id') and self.env['hr.holidays.status'].browse(values['holiday_status_id']).limit == False and self.env['hr.holidays.status'].browse(values['holiday_status_id']).remaining_leaves < values.get('number_of_days_temp'):
+            #~ raise Warning(_('The number of remaining leaves is not sufficient for this leave type'))
+        return super(hr_holidays, self).create(values)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

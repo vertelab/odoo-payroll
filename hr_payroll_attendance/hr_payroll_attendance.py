@@ -163,16 +163,27 @@ class attendanceReport(http.Controller):
     def attendance(self, employees=None, **post):
         return request.website.render("hr_payroll_attendance.hr_attendance_form", {'employees': request.env['hr.employee'].search([('active', '=', True), ('id', '!=', request.env.ref('hr.employee').id)]),})
 
-    @http.route(['/hr/attendance/report'], type='json', auth="user", website=True)
-    def attendance_report(self, employee=None, **kw):
-        state = request.env['hr.employee'].search_read([('id', '=', int(employee))], ['state'])[0]['state']
-        return state
+    @http.route(['/hr/attendance/employee'], type='json', auth="user", website=True)
+    def attendance_report(self, rfid=None, **kw):
+        e = request.env['hr.employee'].search([('rfid', '=', rfid)])
+        if len(e) > 0:
+            return e[0].id
+        else:
+            return ''
+
+    @http.route(['/hr/attendance/state'], type='json', auth="user", website=True)
+    def attendance_state(self, employee=None, **kw):
+        if employee:
+            e = request.env['hr.employee'].search([('id', '=', int(employee))])[0]
+            return {'id': e.id, 'state': e.state}
+        else:
+            return {'state': None}
 
     @http.route(['/hr/attendance/employee_project'], type='json', auth="user", website=True)
     def employee_project(self, employee=None, **kw):
-        employee = request.env['hr.employee'].browse(int(employee))
-        if employee.user_id and employee.state == 'absent':
-            projects = request.env['project.project'].search([('members', '=', employee.user_id.id)]).mapped(lambda p : {'id': p.id, 'name': p.name})
+        e = request.env['hr.employee'].browse(int(employee))
+        if e.user_id and e.state == 'absent':
+            projects = request.env['project.project'].search([('members', '=', e.user_id.id)]).mapped(lambda p : {'id': p.id, 'name': p.name})
             if len(projects) > 0:
                 return {'projects': projects}
             else:

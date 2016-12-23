@@ -2,7 +2,7 @@
 ##############################################################################
 #
 # OpenERP, Open Source Management Solution, third party addon
-# Copyright (C) 2016- Vertel AB (<http://vertel.se>).
+# Copyright (C) 2004-2016 Vertel AB (<http://vertel.se>).
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -18,22 +18,16 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-{
-'name': 'Payroll Attendance',
-'version': '0.1',
-'summary': 'Human Resource',
-'category': 'hr',
-'description': """
-Attendance report in web form
 
-""",
-'author': 'Vertel AB',
-'website': 'http://www.vertel.se',
-'depends': ['hr_attendance', 'bus', 'hr_payroll_flex100', 'hr_holidays'],
-'data': [
-    'hr_payroll_attendance_view.xml',
-    'hr_employee_view.xml',
-    'hr_payroll_attendance_data.xml',
-    ],
-'installable': True,
-}
+from openerp import models, fields, api, _
+
+import logging
+_logger = logging.getLogger(__name__)
+
+class hr_employee(models.Model):
+    _inherit = 'hr.employee'
+
+    rfid = fields.Char(string='RFID')
+
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
