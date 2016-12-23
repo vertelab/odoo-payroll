@@ -110,55 +110,5 @@ class hr_holidays(models.Model):
             if date_from and date_to and result['value'].get('number_of_days_temp', 2) <= 1.0:
                 result['value']['number_of_days_temp'] = self._get_number_of_days_temp(employee, date_from, date_to)
         return result
-        
-        
-    #~ def onchange_date_from(self, cr, uid, ids, date_to, date_from):
-        #~ """
-        #~ If there are no date set for date_to, automatically set one 8 hours later than
-        #~ the date_from.
-        #~ Also update the number_of_days.
-        #~ """
-        #~ # date_to has to be greater than date_from
-        #~ if (date_from and date_to) and (date_from > date_to):
-            #~ raise osv.except_osv(_('Warning!'),_('The start date must be anterior to the end date.'))
-
-        #~ result = {'value': {}}
-
-        #~ # No date_to set so far: automatically compute one 8 hours later
-        #~ if date_from and not date_to:
-            #~ date_to_with_delta = datetime.datetime.strptime(date_from, tools.DEFAULT_SERVER_DATETIME_FORMAT) + datetime.timedelta(hours=8)
-            #~ result['value']['date_to'] = str(date_to_with_delta)
-
-        #~ # Compute and update the number of days
-        #~ if (date_to and date_from) and (date_from <= date_to):
-            #~ diff_day = self._get_number_of_days(date_from, date_to)
-            #~ result['value']['number_of_days_temp'] = round(math.floor(diff_day))+1
-        #~ else:
-            #~ result['value']['number_of_days_temp'] = 0
-
-        #~ return result
-
-    #~ def onchange_date_to(self, cr, uid, ids, date_to, date_from):
-        #~ """
-        #~ Update the number_of_days.
-        #~ """
-
-        #~ # date_to has to be greater than date_from
-        #~ if (date_from and date_to) and (date_from > date_to):
-            #~ raise osv.except_osv(_('Warning!'),_('The start date must be anterior to the end date.'))
-
-        #~ result = {'value': {}}
-
-        #~ # Compute and update the number of days
-        #~ if (date_to and date_from) and (date_from <= date_to):
-            #~ diff_day = self._get_number_of_days(date_from, date_to)
-            #~ result['value']['number_of_days_temp'] = round(math.floor(diff_day))+1
-        #~ else:
-            #~ result['value']['number_of_days_temp'] = 0
-
-        #~ return result
-
-
-    
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
