@@ -142,11 +142,12 @@ class hr_payslip(models.Model):
         if self.employee_id.sudo().contract_id:
             for day in range(0, (fields.Date.from_string(self.date_to) - fields.Date.from_string(self.date_from)).days + 1):
                 #~ working_hours_on_day = self.pool.get('resource.calendar').working_hours_on_day(self.env.cr, self.env.uid, slip.employee_id.contract_id.working_hours.id, fields.Date.from_string(slip.date_from) + timedelta(days=day), self.env.context)
-                working_hours_on_day = self.employee_id.sudo().contract_id.working_hours.get_working_hours_of_date(start_dt=fields.Datetime.from_string(self.date_from) + timedelta(days=day))[0]
-                _logger.warn('working_h_on day %s' %working_hours_on_day )
-                if working_hours_on_day:
-                    nbr += 1.0
-                    nbr_hours += working_hours_on_day
+                if self.employee_id.sudo().contract_id and self.employee_id.sudo().contract_id.working_hours:
+                    working_hours_on_day = self.employee_id.sudo().contract_id.working_hours.get_working_hours_of_date(start_dt=fields.Datetime.from_string(self.date_from) + timedelta(days=day))[0]
+                    _logger.warn('working_h_on day %s' %working_hours_on_day )
+                    if working_hours_on_day:
+                        nbr += 1.0
+                        nbr_hours += working_hours_on_day
         self.schema_number_of_days = nbr
         self.schema_number_of_hours = nbr_hours
     schema_number_of_days = fields.Float(string="Schema numer of days", compute='_schema_number_of_days')
