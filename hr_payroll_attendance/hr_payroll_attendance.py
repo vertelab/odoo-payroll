@@ -35,7 +35,7 @@ class hr_attendance(models.Model):
     project_id = fields.Many2one(comodel_name='project.project', string='Project')
     # project_work_time calculate time betweet two attendances
 
-    def convert2utz(self, employee, lo_dt): #convert user's local timezone to UTC
+    def convert2utc(self, employee, lo_dt): #convert user's local timezone to UTC
         lo_tzone = self.env.ref('base.user_root').tz
         if employee.user_id.tz:
             lo_tzone = employee.user_id.tz
@@ -54,7 +54,7 @@ class hr_attendance(models.Model):
                         hours_to = {a.dayofweek: a.hour_to for a in e.contract_id.working_hours.attendance_ids}
                         now = datetime.now()
                         yesterday_utc = datetime(now.year, now.month, now.day) - timedelta(days = 1) + timedelta(minutes = (hours_to[str(now.weekday())]* 60))
-                        yesterday = self.convert2utz(e, yesterday_utc).strftime('%Y-%m-%d %H:%M:%S')
+                        yesterday = self.convert2utc(e, yesterday_utc).strftime('%Y-%m-%d %H:%M:%S')
                         try:
                             e.with_context({'action_date': yesterday, 'action': 'sign_out'}).attendance_action_change()
                         except Exception as ex:
@@ -165,7 +165,11 @@ class attendanceReport(http.Controller):
 
     @http.route(['/hr/attendance/employee'], type='json', auth="user", website=True)
     def attendance_report(self, rfid=None, **kw):
-        return request.env['hr.employee'].search([('rfid', '=', rfid)])[0].id
+        e = request.env['hr.employee'].search([('rfid', '=', rfid)])
+        if len(e) > 0:
+            return e[0].id
+        else:
+            return ''
 
     @http.route(['/hr/attendance/state'], type='json', auth="user", website=True)
     def attendance_state(self, employee=None, **kw):

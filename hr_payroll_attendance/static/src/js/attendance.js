@@ -55,9 +55,12 @@ function employee_id(rfid){
         openerp.jsonRpc("/hr/attendance/employee", 'call', {
             'rfid': rfid,
         }).done(function(data){
-            if(data != "") {
-                employee_state(data);
+            if(data == ""){
+                $("#employee_message_error").html("<h2 style='color: #f00;'>Unidentified user</h2>");
+                $('#Log_div').delay(15000).fadeOut('slow');
             }
+            else
+                employee_state(data);
         });
     }
     if ($("#hr_employee").val() != ""){
