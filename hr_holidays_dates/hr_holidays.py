@@ -22,6 +22,7 @@
 from openerp import models, fields, api, _
 from datetime import timedelta
 from openerp.exceptions import except_orm, Warning, RedirectWarning
+from openerp.tools import float_compare
 
 
 import logging
@@ -120,8 +121,25 @@ class hr_holidays(models.Model):
     
     @api.model
     def create(self,values):
-        #~ if values.get('holiday_status_id') and self.env['hr.holidays.status'].browse(values['holiday_status_id']).limit == False and self.env['hr.holidays.status'].browse(values['holiday_status_id']).remaining_leaves < values.get('number_of_days_temp'):
-            #~ raise Warning(_('The number of remaining leaves is not sufficient for this leave type'))
+        if values.get('holiday_type') == 'category' or values.get('type') == 'add' or values.get('employee_id') == False:
+            pass
+        else:
+            leave = self.env['hr.holidays.status'].browse(values['holiday_status_id'])
+            if not leave.limit:
+                leave_days = leave.get_days(values.get('employee_id'))[leave.id]
+                if float_compare(leave_days['remaining_leaves'], values.get('number_of_days_temp'), precision_digits=2) == -1 or \
+                   float_compare(leave_days['virtual_remaining_leaves'], values.get('number_of_days_temp'), precision_digits=2) == -1:
+                    # Raising a warning gives a more user-friendly feedback than the default constraint error
+                    raise Warning(_('The number of remaining leaves is not sufficient for this leave type.\n'
+                                'Please verify also the leaves waiting for validation.'))
         return super(hr_holidays, self).create(values)
+
+        
+        
+        #~ leave = self.env['hr.holidays.status'].with_context('': ).browse(values['holiday_status_id'])
+        #~ raise Warning(self.env['hr.holidays.status'].browse(values['holiday_status_id']).limit,self.env['hr.holidays.status'].browse(values['holiday_status_id']).remaining_leaves,self.env['hr.holidays.status'].browse(values['holiday_status_id']).virtual_remaining_leaves)
+        #~ if (values.get('holiday_status_id') and self.env['hr.holidays.status'].browse(values['holiday_status_id']).limit == False  and self.env['hr.holidays.status'].browse(values['holiday_status_id']).remaining_leaves <= values.get('number_of_days_temp')) or values.get('type') == 'remove':
+        #~ if not self.check_holidays():
+            #~ raise Warning(_('The number of remaining leaves is not sufficient for this leave type'))
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -25,7 +25,8 @@
 'category': 'hr',
 'description': """
     * Date from and date to follows employees schema
-    * number_of_days calculates from schema
+    * Number_of_days calculates from schema
+    * Nicer error message when there is lack of leaves
 
 """,
 'author': 'Vertel AB',
