@@ -168,7 +168,6 @@ function hour2HourMinute(hour) {
 }
 
 function clearContent(){
-    $("#hr_employee").empty();
     $("#employee_image").empty();
     $("#employee_message").empty();
     $("#employee_message_error").empty();
