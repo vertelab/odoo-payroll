@@ -19,7 +19,7 @@
 #
 ##############################################################################
 {
-'name': 'Payroll Attendance',
+'name': 'Attendance Terminal',
 'version': '0.1',
 'summary': 'Human Resource',
 'category': 'hr',
@@ -29,11 +29,11 @@ Attendance report in web form
 """,
 'author': 'Vertel AB',
 'website': 'http://www.vertel.se',
-'depends': ['hr_attendance', 'bus', 'hr_payroll_flex100', 'hr_holidays'],
+'depends': ['hr_attendance', 'bus',],
 'data': [
-    'hr_payroll_attendance_view.xml',
+    'hr_attendance_terminal_view.xml',
     'hr_employee_view.xml',
-    'hr_payroll_attendance_data.xml',
+    'hr_attendance_terminal_data.xml',
     ],
 'installable': True,
 }

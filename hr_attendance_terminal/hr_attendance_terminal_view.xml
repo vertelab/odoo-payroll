@@ -30,7 +30,7 @@
                         </t>
                     </t>
                     <t t-call-assets="website.assets_frontend" t-js="false" />
-                    <link href="/hr_payroll_attendance/static/src/css/attendance.css" rel="stylesheet"/>
+                    <link href="/hr_attendance_terminal/static/src/css/attendance.css" rel="stylesheet"/>
                     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300" rel="stylesheet"/>
                 </head>
                 <body onload="clock()">
@@ -74,7 +74,7 @@
                         </div>
                     </div>
                     <t t-call-assets="web.assets_common" t-css="false"/>
-                    <script type="text/javascript" src="/hr_payroll_attendance/static/src/js/attendance.js" />
+                    <script type="text/javascript" src="/hr_attendance_terminal/static/src/js/attendance.js" />
                 </body>
             </html>
         </template>

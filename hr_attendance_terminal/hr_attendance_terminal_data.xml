@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<openerp>
+  <data noupdate="1">
+
+    <!-- Automatic action -->
+    <record model="ir.actions.server" id="action_notify_attendance_change">
+      <field name="name">Action Notify Attendance Change</field>
+      <field name="state">code</field>
+      <field name="condition" eval="True" />
+      <field name="model_id" ref="hr_attendance.model_hr_attendance" />
+      <field name="code">
+env['bus.bus'].sendone('attendance',object.id)
+      </field>
+    </record>
+
+    <record model="base.action.rule" id="notify_attendance_change">
+      <field name="name">Notify Attendance Change</field>
+      <field name="kind">on_create</field>
+      <field name="sequence">2</field>
+      <field name="model_id" ref="hr_attendance.model_hr_attendance" />
+      <field name="server_action_ids" eval="[(6,0, [ref('action_notify_attendance_change')])]"/>
+    </record>
+
+  </data>
+</openerp>
