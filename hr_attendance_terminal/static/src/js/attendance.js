@@ -1,5 +1,5 @@
 var logTimeOut;
-
+var _t = openerp._t;
 function attendance_data_loop(id) {
     openerp.jsonRpc('/longpolling/poll','call',
     {
@@ -99,7 +99,7 @@ function employee_project(id){
         }).done(function(data){
             if('projects' in data) {
                 var html_content = "<select id='hr_employee_project' class='form-control selectpicker dropdown dropdown_attendance' data-style='btn-primary'>";
-                html_content += "<option value='' selected='checked'><span> -- Inget projekt -- </span></option>";
+                html_content += "<option value='' selected='checked'><span>" + _t(" -- No Project -- ") + "</span></option>";
                 for(i=0; i<data['projects'].length; i++) {
                     html_content += "<option value=" + data['projects'][i].id + ">";
                     html_content += "<span>" + data['projects'][i].name + "</span></option>";
@@ -139,7 +139,7 @@ openerp.jsonRpc("/hr/attendance/" + id, 'call', {
         if (data.employee.img === null)
             $("#employee_image").html("<img src='/hr_payroll_attendance/static/src/img/icon-user.png'/>");
         if (data.attendance.action === 'sign_in') {
-            $("#employee_message").html("<h2>Welcome!</h2><h2>" + data.employee.name +"</h2>");
+            $("#employee_message").html("<h2>" + _t("Welcome!") + "</h2><h2>" + data.employee.name +"</h2>");
         }
         if (data.attendance.action === 'sign_out'){
             var workedHour = 0;
@@ -149,11 +149,10 @@ openerp.jsonRpc("/hr/attendance/" + id, 'call', {
                 workedHour = hour2HourMinute(data.attendance.worked_hours)[0];
                 workedMinute = hour2HourMinute(data.attendance.worked_hours)[1];
             }
-
-            $("#employee_message").html("<h2>Goodbye!</h2><h2>" + data.employee.name +"</h2>");
-            $("#employee_worked_hour").html("<h4><strong>Worked Hours: </strong>" + workedHour + " hours and " + workedMinute +" minutes</h4>");
+            $("#employee_message").html("<h2>" + _t("Goodbye!") + "</h2><h2>" + data.employee.name +"</h2>");
+            $("#employee_worked_hour").html("<h4><strong>" + _t("Worked Hours") + ": </strong>" + workedHour + _t(" hours and ") + workedMinute + _t(" minutes") + "</h4>");
             if(data.attendance.work_time === 'flex'){
-                $("#employee_flex_time").html("<h4><strong>Flex Time: </strong>" + data.attendance.flextime + " minutes</h4><h4><strong>Flex Time This Month: </strong>" + data.attendance.flextime_month + " minutes</h4><h4><strong>Compensary Leave: </strong>" + data.attendance.compensary_leave + " days</h4>");
+                $("#employee_flex_time").html("<h4><strong>" + _t("Flex Time") + ": </strong>" + data.attendance.flextime + _t(" minutes") + "</h4><h4><strong>" + _t("Flex Time This Month") + ": </strong>" + data.attendance.flextime_month + _t(" minutes") + "</h4><h4><strong>" + _t("Compensary Leave") + ": </strong>" + data.attendance.compensary_leave + _t(" days") + "</h4>");
             }
         }
         logTimeOut = setTimeout("$('#Log_div').fadeOut('slow')", 15000);
@@ -196,8 +195,8 @@ function clock() {
     minute = checkTime(minute);
     //second = checkTime(second);
     $("#time").text(hour + ":" + minute);
-    $("#week_day_d").text(getWeekDay(week_day) + " den " + day);
-    $("#week_day_m_y").text(getMonth(month) + " " + year);
+    //~ $("#week_day_d").text(getWeekDay(week_day) + " den " + day);
+    //~ $("#week_day_m_y").text(getMonth(month) + " " + year);
     $("#date").text(year + "-" + month + "-" + day);
     var time = setTimeout(clock, 500);
 }

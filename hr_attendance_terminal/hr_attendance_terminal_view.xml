@@ -2,7 +2,7 @@
 <openerp>
     <data>
         <template id="hr_attendance_form" name="HR Attendance">
-            <html t-att-lang="lang and lang.replace('_', '-')" t-att-data-oe-company-name="res_company.name">
+            <html t-att-lang="lang and lang.replace('_', '-')" t-att-data-website-id="website.id if editable and website else None" t-att-data-editable="'1' if editable else None" t-att-data-translatable="'1' if translatable else None" t-att-data-view-xmlid="xmlid if editable else None" t-att-data-main-object="repr(main_object) if editable else None" t-att-data-oe-company-name="res_company.name">
                 <head>
                     <meta charset="utf-8" />
                     <t t-if="main_object and 'website_meta_title' in main_object and not title">
@@ -46,7 +46,7 @@
                                 <div class="form-group">
                                     <select id="hr_employee" class="form-control selectpicker dropdown dropdown_attendance" data-style="btn-primary" onchange="employee_id('')">
                                         <option value="" selected="checked">
-                                            <span>-- Välj anställd --</span>
+                                            <span>-- Choose Employee --</span>
                                         </option>
                                         <t t-if="len(employees) &gt; 0" t-foreach="employees" t-as="e">
                                             <option t-att-value="e.id">
@@ -74,6 +74,7 @@
                         </div>
                     </div>
                     <t t-call-assets="web.assets_common" t-css="false"/>
+                    <t t-call-assets="website.assets_frontend" t-css="false" />
                     <script type="text/javascript" src="/hr_attendance_terminal/static/src/js/attendance.js" />
                 </body>
             </html>
