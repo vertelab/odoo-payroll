@@ -29,7 +29,7 @@ Attendance report in web form
 """,
 'author': 'Vertel AB',
 'website': 'http://www.vertel.se',
-'depends': ['hr_attendance', 'bus',],
+'depends': ['hr_attendance', 'bus', 'website'],
 'data': [
     'hr_attendance_terminal_view.xml',
     'hr_employee_view.xml',
