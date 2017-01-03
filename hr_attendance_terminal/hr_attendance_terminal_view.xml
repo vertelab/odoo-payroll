@@ -34,14 +34,14 @@
                     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300" rel="stylesheet"/>
                 </head>
                 <body onload="clock()">
-                    <div id="time_div" class="pull-right">
-                        <h1 id="time" class="text-center"/>
-                        <p id="week_day_d" class="text-center"/>
-                        <p id="week_day_m_y" class="text-center"/>
-                        <p id="date" class="text-center"/>
-                    </div>
-                    <div class="container">
-                        <div id="attendance_div" class="col-md-12 col-sm-12 col-xs-12">
+                    <div id="main_div" class="container">
+                        <div id="time_div" class="pull-right col-md-1 col-sm-1 col-xs-1">
+                            <h1 id="time" class="text-center"/>
+                            <p id="week_day_d" class="text-center"/>
+                            <p id="week_day_m_y" class="text-center"/>
+                            <p id="date" class="text-center"/>
+                        </div>
+                        <div id="attendance_div" class="col-md-11 col-sm-11 col-xs-11">
                             <div class="col-md-6 col-sm-6 col-xs-6">
                                 <div class="form-group">
                                     <select id="hr_employee" class="form-control selectpicker dropdown dropdown_attendance" data-style="btn-primary" onchange="employee_id('')">
@@ -63,6 +63,9 @@
                             </div>
                         </div>
                         <div id="Log_div" class="col-md-12 col-sm-12 col-xs-12">
+                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                <div id="employees_list" />
+                            </div>
                             <div id="employee_message_error" class="col-md-12 col-sm-12 col-xs-12" />
                             <div id="employee_image" class="col-md-6 col-sm-6 col-xs-6" />
                             <div class="col-md-6 col-sm-6 col-xs-6">
@@ -71,6 +74,10 @@
                                 <div id="employee_flex_time" class="col-md-12 col-sm-12 col-xs-12" />
                                 <div id="employee_time_bank" class="col-md-12 col-sm-12 col-xs-12" />
                             </div>
+                        </div>
+                        <div id="check_employees_div">
+                            <h4 class="text-center"><span id="employees_qty"><t t-esc="len(employees)"/></span></h4>
+                            <button id="show_employees" class="btn btn-default" onclick="check_employees()">Users</button>
                         </div>
                     </div>
                     <t t-call-assets="web.assets_common" t-css="false"/>

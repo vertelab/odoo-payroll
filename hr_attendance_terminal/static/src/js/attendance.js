@@ -56,7 +56,7 @@ function employee_id(rfid){
             'rfid': rfid,
         }).done(function(data){
             if(data == ""){
-                $("#employee_message_error").html("<h2 style='color: #f00;'>Unidentified user</h2>");
+                $("#employee_message_error").html("<h2 style='color: #f00;'>" + _t("Unidentified user") + "</h2>");
                 $('#Log_div').delay(15000).fadeOut('slow');
             }
             else
@@ -113,6 +113,38 @@ function employee_project(id){
     }
 }
 
+function number_employees(){
+    openerp.jsonRpc("/hr/attendance/employees_number", 'call', {
+    }).done(function(data){
+        $("#employees_qty").html("<span>" + data +"</span>");
+    });
+}
+
+function check_employees(){
+    openerp.jsonRpc("/hr/attendance/employees", 'call', {
+    }).done(function(data){
+        clearContent();
+        if(data == "") {
+            number_employees();
+            $("#employees_list").html("<h2 style='color: #f00;' class='text-center'>" + _t("No User is logged in") +"</h2>");
+            $('#Log_div').delay(15000).fadeOut('slow');
+        }
+        else {
+            var employee_contect = "";
+            $.each( data, function( name, image ) {
+                var img = "<img src='/hr_attendance_terminal/static/src/img/icon-user.png' style='width: 64px; height: 64px; margin: auto; display: block;'/>";
+                if (image !== null)
+                    img = "<img src='data:image/png;base64," + image + "' style='margin: auto; display: block;'/>";
+                employee_contect += "<div class='col-md-2 col-sm-2 col-xs-2'>" + img + "<p class='text-center'>" + name + "</p></div>"
+            });
+            number_employees();
+            $("#employees_list").html(employee_contect);
+            $('#Log_div').delay(15000).fadeOut('slow');
+        }
+        logTimeOut = setTimeout("$('#Log_div').fadeOut('slow')", 15000);
+    });
+}
+
 /* Come and Go */
 function come_and_go(){
 openerp.jsonRpc("/hr/attendance/come_and_go", 'call', {
@@ -135,11 +167,12 @@ openerp.jsonRpc("/hr/attendance/" + id, 'call', {
         $("#attendance_div").load(document.URL +  " #attendance_div");
         clearContent();
         if (data.employee.img !== null)
-            $("#employee_image").html("<img src='data:image/png;base64," + data.employee.img + "''/>");
+            $("#employee_image").html("<img src='data:image/png;base64," + data.employee.img + "'/>");
         if (data.employee.img === null)
-            $("#employee_image").html("<img src='/hr_payroll_attendance/static/src/img/icon-user.png'/>");
+            $("#employee_image").html("<img src='/hr_attendance_terminal/static/src/img/icon-user.png'/>");
         if (data.attendance.action === 'sign_in') {
             $("#employee_message").html("<h2>" + _t("Welcome!") + "</h2><h2>" + data.employee.name +"</h2>");
+            number_employees();
         }
         if (data.attendance.action === 'sign_out'){
             var workedHour = 0;
@@ -154,6 +187,7 @@ openerp.jsonRpc("/hr/attendance/" + id, 'call', {
             if(data.attendance.work_time === 'flex'){
                 $("#employee_flex_time").html("<h4><strong>" + _t("Flex Time") + ": </strong>" + data.attendance.flextime + _t(" minutes") + "</h4><h4><strong>" + _t("Flex Time This Month") + ": </strong>" + data.attendance.flextime_month + _t(" minutes") + "</h4><h4><strong>" + _t("Compensary Leave") + ": </strong>" + data.attendance.compensary_leave + _t(" days") + "</h4>");
             }
+            number_employees();
         }
         logTimeOut = setTimeout("$('#Log_div').fadeOut('slow')", 15000);
     });
@@ -167,6 +201,7 @@ function hour2HourMinute(hour) {
 }
 
 function clearContent(){
+    $("#employees_list").empty();
     $("#employee_image").empty();
     $("#employee_message").empty();
     $("#employee_message_error").empty();
