@@ -76,7 +76,7 @@
                             </div>
                         </div>
                         <div id="check_employees_div">
-                            <button id="show_employees" class="btn btn-default" onclick="check_employees()"><span id="employees_qty"><t t-esc="len(employees)"/></span> Users</button>
+                            <button id="show_employees" class="btn btn-default" onclick="check_employees()"><span id="employees_qty"><t t-esc="len(employees.filtered(lambda e: e.state == 'present'))"/></span> Users</button>
                         </div>
                     </div>
                     <t t-call-assets="web.assets_common" t-css="false"/>
