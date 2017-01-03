@@ -69,6 +69,7 @@ function employee_id(rfid){
 }
 
 function employee_state(id){
+    clearContent();
     if (id != "") {
         openerp.jsonRpc("/hr/attendance/state", 'call', {
             'employee': id,
@@ -127,7 +128,6 @@ function check_employees(){
         if(data == "") {
             number_employees();
             $("#employees_list").html("<h2 style='color: #f00;' class='text-center'>" + _t("No User is logged in") +"</h2>");
-            $('#Log_div').delay(15000).fadeOut('slow');
         }
         else {
             var employee_contect = "";
@@ -139,7 +139,6 @@ function check_employees(){
             });
             number_employees();
             $("#employees_list").html(employee_contect);
-            $('#Log_div').delay(15000).fadeOut('slow');
         }
         logTimeOut = setTimeout("$('#Log_div').fadeOut('slow')", 15000);
     });
