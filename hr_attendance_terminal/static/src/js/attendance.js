@@ -197,7 +197,7 @@ function clock() {
     $("#time").text(hour + ":" + minute);
     //~ $("#week_day_d").text(getWeekDay(week_day) + " den " + day);
     //~ $("#week_day_m_y").text(getMonth(month) + " " + year);
-    $("#date").text(year + "-" + month + "-" + day);
+    $("#date").text(year + "-" + (month < 10 ? ("0" + month) : month) + "-" + (day < 10 ? ("0" + day) : day));
     var time = setTimeout(clock, 500);
 }
 
