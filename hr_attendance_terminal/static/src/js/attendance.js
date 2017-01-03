@@ -56,7 +56,7 @@ function employee_id(rfid){
             'rfid': rfid,
         }).done(function(data){
             if(data == ""){
-                $("#employee_message_error").html("<h2 style='color: #f00;'>" + _t("Unidentified user") + "</h2>");
+                $("#employee_message_error").html("<h2 style='color: #f00;'>" + _t("Unidentified User") + "</h2>");
                 $('#Log_div').delay(15000).fadeOut('slow');
             }
             else

@@ -76,8 +76,7 @@
                             </div>
                         </div>
                         <div id="check_employees_div">
-                            <h4 class="text-center"><span id="employees_qty"><t t-esc="len(employees)"/></span></h4>
-                            <button id="show_employees" class="btn btn-default" onclick="check_employees()">Users</button>
+                            <button id="show_employees" class="btn btn-default" onclick="check_employees()"><span id="employees_qty"><t t-esc="len(employees)"/></span> Users</button>
                         </div>
                     </div>
                     <t t-call-assets="web.assets_common" t-css="false"/>
