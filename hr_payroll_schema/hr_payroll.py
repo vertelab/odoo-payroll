@@ -207,7 +207,7 @@ class hr_payslip(models.Model):
             day_to = datetime.strptime(date_to,"%Y-%m-%d")
             nb_of_days = (day_to - day_from).days + 1
             for day in range(0, nb_of_days):
-                working_hours_on_day = self.pool.get('resource.calendar').working_hours_on_day(cr, uid, contract.working_hours, day_from + timedelta(days=day), context)
+                working_hours_on_day = self.pool.get('resource.calendar').working_hours_on_day(cr, SUPERUSER_ID, contract.working_hours, day_from + timedelta(days=day), context)
                 if working_hours_on_day:
                     #the employee had to work
                     leave_type = was_on_leave(contract.employee_id.id, day_from + timedelta(days=day), context=context)

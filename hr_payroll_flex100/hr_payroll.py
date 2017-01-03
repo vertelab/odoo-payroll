@@ -24,6 +24,7 @@ from openerp import models, fields, api, _
 
 import openerp.tools
 from datetime import datetime, timedelta
+from openerp import SUPERUSER_ID
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -35,6 +36,7 @@ class hr_attendance(models.Model):
 
     @api.one
     def _flextime(self):
+        _logger.warn('Here we are')
         if self.employee_id.sudo().contract_id and self._check_last_sign_out(self) and self.employee_id.sudo().contract_id.working_hours:
             today = fields.Datetime.from_string(self.name).replace(hour=0, minute=0, microsecond=0)
             tomorrow = fields.Datetime.to_string(today + timedelta(days=1))
@@ -45,7 +47,7 @@ class hr_attendance(models.Model):
             leaves = self.employee_id.sudo().contract_id.working_hours.get_leave_intervals(resource_id = resource and resource.id or None)[0]
             for holiday in self.env['hr.holidays'].search([('date_from', '>=', fields.Datetime.to_string(today)),('date_to', '<', tomorrow)]):
                 leaves.append((fields.Datetime.from_string(holiday.date_from), fields.Datetime.from_string(holiday.date_to)))
-            job_intervals = self.pool.get('resource.calendar').get_working_intervals_of_day(self.env.cr,self.env.uid,
+            job_intervals = self.pool.get('resource.calendar').get_working_intervals_of_day(self.env.cr,SUPERUSER_ID,
                     self.employee_id.sudo().contract_id.working_hours.id,
                     start_dt=today, leaves=leaves)
             att = self.env['hr.attendance'].search([('employee_id','=',self.employee_id.id),('name','>',self.name[:10] + ' 00:00:00'),('name','<',self.name[:10] + ' 23:59:59')],order='name')
@@ -53,6 +55,7 @@ class hr_attendance(models.Model):
                 flex_begin =  job_intervals[0][0] - fields.Datetime.from_string(att[0].name)
                 flex_end = fields.Datetime.from_string(att[-1].name) - job_intervals[-1][1]
                 self.flextime = round((flex_begin + flex_end).total_seconds() / 60.0)
+        _logger.warn('The end')
     flextime = fields.Integer(compute='_flextime', string='Flex Time (m)')
 
     @api.one
@@ -62,7 +65,7 @@ class hr_attendance(models.Model):
         leaves = 0.0
         if self._check_last_sign_out(self):
             att = self.env['hr.attendance'].search([('employee_id','=',self.employee_id.id),('name','>',self.name[:10] + ' 00:00:00'),('name','<',self.name[:10] + ' 23:59:59')],order='name')
-            job_intervals = self.pool.get('resource.calendar').get_working_intervals_of_day(self.env.cr,self.env.uid, self.employee_id.sudo().contract_id.working_hours.id, start_dt=fields.Datetime.from_string(self.name).replace(hour=0,minute=0))
+            job_intervals = self.pool.get('resource.calendar').get_working_intervals_of_day(self.env.cr,SUPERUSER_ID, self.employee_id.sudo().contract_id.working_hours.id, start_dt=fields.Datetime.from_string(self.name).replace(hour=0,minute=0))
             if len(job_intervals) > 0:
                 if self.flextime > 0.0: #if got positive flex time, worked flex = worked on schedule + flex time
                     self.flex_working_hours = self.get_working_hours + self.flextime / 60.0

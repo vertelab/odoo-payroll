@@ -111,10 +111,10 @@ class attendanceReport(http.Controller):
         return {'attendance': {
                     'name': attendance.name,
                     'action': attendance.action,
-                    'work_time': attendance.sheet_id.employee_id.contract_id.type_id.work_time,
-                    'worked_hours': attendance.flex_working_hours if attendance.sheet_id.employee_id.contract_id.type_id.work_time == 'flex' else attendance.get_working_hours,
+                    'work_time': attendance.sudo().employee_id.contract_id.type_id.work_time,
+                    'worked_hours': attendance.sudo().flex_working_hours if attendance.sudo().employee_id.contract_id.type_id.work_time == 'flex' else attendance.get_working_hours,
                     'flextime_month': attendance.flextime_month,
-                    'flextime': attendance.flextime,
+                    'flextime': attendance.sudo().flextime,
                     'compensary_leave': attendance.compensary_leave,
                 },
                 'employee': {
