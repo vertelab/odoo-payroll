@@ -2,6 +2,11 @@ body {
     font-family: 'Open Sans', sans-serif;
 }
 
+#main_div {
+    padding: 0px;
+    width: 100%;
+}
+
 .absolute_center {
     display: flex;
     justify-content: center;
@@ -10,6 +15,7 @@ body {
 
 #time_div {
     margin: 8px 8px 0px 0px;
+    padding: 0px;
 }
 
 #time_div h1 {
@@ -22,14 +28,20 @@ body {
 
 #attendance_div {
     position: fixed;
-    top: 120px;
+    top: 20px;
     left: 0px;
 }
 
 #Log_div {
     position: fixed;
-    bottom: 50px;
+    bottom: 20px;
     left: 0px;
+}
+
+#check_employees_div{
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
 }
 
 #employee_image img {

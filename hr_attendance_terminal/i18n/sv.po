@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 8.0-20161227\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-02 15:19+0000\n"
-"PO-Revision-Date: 2017-01-02 16:23+0100\n"
+"POT-Creation-Date: 2017-01-03 15:35+0000\n"
+"PO-Revision-Date: 2017-01-03 16:37+0100\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -19,29 +19,29 @@ msgstr ""
 
 #. module: hr_attendance_terminal
 #. openerp-web
-#: code:addons/hr_attendance_terminal/static/src/js/attendance.js:102
+#: code:addons/hr_attendance_terminal/static/src/js/attendance.js:103
 #, python-format
 msgid " -- No Project -- "
 msgstr " -- Inget projekt -- "
 
 #. module: hr_attendance_terminal
 #. openerp-web
-#: code:addons/hr_attendance_terminal/static/src/js/attendance.js:155
+#: code:addons/hr_attendance_terminal/static/src/js/attendance.js:187
 #, python-format
 msgid " days"
-msgstr " Dagar"
+msgstr " dagar"
 
 #. module: hr_attendance_terminal
 #. openerp-web
-#: code:addons/hr_attendance_terminal/static/src/js/attendance.js:153
+#: code:addons/hr_attendance_terminal/static/src/js/attendance.js:185
 #, python-format
 msgid " hours and "
 msgstr " Timmar och "
 
 #. module: hr_attendance_terminal
 #. openerp-web
-#: code:addons/hr_attendance_terminal/static/src/js/attendance.js:153
-#: code:addons/hr_attendance_terminal/static/src/js/attendance.js:155
+#: code:addons/hr_attendance_terminal/static/src/js/attendance.js:185
+#: code:addons/hr_attendance_terminal/static/src/js/attendance.js:187
 #, python-format
 msgid " minutes"
 msgstr " minuter"
@@ -63,7 +63,7 @@ msgstr "Närvaro"
 
 #. module: hr_attendance_terminal
 #. openerp-web
-#: code:addons/hr_attendance_terminal/static/src/js/attendance.js:155
+#: code:addons/hr_attendance_terminal/static/src/js/attendance.js:187
 #, python-format
 msgid "Compensary Leave"
 msgstr "kompensationsledighet"
@@ -75,21 +75,21 @@ msgstr "Anställd"
 
 #. module: hr_attendance_terminal
 #. openerp-web
-#: code:addons/hr_attendance_terminal/static/src/js/attendance.js:155
+#: code:addons/hr_attendance_terminal/static/src/js/attendance.js:187
 #, python-format
 msgid "Flex Time"
 msgstr "Flextidsbank"
 
 #. module: hr_attendance_terminal
 #. openerp-web
-#: code:addons/hr_attendance_terminal/static/src/js/attendance.js:155
+#: code:addons/hr_attendance_terminal/static/src/js/attendance.js:187
 #, python-format
 msgid "Flex Time This Month"
 msgstr "Denna månads flextid"
 
 #. module: hr_attendance_terminal
 #. openerp-web
-#: code:addons/hr_attendance_terminal/static/src/js/attendance.js:152
+#: code:addons/hr_attendance_terminal/static/src/js/attendance.js:184
 #, python-format
 msgid "Goodbye!"
 msgstr "Hejdå!"
@@ -105,6 +105,13 @@ msgid "Log Out"
 msgstr "Logga ut"
 
 #. module: hr_attendance_terminal
+#. openerp-web
+#: code:addons/hr_attendance_terminal/static/src/js/attendance.js:130
+#, python-format
+msgid "No User is logged in"
+msgstr "Ingen användare är inloggad"
+
+#. module: hr_attendance_terminal
 #: field:hr.attendance,project_id:0
 msgid "Project"
 msgstr "Projekt"
@@ -116,20 +123,32 @@ msgstr "RFID"
 
 #. module: hr_attendance_terminal
 #. openerp-web
-#: code:addons/hr_attendance_terminal/static/src/js/attendance.js:142
+#: code:addons/hr_attendance_terminal/static/src/js/attendance.js:59
+#, python-format
+msgid "Unidentified User"
+msgstr "Oidentifierad användare"
+
+#. module: hr_attendance_terminal
+#: view:website:hr_attendance_terminal.hr_attendance_form
+msgid "Users"
+msgstr "Användare"
+
+#. module: hr_attendance_terminal
+#. openerp-web
+#: code:addons/hr_attendance_terminal/static/src/js/attendance.js:173
 #, python-format
 msgid "Welcome!"
 msgstr "Välkommen!"
 
 #. module: hr_attendance_terminal
 #. openerp-web
-#: code:addons/hr_attendance_terminal/static/src/js/attendance.js:153
+#: code:addons/hr_attendance_terminal/static/src/js/attendance.js:185
 #, python-format
 msgid "Worked Hours"
 msgstr "Arbetad tid"
 
 #. module: hr_attendance_terminal
-#: code:addons/hr_attendance_terminal/hr_attendance_terminal.py:88
+#: code:addons/hr_attendance_terminal/hr_attendance_terminal.py:104
 #, python-format
 msgid "You cannot %s twice"
 msgstr "Du kan inte %s två gånger"
