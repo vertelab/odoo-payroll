@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 8.0-20161227\n"
+"Project-Id-Version: Odoo Server 8.0-20170102\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-03 15:35+0000\n"
-"PO-Revision-Date: 2017-01-03 16:37+0100\n"
+"POT-Creation-Date: 2017-01-09 16:00+0000\n"
+"PO-Revision-Date: 2017-01-09 17:11+0100\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -15,14 +15,14 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: \n"
 "Language: sv\n"
-"X-Generator: Poedit 1.8.7.1\n"
+"X-Generator: Poedit 1.8.9\n"
 
 #. module: hr_attendance_terminal
 #. openerp-web
 #: code:addons/hr_attendance_terminal/static/src/js/attendance.js:103
 #, python-format
 msgid " -- No Project -- "
-msgstr " -- Inget projekt -- "
+msgstr " -- Project saknas -- "
 
 #. module: hr_attendance_terminal
 #. openerp-web
@@ -36,7 +36,7 @@ msgstr " dagar"
 #: code:addons/hr_attendance_terminal/static/src/js/attendance.js:185
 #, python-format
 msgid " hours and "
-msgstr " Timmar och "
+msgstr " timmar och"
 
 #. module: hr_attendance_terminal
 #. openerp-web
@@ -54,7 +54,7 @@ msgstr "-- Välj anställd --"
 #. module: hr_attendance_terminal
 #: model:ir.actions.server,name:hr_attendance_terminal.action_notify_attendance_change
 msgid "Action Notify Attendance Change"
-msgstr "Åtgärd meddela närvaro förändring"
+msgstr "Aktivitet indikera närvaroändring"
 
 #. module: hr_attendance_terminal
 #: model:ir.model,name:hr_attendance_terminal.model_hr_attendance
@@ -66,7 +66,7 @@ msgstr "Närvaro"
 #: code:addons/hr_attendance_terminal/static/src/js/attendance.js:187
 #, python-format
 msgid "Compensary Leave"
-msgstr "kompensationsledighet"
+msgstr "Kompensationsledigt"
 
 #. module: hr_attendance_terminal
 #: model:ir.model,name:hr_attendance_terminal.model_hr_employee
@@ -78,14 +78,14 @@ msgstr "Anställd"
 #: code:addons/hr_attendance_terminal/static/src/js/attendance.js:187
 #, python-format
 msgid "Flex Time"
-msgstr "Flextidsbank"
+msgstr "Flextid"
 
 #. module: hr_attendance_terminal
 #. openerp-web
 #: code:addons/hr_attendance_terminal/static/src/js/attendance.js:187
 #, python-format
 msgid "Flex Time This Month"
-msgstr "Denna månads flextid"
+msgstr "Flextid denna månad"
 
 #. module: hr_attendance_terminal
 #. openerp-web
@@ -109,7 +109,7 @@ msgstr "Logga ut"
 #: code:addons/hr_attendance_terminal/static/src/js/attendance.js:130
 #, python-format
 msgid "No User is logged in"
-msgstr "Ingen användare är inloggad"
+msgstr "Ingen användare inloggad"
 
 #. module: hr_attendance_terminal
 #: field:hr.attendance,project_id:0
@@ -145,10 +145,10 @@ msgstr "Välkommen!"
 #: code:addons/hr_attendance_terminal/static/src/js/attendance.js:185
 #, python-format
 msgid "Worked Hours"
-msgstr "Arbetad tid"
+msgstr "Arbetade timmar"
 
 #. module: hr_attendance_terminal
 #: code:addons/hr_attendance_terminal/hr_attendance_terminal.py:104
 #, python-format
 msgid "You cannot %s twice"
-msgstr "Du kan inte %s två gånger"
+msgstr "Du kan inte %s dubbelt"
