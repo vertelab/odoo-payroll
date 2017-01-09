@@ -2,7 +2,7 @@
 ##############################################################################
 #
 # OpenERP, Open Source Management Solution, third party addon
-# Copyright (C) 2016- Vertel AB (<http://vertel.se>).
+# Copyright (C) 2004-2017 Vertel AB (<http://vertel.se>).
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -18,17 +18,22 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-{
-'name': 'Payroll Message Menu',
-'version': '0.1',
-'summary': 'Human Resource',
-'category': 'hr',
-'description': """show time report menus in messaging menu
+from openerp.exceptions import except_orm, Warning, RedirectWarning
+from openerp import models, fields, api, _
 
-""",
-'author': 'Vertel AB',
-'website': 'http://www.vertel.se',
-'depends': ['hr_timesheet_sheet', 'hr_holidays','project'],
-'data': ['hr_payroll_messagemenu_view.xml', 'hr_payroll_messagemenu_data.xml',],
-'installable': True,
-}
+import logging
+_logger = logging.getLogger(__name__)
+
+class hr_attendance(models.Model):
+    _inherit = 'hr.attendance'
+
+    def init_records(self, cr, uid, context=None):
+        access_hr_attendance_user = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'hr_attendance', 'access_hr_attendance_system_user')
+        self.pool.get('ir.model.access').write(cr, uid, access_hr_attendance_user[1],{
+            'perm_read': True,
+            'perm_write': False,
+            'perm_create': True,
+            'perm_unlink': False,
+        })
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

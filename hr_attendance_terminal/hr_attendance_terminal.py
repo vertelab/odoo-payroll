@@ -46,6 +46,22 @@ class attendanceReport(http.Controller):
     def attendance(self, employees=None, **post):
         return request.website.render("hr_attendance_terminal.hr_attendance_form", {'employees': request.env['hr.employee'].search([('active', '=', True), ('id', '!=', request.env.ref('hr.employee').id)]),})
 
+    @http.route(['/hr/attendance/employees_number'], type='json', auth="user", website=True)
+    def number_employees(self, **kw):
+        employees = request.env['hr.employee'].search([('active', '=', True), ('id', '!=', request.env.ref('hr.employee').id)]).filtered(lambda e: e.state == 'present')
+        return len(employees)
+
+    @http.route(['/hr/attendance/employees'], type='json', auth="user", website=True)
+    def check_employees(self, **kw):
+        employees = request.env['hr.employee'].search([('active', '=', True), ('id', '!=', request.env.ref('hr.employee').id)]).filtered(lambda e: e.state == 'present')
+        employees_list = {}
+        for e in employees:
+            employees_list[e.name] = e.image_small
+        if len(employees_list) > 0:
+            return employees_list
+        else:
+            return ''
+
     @http.route(['/hr/attendance/employee'], type='json', auth="user", website=True)
     def attendance_report(self, rfid=None, **kw):
         e = request.env['hr.employee'].search([('rfid', '=', rfid)])
