@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data noupdate="0">
+
+    <record id="view_employee_filter" model="ir.ui.view">
+      <field name="name">hr.employee.inherit.hr_department_access</field>
+      <field name="model">hr.employee</field>
+      <field name="inherit_id" ref="hr.view_employee_filter" />
+      <field name="arch" type="xml">
+        <field name="category_ids" position="after">
+            <filter string="My Department" name="my_department" domain="[('department_id.manager_id.user_id', '=', uid)]"/>
+        </field>
+      </field>
+    </record>
+
+    <record id="hr.open_view_employee_list_my" model="ir.actions.act_window">
+        <field name="context">{
+                    'search_default_my_department': 1
+                }</field>
+    </record>
+
+</data>
+</openerp>
