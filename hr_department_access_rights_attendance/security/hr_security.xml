@@ -10,4 +10,7 @@
     </record>
 
 </data>
+<data noupdate="1">
+    <function model="hr.attendance" name="init_records" />
+</data>
 </openerp>
