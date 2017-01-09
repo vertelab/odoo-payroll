@@ -31,7 +31,7 @@
 """,
 'author': 'Vertel AB',
 'website': 'http://www.vertel.se',
-'depends': ['hr_holidays'],
+'depends': ['hr_holidays', 'hr_weekly_working_hours'],
 'data': ['hr_holidays_view.xml'],
 'installable': True,
 }

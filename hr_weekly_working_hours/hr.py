@@ -69,9 +69,28 @@ class hr_employee(models.Model):
         if not date:
             date = fields.Date.today()
         res = 0
-        for contract in self.contract_ids:
+        for contract in self.sudo().contract_ids:
             if contract.date_start <= date and contract.date_end >= date:
                 res += contract.weekly_working_hours
-        
+        if not res and date != fields.Date.today():
+            res = get_working_hours()
+        return res
+    
+    @api.multi
+    def get_working_days(self, date = None):
+        self.ensure_one()
+        if not date:
+            date = fields.Date.today()
+        res = 0
+        for contract in self.sudo().contract_ids:
+            if contract.date_start <= date and contract.date_end >= date:
+                res += contract.wwh_days_intermittent
+        if not res and date != fields.Date.today():
+            res = get_working_days()
+        return res
+    
+    @api.multi
+    def get_working_hours_per_day(self, date = None):
+        return self.get_working_hours(date) / (self.get_working_days(date) or 5) # Assume 5 day week if 0
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

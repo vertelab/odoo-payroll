@@ -33,7 +33,21 @@ class hr_holidays(models.Model):
     _inherit = "hr.holidays"
     
     number_of_days_temp_show = fields.Float('Allocation', compute = '_get_number_of_days_temp_show')
-    number_of_hours = fields.Float('Hours', compute = '_get_number_of_hours')
+    number_of_hours = fields.Float('Hours', compute = '_get_converted_time', inverse = '_set_converted_time')
+    number_of_minutes = fields.Float('Minutes', compute='_get_converted_time', inverse = '_set_converted_time')
+    time_unit = fields.Selection(related = 'holiday_status_id.time_unit')
+    
+    def _get_converted_time(self):
+        self.number_of_hours = self.number_of_days_temp * (self.employee_id.get_working_hours() or 8)
+        self.number_of_minutes = self.number_of_hours * 60
+    
+    @api.one
+    @api.onchange('number_of_hours', 'number_of_minutes')
+    def _set_converted_time(self):
+        if self.holiday_status_id.time_unit == 'hour':
+            self.number_of_days_temp = self.number_of_hours / (self.employee_id.get_working_hours() or 8)   # Assume 8 hours if 0
+        elif self.holiday_status_id.time_unit == 'minute':
+            self.number_of_days_temp = (self.number_of_minutes / (self.employee_id.get_working_hours() or 8)) / 60
     
     @api.one
     def _get_number_of_days_temp_show(self):
@@ -48,15 +62,14 @@ class hr_holidays(models.Model):
     @api.onchange('number_of_days_temp')
     def onchange_number_of_days_temp(self):
         self._get_number_of_days_temp_show()
-        self._get_number_of_hours()
     
-    @api.one
-    def _get_number_of_hours(self):
-        employee = self.employee_id.sudo()
-        if employee and employee.sudo().contract_id and employee.sudo().contract_id.working_hours and self.number_of_days_temp <= 1:
-            self.number_of_hours = self.number_of_days_temp * employee.sudo().contract_id.working_hours.get_working_hours_of_date(
-                fields.Datetime.from_string(self.date_from),
-                fields.Datetime.from_string(self.date_to))[0]
+    #~ @api.one
+    #~ def _get_number_of_hours(self):
+        #~ employee = self.employee_id.sudo()
+        #~ if employee and employee.sudo().contract_id and employee.sudo().contract_id.working_hours and self.number_of_days_temp <= 1:
+            #~ self.number_of_hours = self.number_of_days_temp * employee.sudo().contract_id.working_hours.get_working_hours_of_date(
+                #~ fields.Datetime.from_string(self.date_from),
+                #~ fields.Datetime.from_string(self.date_to))[0]
     
     def _get_default_date_from(self, employee, date_from):
         if employee and employee.sudo().contract_id and employee.sudo().contract_id.working_hours and date_from:
@@ -134,12 +147,9 @@ class hr_holidays(models.Model):
                                 'Please verify also the leaves waiting for validation.'))
         return super(hr_holidays, self).create(values)
 
-        
-        
-        #~ leave = self.env['hr.holidays.status'].with_context('': ).browse(values['holiday_status_id'])
-        #~ raise Warning(self.env['hr.holidays.status'].browse(values['holiday_status_id']).limit,self.env['hr.holidays.status'].browse(values['holiday_status_id']).remaining_leaves,self.env['hr.holidays.status'].browse(values['holiday_status_id']).virtual_remaining_leaves)
-        #~ if (values.get('holiday_status_id') and self.env['hr.holidays.status'].browse(values['holiday_status_id']).limit == False  and self.env['hr.holidays.status'].browse(values['holiday_status_id']).remaining_leaves <= values.get('number_of_days_temp')) or values.get('type') == 'remove':
-        #~ if not self.check_holidays():
-            #~ raise Warning(_('The number of remaining leaves is not sufficient for this leave type'))
+class hr_holidays_status(models.Model):
+    _inherit = "hr.holidays.status"
+    
+    time_unit = fields.Selection([('day', 'Days'), ('hour', 'Hours'), ('minute', 'Minutes')], 'Time Unit', default='day')
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
