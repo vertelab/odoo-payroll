@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 8.0-20161208\n"
+"Project-Id-Version: Odoo Server 8.0-20170102\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-12-09 08:12+0000\n"
-"PO-Revision-Date: 2016-12-09 09:15+0100\n"
+"POT-Creation-Date: 2017-01-09 15:12+0000\n"
+"PO-Revision-Date: 2017-01-09 16:19+0100\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: \n"
 "Language: sv\n"
-"X-Generator: Poedit 1.8.7.1\n"
+"X-Generator: Poedit 1.8.9\n"
 
 #. module: hr_payroll_flex100
 #: model:ir.model,name:hr_payroll_flex100.model_hr_attendance
@@ -23,9 +23,19 @@ msgid "Attendance"
 msgstr "Närvaro"
 
 #. module: hr_payroll_flex100
-#: model:hr.holidays.status,name:hr_payroll_flex100.compensary_leave
+#: field:hr.payslip,compensary_leave:0
 msgid "Compensary Leave"
-msgstr "kompensationsledighet"
+msgstr "Kompensationsledigt"
+
+#. module: hr_payroll_flex100
+#: field:hr_timesheet_sheet.sheet,compensary_leave:0
+msgid "Compensary Leave (d)"
+msgstr "Kompensationsledigt (d)"
+
+#. module: hr_payroll_flex100
+#: field:hr.attendance,compensary_leave:0
+msgid "Compensary leave"
+msgstr "Kompensationsledigt"
 
 #. module: hr_payroll_flex100
 #: model:ir.model,name:hr_payroll_flex100.model_hr_contract_type
@@ -33,9 +43,30 @@ msgid "Contract Type"
 msgstr "Avtalstyp"
 
 #. module: hr_payroll_flex100
+#: field:hr.holidays.earning,create_uid:0
+msgid "Created by"
+msgstr "Skapad av"
+
+#. module: hr_payroll_flex100
+#: field:hr.holidays.earning,create_date:0
+msgid "Created on"
+msgstr "Skapad"
+
+#. module: hr_payroll_flex100
+#: field:hr.holidays.earning,display_name:0
+msgid "Display Name"
+msgstr "Visningsnamn"
+
+#. module: hr_payroll_flex100
 #: model:ir.model,name:hr_payroll_flex100.model_hr_employee
 msgid "Employee"
 msgstr "Anställd"
+
+#. module: hr_payroll_flex100
+#: field:hr.attendance,flextime:0 field:hr.payslip,flextime:0
+#: field:hr_timesheet_sheet.sheet,flextime:0
+msgid "Flex Time (m)"
+msgstr "Flextid (m)"
 
 #. module: hr_payroll_flex100
 #: field:hr.employee,flex_holiday_id:0
@@ -43,22 +74,75 @@ msgid "Flex Time Bank"
 msgstr "Flextidsbank"
 
 #. module: hr_payroll_flex100
-#: model:ir.model,name:hr_payroll_flex100.model_hr_holidays_status
-msgid "Holidays Status"
-msgstr "Semestrarstatus"
+#: field:hr.payslip,flex_working_days:0
+msgid "Flex Worked Days"
+msgstr "Arbetade dagar med flex"
 
 #. module: hr_payroll_flex100
-#: code:addons/hr_payroll_flex100/hr_payroll.py:136
+#: field:hr.attendance,flextime_month:0
+msgid "Flextime month"
+msgstr "Flextid månad"
+
+#. module: hr_payroll_flex100
+#: field:hr.holidays.earning,id:0
+msgid "ID"
+msgstr "ID"
+
+#. module: hr_payroll_flex100
+#: field:hr.holidays.earning,__last_update:0
+msgid "Last Modified on"
+msgstr "Senast ändrad"
+
+#. module: hr_payroll_flex100
+#: field:hr.holidays.earning,write_uid:0
+msgid "Last Updated by"
+msgstr "Senast ändrad av"
+
+#. module: hr_payroll_flex100
+#: field:hr.holidays.earning,write_date:0
+msgid "Last Updated on"
+msgstr "Senast uppdaterad"
+
+#. module: hr_payroll_flex100
+#: model:ir.model,name:hr_payroll_flex100.model_hr_holidays_status
+msgid "Leave Type"
+msgstr "Frånvarotyp"
+
+#. module: hr_payroll_flex100
+#: field:hr.holidays.status,ps_leaves_taken:0
+#: field:hr.holidays.status,ps_max_leaves:0
+msgid "Max Leaves"
+msgstr "Maxfrånvaro"
+
+#. module: hr_payroll_flex100
+#: code:addons/hr_payroll_flex100/hr_payroll.py:180
 #, python-format
 msgid "Normal Working Days paid at 100%"
-msgstr "Normala arbetsdagar betalas vid 100%"
+msgstr "Normalt arbetade dagar med 100% ersättning"
 
 #. module: hr_payroll_flex100
 #: model:ir.model,name:hr_payroll_flex100.model_hr_payslip
 msgid "Pay Slip"
-msgstr "Lönespecifikation "
+msgstr "Lönebesked"
+
+#. module: hr_payroll_flex100
+#: model:ir.model,name:hr_payroll_flex100.model_hr_timesheet_sheet_sheet
+msgid "Timesheet"
+msgstr "Tidrapport"
+
+#. module: hr_payroll_flex100
+#: field:hr.payslip,total_compensary_leave:0
+msgid "Total Compensary Leave"
+msgstr "Total kompensationsledighet"
 
 #. module: hr_payroll_flex100
 #: view:hr.attendance:hr_payroll_flex100.view_attendance_who
 msgid "Total Hours (h)"
 msgstr "Totalt antal timmar"
+
+#. module: hr_payroll_flex100
+#: field:hr.attendance,flex_working_hours:0
+#: field:hr.payslip,flex_working_hours:0
+#: field:hr_timesheet_sheet.sheet,flex_working_hours:0
+msgid "Worked Flex (h)"
+msgstr "Flexarbete (h)"

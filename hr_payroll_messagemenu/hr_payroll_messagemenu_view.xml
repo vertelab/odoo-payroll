@@ -3,8 +3,54 @@
   <data>
     <!-- time report -->
     <menuitem name="Time Report" id="msg_menu_time_report" parent="mail.mail_feeds_main" sequence="50" groups="base.group_user" />
-    <menuitem name="My Current Timesheet" id="msg_menu_act_hr_timesheet_sheet_form_my_current" parent="msg_menu_time_report" action="hr_timesheet_sheet.ir_actions_server_timsheet_sheet" sequence="1" />
-    <menuitem id="msg_menu_open_ask_holidays_new" parent="msg_menu_time_report" action="hr_holidays.open_ask_holidays" sequence="2" />
+    <menuitem name="My Current Timesheet" id="msg_menu_act_hr_timesheet_sheet_form_my_current" parent="msg_menu_time_report" action="hr_timesheet_sheet.ir_actions_server_timsheet_sheet" sequence="10" />
+    
+    
+        <record model="ir.actions.act_window" id="open_ask_holidays">
+            <field name="name">My Leave Requests</field>
+            <field name="res_model">hr.holidays</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="hr_holidays.edit_holiday_new"/>
+            <field name="context">{'default_type': 'remove', 'search_default_my_leaves':1}</field>
+            <field name="domain">[('type','=','remove')]</field>
+            <field name="search_view_id" ref="hr_holidays.view_hr_holidays_filter"/>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Click to create a new leave request.
+              </p><p>
+                Once you have recorded your leave request, it will be sent
+                to a manager for validation. Be sure to set the right leave
+                type (recuperation, legal holidays, sickness) and the exact
+                number of open days related to your leave.
+              </p>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window.view" id="action_open_ask_holidays_tree">
+            <field name="sequence" eval="2"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="hr_holidays.view_holiday"/>
+            <field name="act_window_id" ref="open_ask_holidays"/>
+        </record>
+
+        <record model="ir.actions.act_window.view" id="action_open_ask_holidays_form">
+            <field name="sequence" eval="3"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="hr_holidays.edit_holiday_new"/>
+            <field name="act_window_id" ref="open_ask_holidays"/>
+        </record>
+
+        <record model="ir.actions.act_window.view" id="action_open_ask_holidays_calendar">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">calendar</field>
+            <field name="view_id" ref="hr_holidays.view_holiday_new_calendar"/>
+            <field name="act_window_id" ref="open_ask_holidays"/>
+        </record>
+
+        <menuitem parent="msg_menu_time_report" id="menu_open_ask_holidays_new" action="open_ask_holidays" sequence="20"/>
+    
+ 
+    
     <!--
          <menuitem id="msg_sign_in_out" parent="msg_menu_hr_attendance" action="hr_timesheet.action_hr_timesheet_sign_in" sequence="1" groups="base.group_hr_attendance"/>
          
@@ -42,9 +88,18 @@
             <field name="view_id" ref="act_messagemenu_change_project"/>
       <field name="target">new</field>
         </record>
-        <menuitem id="menu_account_financial_reports_tree" name="Change Project" parent="msg_menu_time_report" action="action_account_financial_report_tree"/>
+        <menuitem id="menu_account_financial_reports_tree" name="Change Project" parent="msg_menu_time_report" action="action_account_financial_report_tree"  sequence="30"/>
 
 
+    <record id="hr_timesheet_sheet_form" model="ir.ui.view">
+      <field name="name">hr_timesheet_sheet.sheet.form.messagemenu</field>
+      <field name="model">hr_timesheet_sheet.sheet</field>
+      <field name="inherit_id" ref="hr_payroll_flex100.hr_timesheet_sheet_form" />
+      <field name="arch" type="xml">
+          <field name="flex_working_hours" position='replace'/>
+          <field name="compensary_leave" position='replace'/>
+      </field>
+    </record>
 
   </data>
 </openerp>
