@@ -247,28 +247,49 @@ class hr_payslip(models.Model):
 class hr_employee(models.Model):
     _inherit = 'hr.employee'
 
-    flex_holiday_id = fields.Many2one(comodel_name='hr.holidays', string='Flex Time Bank')
+    #flex_holiday_id = fields.Many2one(comodel_name='hr.holidays', string='Flex Time Bank')
 
     def set_flex_time_pot(self, minutes, date = fields.Datetime.now()):
-        date_to = fields.Datetime.from_string('1970-01-01 00:00:00') + timedelta(minutes = abs(minutes))
-        if self.flex_holiday_id:
-            self.flex_holiday_id.write({
-                'name': 'Time Bank for %s (%s)' % (self.name, date),
-                'type': 'add' if minutes > 0.0 else 'remove',
-                'number_of_minutes': abs(minutes),
-                'date_to': date_to,
-            })
+        values = {
+            'name': _('Flex Time for %s (%s)') % (self.name, date),
+            'holiday_status_id': self.env.ref("hr_holidays.holiday_status_comp").id,
+            'employee_id': self.id,
+            'type': 'add' if minutes >= 0.0 else 'remove' ,
+            'state': 'validate',
+            'number_of_minutes': abs(minutes),
+            'date_flextime': date,
+            'date_from': '1900-01-01 00:00:00',
+        }
+        last = self.env['hr.holidays'].search([('employee_id', '=', self.id), ('date_flextime', '!=', False), ('date_to', '!=', False)], limit = 1, order = 'date_flextime desc')
+        if last:
+            values['date_from'] = fields.Datetime.to_string(fields.Datetime.from_string(last.date_to) + timedelta(seconds = 1))
+        values['date_to'] = fields.Datetime.to_string(fields.Datetime.from_string(values['date_from']) + timedelta(minutes = abs(minutes)))
+        holiday = self.env['hr.holidays'].search([('employee_id', '=', self.id), ('date_flextime', '=', date)])
+        if holiday:
+            holiday.write(values)
         else:
-            self.flex_holiday_id = self.env['hr.holidays'].create({
-                'name': 'Time Bank for %s (%s)' % (self.name, date),
-                'holiday_status_id': self.env.ref("hr_holidays.holiday_status_comp").id,
-                'employee_id': self.id,
-                'type': 'add' if minutes > 0.0 else 'remove' ,
-                'state': 'validate',
-                'number_of_minutes': abs(minutes),
-                'date_from': '1970-01-01 00:00:00',
-                'date_to': date_to,
-            })
+            holiday = self.env['hr.holidays'].create(values)
+        holiday.holidays_validate()
+        
+        
+        #~ if self.flex_holiday_id:
+            #~ self.flex_holiday_id.write({
+                #~ 'name': 'Time Bank for %s (%s)' % (self.name, date),
+                #~ 'type': 'add' if minutes >= 0.0 else 'remove',
+                #~ 'number_of_minutes': abs(minutes),
+                #~ 'date_to': date_to,
+            #~ })
+        #~ else:
+            #~ self.flex_holiday_id = self.env['hr.holidays'].create({
+                #~ 'name': 'Time Bank for %s (%s)' % (self.name, date),
+                #~ 'holiday_status_id': self.env.ref("hr_holidays.holiday_status_comp").id,
+                #~ 'employee_id': self.id,
+                #~ 'type': 'add' if minutes > 0.0 else 'remove' ,
+                #~ 'state': 'validate',
+                #~ 'number_of_minutes': abs(minutes),
+                #~ 'date_from': '1970-01-01 00:00:00',
+                #~ 'date_to': date_to,
+            #~ })
 
 class hr_timesheet_sheet(models.Model):
     _inherit = "hr_timesheet_sheet.sheet"
@@ -287,7 +308,9 @@ class hr_timesheet_sheet(models.Model):
     compensary_leave = fields.Float(string='Compensary Leave (d)', compute='_compensary_leave')
 
 class hr_holidays(models.Model):
-    _inherit='hr.holidays.status'
+    _inherit='hr.holidays'
+    
+    date_flextime = fields.Date('Flextime Date', help = "This leave is a flextime total up until this date (presumably covering the entire month).")
 
     @api.one
     def _ps_max_leaves(self):
