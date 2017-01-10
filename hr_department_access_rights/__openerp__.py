@@ -34,9 +34,9 @@ Limits access rights for Officers to data regarding employees belonging to their
 
     'auto_install': False,
     'website': 'http://www.vertel.se',
-    'data':['security/hr_security.xml'],
-	'demo':[
-	],
+    'data':['security/hr_security.xml', 'hr_view.xml'],
+    'demo':[
+    ],
     'installable': True
 }
 
