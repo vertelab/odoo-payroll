@@ -47,13 +47,13 @@ class hr_contract(models.Model):
         'working_hours.attendance_ids.hour_from',
         'working_hours.attendance_ids.hour_to')
     def get_scheduled_working_hours(self):
-        self.scheduled_working_hours = self.working_hours and self.working_hours.get_working_hours() or 0
+        self.scheduled_working_hours = self.working_hours and self.working_hours.get_weekly_working_hours() or 0
 
 class resource_calendar(models.Model):
     _inherit = "resource.calendar"
     
     @api.multi
-    def get_working_hours(self):
+    def get_weekly_working_hours(self):
         self.ensure_one()
         res = 0
         for line in self.attendance_ids:
@@ -73,7 +73,7 @@ class hr_employee(models.Model):
             if contract.date_start <= date and contract.date_end >= date:
                 res += contract.weekly_working_hours
         if not res and date != fields.Date.today():
-            res = get_working_hours()
+            res = self.get_working_hours()
         return res
     
     @api.multi
@@ -86,7 +86,7 @@ class hr_employee(models.Model):
             if contract.date_start <= date and contract.date_end >= date:
                 res += contract.wwh_days_intermittent
         if not res and date != fields.Date.today():
-            res = get_working_days()
+            res = self.get_working_days()
         return res
     
     @api.multi

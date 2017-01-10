@@ -60,10 +60,10 @@ class hr_attendance(models.Model):
         if self.employee_id.sudo().contract_id and self._check_last_sign_out(self):
             att = self.env['hr.attendance'].search([('employee_id','=',self.employee_id.id),('name','>',self.name[:10] + ' 00:00:00'),('name','<',self.name[:10] + ' 23:59:59')],order='name')
             for (start,end) in zip(att,att[1:])[::2]:
-                self.get_working_hours += self.pool.get('resource.calendar').get_working_hours(self.env.cr, SUPERUSER_ID,
-                self.employee_id.sudo().contract_id.working_hours.id,
-                    datetime.strptime(start.name, tools.DEFAULT_SERVER_DATETIME_FORMAT),
-                    datetime.strptime(end.name, tools.DEFAULT_SERVER_DATETIME_FORMAT))
+                self.get_working_hours += self.pool.get('resource.calendar').get_working_hours(
+                    self.env.cr, SUPERUSER_ID, self.employee_id.sudo().contract_id.working_hours.id,
+                    fields.Datetime.from_string(start.name),
+                    fields.Datetime.from_string(end.name))
         else:
             self.get_working_hours = 0.0
     get_working_hours = fields.Float(compute='_get_working_hours', string='Worked in schedule (h)')

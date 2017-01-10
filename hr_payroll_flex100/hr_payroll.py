@@ -59,7 +59,6 @@ class hr_attendance(models.Model):
     @api.one
     def _flex_working_hours(self):
         flex_working_hours = 0.0
-        #~ get_working_hours = 0.0
         leaves = 0.0
         if self._check_last_sign_out(self):
             att = self.env['hr.attendance'].sudo().search([('employee_id','=',self.employee_id.id),('name','>',self.name[:10] + ' 00:00:00'),('name','<',self.name[:10] + ' 23:59:59')],order='name')
@@ -74,22 +73,7 @@ class hr_attendance(models.Model):
                         self.flex_working_hours = self.working_hours_on_day
                     elif fields.Datetime.from_string(att[0].name) >= job_intervals[0][0] or fields.Datetime.from_string(att[-1].name) <= job_intervals[-1][-1]: #if not, take worked hours in schedule
                         self.flex_working_hours = self.get_working_hours
-
-            #~ for (start, end) in zip(att, att[1:])[::2]:
-                #~ get_working_hours += self.pool.get('resource.calendar').get_working_hours(self.env.cr, self.env.uid,
-                                                                                            #~ self.employee_id.contract_id.working_hours.id,
-                                                                                            #~ datetime.strptime(start.name, tools.DEFAULT_SERVER_DATETIME_FORMAT),
-                                                                                            #~ datetime.strptime(end.name, tools.DEFAULT_SERVER_DATETIME_FORMAT))
-                #~ flex_working_hours += (fields.Datetime.from_string(end.name) - fields.Datetime.from_string(start.name)).total_seconds() / 3600.0
-
-            #~ last = ()
-            #~ for i in job_intervals:
-                #~ if not last:
-                    #~ last = i
-                    #~ continue
-                #~ leaves += (i[0] - last[1]).total_seconds()
-                #~ last = i
-        #~ self.flex_working_hours = flex_working_hours - leaves / 3600.0
+    
     flex_working_hours = fields.Float(compute='_flex_working_hours', string='Worked Flex (h)')
 
     @api.one
@@ -230,8 +214,10 @@ class hr_payslip(models.Model):
         #~ """ Wrapper on _schedule_days: return the beginning/ending datetime of"""
 
         #raise Warning(self.worked_days_line_ids)
-        self.employee_id.set_flex_time_pot(self.flextime / 60.0 / 24.0, self.date_to) # minutes to days
-        return super(hr_payslip,self).hr_verify_sheet()
+        #TODO: Make sure this is only written once.
+        if self.state == 'draft':
+            self.employee_id.set_flex_time_pot(self.flextime, self.date_to)
+        return super(hr_payslip, self).hr_verify_sheet()
 
     #~ def refund_sheet(self, cr, uid, ids, context=None):
         #~ mod_obj = self.pool.get('ir.model.data')
@@ -263,13 +249,13 @@ class hr_employee(models.Model):
 
     flex_holiday_id = fields.Many2one(comodel_name='hr.holidays', string='Flex Time Bank')
 
-    def set_flex_time_pot(self, days, date = fields.Datetime.now()):
-        date_to = fields.Datetime.from_string('1970-01-01 00:00:00') + timedelta(days = abs(days))
+    def set_flex_time_pot(self, minutes, date = fields.Datetime.now()):
+        date_to = fields.Datetime.from_string('1970-01-01 00:00:00') + timedelta(minutes = abs(minutes))
         if self.flex_holiday_id:
             self.flex_holiday_id.write({
                 'name': 'Time Bank for %s (%s)' % (self.name, date),
-                'type': 'add' if days > 0.0 else 'remove',
-                'number_of_days_temp': abs(days),
+                'type': 'add' if minutes > 0.0 else 'remove',
+                'number_of_minutes': abs(minutes),
                 'date_to': date_to,
             })
         else:
@@ -277,9 +263,9 @@ class hr_employee(models.Model):
                 'name': 'Time Bank for %s (%s)' % (self.name, date),
                 'holiday_status_id': self.env.ref("hr_holidays.holiday_status_comp").id,
                 'employee_id': self.id,
-                'type': 'add' if days > 0.0 else 'remove' ,
+                'type': 'add' if minutes > 0.0 else 'remove' ,
                 'state': 'validate',
-                'number_of_days_temp': abs(days),
+                'number_of_minutes': abs(minutes),
                 'date_from': '1970-01-01 00:00:00',
                 'date_to': date_to,
             })
