@@ -37,6 +37,7 @@ class hr_holidays(models.Model):
     number_of_minutes = fields.Float('Minutes', compute='_get_converted_time', inverse = '_set_converted_time', readonly=True, states={'draft':[('readonly',False)], 'confirm':[('readonly',False)]})
     time_unit = fields.Selection(related = 'holiday_status_id.time_unit')
     
+    @api.one
     def _get_converted_time(self):
         self.number_of_hours = self.number_of_days_temp * (self.employee_id.get_working_hours() or 8)
         self.number_of_minutes = self.number_of_hours * 60
