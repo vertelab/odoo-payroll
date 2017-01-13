@@ -39,8 +39,9 @@
       <field name="model">hr_timesheet_sheet.sheet</field>
       <field name="inherit_id" ref="hr_payroll_schema.hr_timesheet_sheet_form" />
       <field name="arch" type="xml">
-        <field name="total_difference" position="after">
+        <field name="total_attendance_schema" position="after">
             <field name="flextime" attrs="{'invisible': [('work_time', '!=', 'flex')]}"/>
+            <field name="flextime_total" attrs="{'invisible': [('work_time', '!=', 'flex')]}"/>
             <field name="flex_working_hours" attrs="{'invisible': [('work_time', '!=', 'flex')]}"/>
             <field name="compensary_leave"/>
         </field>

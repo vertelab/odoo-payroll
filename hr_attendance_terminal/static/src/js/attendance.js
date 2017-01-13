@@ -184,7 +184,7 @@ openerp.jsonRpc("/hr/attendance/" + id, 'call', {
             $("#employee_message").html("<h2>" + _t("Goodbye!") + "</h2><h2>" + data.employee.name +"</h2>");
             $("#employee_worked_hour").html("<h4><strong>" + _t("Worked Hours") + ": </strong>" + workedHour + _t(" hours and ") + workedMinute + _t(" minutes") + "</h4>");
             if(data.attendance.work_time === 'flex'){
-                $("#employee_flex_time").html("<h4><strong>" + _t("Flex Time") + ": </strong>" + data.attendance.flextime + _t(" minutes") + "</h4><h4><strong>" + _t("Flex Time This Month") + ": </strong>" + data.attendance.flextime_month + _t(" minutes") + "</h4><h4><strong>" + _t("Compensary Leave") + ": </strong>" + data.attendance.compensary_leave + _t(" days") + "</h4>");
+                $("#employee_flex_time").html("<h4><strong>" + _t("Flex Time") + ": </strong>" + data.attendance.flextime + _t(" minutes") + "</h4><h4><strong>" + _t("Flex Time Bank") + ": </strong>" + data.attendance.flextime_total + _t(" minutes") + "</h4>");
             }
             number_employees();
         }

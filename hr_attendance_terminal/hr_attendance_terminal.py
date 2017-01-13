@@ -129,9 +129,8 @@ class attendanceReport(http.Controller):
                     'action': attendance.action,
                     'work_time': attendance.sudo().employee_id.contract_id.type_id.work_time,
                     'worked_hours': attendance.sudo().flex_working_hours if attendance.sudo().employee_id.contract_id.type_id.work_time == 'flex' else attendance.get_working_hours,
-                    'flextime_month': attendance.flextime_month,
+                    'flextime_total': attendance.flextime_total,
                     'flextime': attendance.sudo().flextime,
-                    'compensary_leave': attendance.compensary_leave,
                 },
                 'employee': {
                     'img': attendance.employee_id.image_medium,

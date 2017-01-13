@@ -92,9 +92,14 @@ class hr_attendance(models.Model):
 
     @api.one
     def _compensary_leave(self):
-        self.compensary_leave = self.with_context({'employee_id': self.employee_id.id}).env.ref("hr_holidays.holiday_status_comp").remaining_leaves
+        self.compensary_leave = self.with_context({'employee_id': self.employee_id.id}).env.ref("hr_holidays.holiday_status_comp").remaining_leaves * 60 * (self.employee_id.get_working_hours_per_day() or 8)
     compensary_leave = fields.Float(compute='_compensary_leave')
-
+    
+    flextime_total = fields.Float('Flextime Bank', compute='_get_flextime_total')
+    
+    @api.one
+    def _get_flextime_total(self):
+        self.flextime_total = self.employee_id.get_unbanked_flextime() + self.compensary_leave
 
 class hr_payslip(models.Model):
     _inherit = 'hr.payslip'
@@ -117,7 +122,7 @@ class hr_payslip(models.Model):
             holidays = self.env['hr.holidays'].search([('employee_id', '=', self.employee_id.id), ('holiday_status_id', '=', self.env.ref("hr_holidays.holiday_status_comp").id), ('date_to', '<', self.date_to + ' 23:59:59')])
             self.write({'compensary_leave': sum(holidays.filtered(lambda h: h.type == 'add').mapped("number_of_days_temp")) - sum(holidays.filtered(lambda h: h.type == 'remove').mapped("number_of_days_temp"))})
         self.total_compensary_leave = self.compensary_leave + (self.flextime / 60.0 / 24.0)
-    compensary_leave = fields.Float(string='Compensary Leave') #,compute="_compensary_leave", store=True)
+    compensary_leave = fields.Float(string='Compensary Leave', compute="_compensary_leave", store=True)
     total_compensary_leave = fields.Float(string='Total Compensary Leave',compute="_compensary_leave")
 
 
@@ -270,26 +275,19 @@ class hr_employee(models.Model):
         else:
             holiday = self.env['hr.holidays'].create(values)
         holiday.holidays_validate()
-        
-        
-        #~ if self.flex_holiday_id:
-            #~ self.flex_holiday_id.write({
-                #~ 'name': 'Time Bank for %s (%s)' % (self.name, date),
-                #~ 'type': 'add' if minutes >= 0.0 else 'remove',
-                #~ 'number_of_minutes': abs(minutes),
-                #~ 'date_to': date_to,
-            #~ })
-        #~ else:
-            #~ self.flex_holiday_id = self.env['hr.holidays'].create({
-                #~ 'name': 'Time Bank for %s (%s)' % (self.name, date),
-                #~ 'holiday_status_id': self.env.ref("hr_holidays.holiday_status_comp").id,
-                #~ 'employee_id': self.id,
-                #~ 'type': 'add' if minutes > 0.0 else 'remove' ,
-                #~ 'state': 'validate',
-                #~ 'number_of_minutes': abs(minutes),
-                #~ 'date_from': '1970-01-01 00:00:00',
-                #~ 'date_to': date_to,
-            #~ })
+    
+    @api.one
+    def get_unbanked_flextime(self):
+        """Returns all flextime since last payslip."""
+        slip = self.env['hr.payslip'].search([('date_to', '<=', fields.Date.today()), ('state', '=', 'done')], limit = 1, order = 'date_to desc')
+        if slip:
+            attendances = self.env['hr.attendance'].search_read([('employee_id', '=', self.id), ('action', '=', 'sign_out'), ('name', '>', slip.date_to)], ['flextime'])
+        else:
+            attendances = self.env['hr.attendance'].search_read([('employee_id', '=', self.id)], ['flextime'])
+        res = 0
+        for attendance in attendances:
+            res += attendance['flextime']
+        return res
 
 class hr_timesheet_sheet(models.Model):
     _inherit = "hr_timesheet_sheet.sheet"
@@ -306,6 +304,11 @@ class hr_timesheet_sheet(models.Model):
     def _compensary_leave(self):
         self.compensary_leave = self.with_context({'employee_id': self.employee_id.id}).env.ref("hr_holidays.holiday_status_comp").remaining_leaves
     compensary_leave = fields.Float(string='Compensary Leave (d)', compute='_compensary_leave')
+    flextime_total = fields.Float('Flextime Bank', compute='_get_flextime_total')
+    
+    @api.one
+    def _get_flextime_total(self):
+        self.flextime_total = self.employee_id.get_unbanked_flextime() + self.compensary_leave
 
 class hr_holidays(models.Model):
     _inherit='hr.holidays'
