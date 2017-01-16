@@ -40,6 +40,38 @@ class hr_attendance(models.Model):
             lo_tzone = employee.user_id.tz
         return pytz.timezone(lo_tzone).localize(lo_dt).astimezone(pytz.utc)
 
+class hr_employee(models.Model):
+    _inherit = 'hr.employee'
+    
+    #TODO: Move to separate module?
+    @api.multi
+    def get_breaks_in_s(self, start, stop):
+        self.ensure_one()
+        res = 0
+        _logger.warn(self.contract_id.working_hours.get_working_intervals_of_day(start, stop))
+        if hasattr(self, 'contract_id') and self.sudo().contract_id and self.sudo().contract_id.working_hours:
+            #Should probably be a function (or two) on resource.calendar
+            intervals = self.sudo().contract_id.working_hours.get_working_intervals_of_day(start.replace(hour=0, minute=0))[0]
+            breaks = []
+            for i in range(0, len(intervals) - 1):
+                breaks.append([intervals[i][1], intervals[i + 1][0]])
+            i = 0
+            while i < len(breaks):
+                _logger.warn(breaks)
+                if start >= breaks[i][1]:
+                    del breaks[i]
+                elif stop <= breaks[i][0]:
+                    del breaks[i]
+                else:
+                    if start > breaks[i][0]:
+                        breaks[i][0] = start
+                    if stop < breaks[i][1]:
+                        breaks[i][1] = stop
+                    res += (breaks[i][1] - breaks[i][0]).total_seconds()
+                    i+= 1
+        return res
+        
+
 class attendanceReport(http.Controller):
 
     @http.route(['/hr/attendance'], type='http', auth="user", website=True)
@@ -111,7 +143,7 @@ class attendanceReport(http.Controller):
                     'date': last_attendance.name[:10],
                     'account_id': sec_last_attendance.project_id.analytic_account_id.id,
                     'name': '/',
-                    'unit_amount': (fields.Datetime.from_string(last_attendance.name) - fields.Datetime.from_string(sec_last_attendance.name)).total_seconds() / 3600.0,
+                    'unit_amount': (fields.Datetime.from_string(last_attendance.name) - fields.Datetime.from_string(sec_last_attendance.name)).total_seconds() / 3600.0 - employee.get_breaks_in_s(),
                     'user_id': employee.user_id.id,
                     'product_id': request.env['hr.analytic.timesheet'].with_context(user_id = employee.user_id.id, employee_id = employee.id)._getEmployeeProduct(),
                     'product_uom_id': request.env['hr.analytic.timesheet'].with_context(user_id = employee.user_id.id, employee_id = employee.id)._getEmployeeUnit(),
