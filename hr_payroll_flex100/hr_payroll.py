@@ -276,9 +276,10 @@ class hr_employee(models.Model):
             holiday = self.env['hr.holidays'].create(values)
         holiday.holidays_validate()
     
-    @api.one
+    @api.multi
     def get_unbanked_flextime(self):
         """Returns all flextime since last payslip."""
+        self.ensure_one()
         slip = self.env['hr.payslip'].search([('date_to', '<=', fields.Date.today()), ('state', '=', 'done')], limit = 1, order = 'date_to desc')
         if slip:
             attendances = self.env['hr.attendance'].search_read([('employee_id', '=', self.id), ('action', '=', 'sign_out'), ('name', '>', slip.date_to)], ['flextime'])
