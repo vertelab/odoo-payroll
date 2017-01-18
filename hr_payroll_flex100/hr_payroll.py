@@ -280,7 +280,7 @@ class hr_employee(models.Model):
     def get_unbanked_flextime(self):
         """Returns all flextime since last payslip."""
         self.ensure_one()
-        slip = self.env['hr.payslip'].search([('date_to', '<=', fields.Date.today()), ('state', '=', 'done')], limit = 1, order = 'date_to desc')
+        slip = self.env['hr.payslip'].sudo().search([('date_to', '<=', fields.Date.today()), ('state', '=', 'done')], limit = 1, order = 'date_to desc')
         if slip:
             attendances = self.env['hr.attendance'].search_read([('employee_id', '=', self.id), ('action', '=', 'sign_out'), ('name', '>', slip.date_to)], ['flextime'])
         else:
@@ -303,7 +303,7 @@ class hr_timesheet_sheet(models.Model):
 
     @api.one
     def _compensary_leave(self):
-        self.compensary_leave = self.with_context({'employee_id': self.employee_id.id}).env.ref("hr_holidays.holiday_status_comp").remaining_leaves
+        self.compensary_leave = self.with_context({'employee_id': self.employee_id.id}).env.ref("hr_holidays.holiday_status_comp").remaining_leaves * 60 * (self.employee_id.get_working_hours_per_day() or 8)
     compensary_leave = fields.Float(string='Compensary Leave (d)', compute='_compensary_leave')
     flextime_total = fields.Float('Flextime Bank', compute='_get_flextime_total')
     
