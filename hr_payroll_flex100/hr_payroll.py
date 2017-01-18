@@ -108,7 +108,7 @@ class hr_payslip(models.Model):
     def _flextime(self):
         self.flextime = sum(self.env['hr.attendance'].search([('employee_id', '=',self.employee_id.id), ('name', '>', self.date_from + ' 00:00:00'), ('name', '<', self.date_to + ' 23:59:59')]).mapped("flextime"))
         self.flex_working_hours = sum(self.env['hr.attendance'].search([('employee_id','=',self.employee_id.id),('name','>',self.date_from + ' 00:00:00'),('name','<',self.date_to + ' 23:59:59')]).mapped("flex_working_hours"))
-    flextime = fields.Float(string='Flex Time (m)',compute="_flextime")
+    flextime = fields.Float(string='Flex Time This Period (m)',compute="_flextime")
     flex_working_hours = fields.Float(compute='_flextime', string='Worked Flex (h)')
 
     @api.one
@@ -299,7 +299,7 @@ class hr_timesheet_sheet(models.Model):
         self.flex_working_hours = sum(self.attendances_ids.mapped('flex_working_hours'))
         self.flextime = sum(self.attendances_ids.mapped('flextime'))
     flex_working_hours = fields.Float(compute='_flex_working_hours', string='Worked Flex (h)')
-    flextime = fields.Float(compute='_flex_working_hours', string='Flex Time (m)')
+    flextime = fields.Float(compute='_flex_working_hours', string='Flex Time This Period(m)')
 
     @api.one
     def _compensary_leave(self):
