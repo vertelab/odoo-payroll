@@ -333,11 +333,13 @@ class hr_holidays_status(models.Model):
     def name_get(self):
         """Add flex time to name."""
         res = super(hr_holidays_status, self).name_get()
-        for hs in self:
-            if hs == self.env.ref("hr_holidays.holiday_status_comp"):
-                for i in range(0, len(res)):
-                    if res[i][0] == hs.id:
-                        res[i] = (hs.id, res[i][1] + ('  (%g/%g)' % ((hs.leaves_taken or 0.0) * 24 * 60, (hs.max_leaves or 0.0) * 24 * 60)))
+        if self._context.get('employee_id', False):
+            employee = self.env['hr.employee'].browse(self._context.get('employee_id'))
+            for hs in self:
+                if hs == self.env.ref("hr_holidays.holiday_status_comp"):
+                    for i in range(0, len(res)):
+                        if res[i][0] == hs.id:
+                            res[i] = (hs.id, res[i][1] + ('  (%g m/%g m)' % ((hs.leaves_taken or 0.0) * 60 * (employee.get_working_hours_per_day() or 8), (hs.max_leaves or 0.0) * 60 * (employee.get_working_hours_per_day() or 8))))
         return res
 
 class hr_contract_type(models.Model):

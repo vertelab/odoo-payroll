@@ -153,7 +153,7 @@ openerp.jsonRpc("/hr/attendance/come_and_go", 'call', {
         if (data != undefined) {
             clearContent();
             $("#employee_message_error").html("<h2 style='color: #f00;'>" + data +"</h2>");
-            $('#Log_div').delay(15000).fadeOut('slow');
+            logTimeOut = setTimeout("$('#Log_div').fadeOut('slow')", 15000);
         }
     });
 }
