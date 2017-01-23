@@ -21,5 +21,10 @@ env['bus.bus'].sendone('attendance',object.id)
       <field name="server_action_ids" eval="[(6,0, [ref('action_notify_attendance_change')])]"/>
     </record>
 
+    <record model="ir.config_parameter" id="attendance_terminal_timeout">
+      <field name="key">terminal_timeout</field>
+      <field name="value">15</field>
+    </record>
+
   </data>
 </openerp>
