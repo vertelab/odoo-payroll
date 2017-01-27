@@ -1,5 +1,10 @@
 var logTimeOut;
 var _t = openerp._t;
+
+function getResults (result) {
+    console.log(result); // to see which data come from server
+}
+
 function attendance_data_loop(id) {
     openerp.jsonRpc('/longpolling/poll','call',
     {
@@ -20,7 +25,6 @@ function attendance_data_loop(id) {
             setTimeout(function() {
                 attendance_data_loop(id);
             }, 5000)
-
         }
     )
 };
@@ -48,6 +52,10 @@ $(document).ready(function() {
         }
         pressed = true;
     });
+    //~ time_out.query(["key"]).filter([["key", "=", "terminal_timeout"]])
+    //~ .then(function(result){
+        //~ console.log(result);
+    //~ })
 });
 
 function employee_id(rfid){
