@@ -135,7 +135,7 @@ class hr_holidays(models.Model):
     
     @api.model
     def create(self,values):
-        if values.get('holiday_type') == 'category' or values.get('type') == 'add' or values.get('employee_id') == False:
+        if values.get('holiday_type') == 'category' or values.get('type') == 'add' or values.get('employee_id') == None:
             pass
         else:
             leave = self.env['hr.holidays.status'].browse(values['holiday_status_id'])
