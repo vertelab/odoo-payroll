@@ -35,7 +35,7 @@ class hr_holidays(models.Model):
     number_of_days_temp_show = fields.Float('Allocation', compute = '_get_number_of_days_temp_show')
     number_of_hours = fields.Float('Hours', compute = '_get_converted_time', inverse = '_set_converted_time', readonly=True, states={'draft':[('readonly',False)], 'confirm':[('readonly',False)]})
     number_of_minutes = fields.Float('Minutes', compute='_get_converted_time', inverse = '_set_converted_time', readonly=True, states={'draft':[('readonly',False)], 'confirm':[('readonly',False)]})
-    time_unit = fields.Selection(related = 'holiday_status_id.time_unit')
+    time_unit = fields.Selection(related = 'holiday_status_id.time_unit', readonly = True)
     
     @api.one
     def _get_converted_time(self):
