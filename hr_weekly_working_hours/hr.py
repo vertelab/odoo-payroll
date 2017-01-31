@@ -41,6 +41,7 @@ class hr_contract(models.Model):
     scheduled_working_hours = fields.Float('Scheduled Working Hours', compute='get_scheduled_working_hours', store=True)
     wwh_days_full = fields.Float('WWH Days Full Time', default=5)
     wwh_days_intermittent = fields.Float('WWH Days Intermittent', default=5)
+    working_percent = fields.Float('Working Percent',default=100)
     
     @api.one
     @api.depends('working_hours', 'working_hours.attendance_ids',

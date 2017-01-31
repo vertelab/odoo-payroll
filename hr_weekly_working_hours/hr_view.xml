@@ -12,6 +12,7 @@
             <field name="weekly_working_hours"/>
             <field name="wwh_days_full"/>
             <field name="wwh_days_intermittent"/>
+            <field name="working_percent"/>
           </group>
         </separator>
       </field>
