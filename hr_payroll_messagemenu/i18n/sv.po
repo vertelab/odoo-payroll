@@ -1,23 +1,26 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-#	* hr_payroll_messagemenu
+# 	* hr_payroll_messagemenu
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 8.0-20161025\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-01-31 09:11+0000\n"
-"PO-Revision-Date: 2017-01-31 09:11+0000\n"
+"PO-Revision-Date: 2017-01-31 10:18+0100\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: \n"
+"Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: \n"
+"Language: sv\n"
+"X-Generator: Poedit 1.8.9\n"
 
 #. module: hr_payroll_messagemenu
 #: model:ir.actions.act_window,help:hr_payroll_messagemenu.open_ask_holidays
-msgid "<p class=\"oe_view_nocontent_create\">\n"
+msgid ""
+"<p class=\"oe_view_nocontent_create\">\n"
 "                Click to create a new leave request.\n"
 "              </p><p>\n"
 "                Once you have recorded your leave request, it will be sent\n"
@@ -26,13 +29,13 @@ msgid "<p class=\"oe_view_nocontent_create\">\n"
 "                number of open days related to your leave.\n"
 "              </p>\n"
 "            "
-msgstr "<p class=\"oe_view_nocontent_create\">\n"
-"                Click to create a new leave request.\n"
+msgstr ""
+"<p class=\"oe_view_nocontent_create\">\n"
+"                Klicka för att skapa en ny förfrågan.\n"
 "              </p><p>\n"
-"                Once you have recorded your leave request, it will be sent\n"
-"                to a manager for validation. Be sure to set the right leave\n"
-"                type (recuperation, legal holidays, sickness) and the exact\n"
-"                number of open days related to your leave.\n"
+"Så snart du sparat din förfrågan, skickas den                \n"
+"till närmaste chef fö granskning. Var noga med att välja korrekt\n"
+"frånvarotyp och exakt antal dagar det gäller (kan variera med avtalstyp)\n"
 "              </p>\n"
 "            "
 
@@ -56,7 +59,7 @@ msgstr "Begäran kompensationsledigt"
 #. module: hr_payroll_messagemenu
 #: field:messagemenu.change_project,create_uid:0
 msgid "Created by"
-msgstr "Created by"
+msgstr "Skapad av"
 
 #. module: hr_payroll_messagemenu
 #: field:messagemenu.change_project,create_date:0
@@ -86,7 +89,7 @@ msgstr "Senast uppdaterad"
 #. module: hr_payroll_messagemenu
 #: field:messagemenu.change_project,write_date:0
 msgid "Last Updated on"
-msgstr "Last Updated on"
+msgstr "Senast uppdaterad"
 
 #. module: hr_payroll_messagemenu
 #: model:ir.ui.menu,name:hr_payroll_messagemenu.msg_menu_act_hr_timesheet_sheet_form_my_current
@@ -114,48 +117,47 @@ msgstr "Projekt"
 #: code:addons/hr_payroll_messagemenu/hr_payroll_messagemenu.py:77
 #, python-format
 msgid "There is no active attendance"
-msgstr "There is no active attendance"
+msgstr "Närvaro saknas"
 
 #. module: hr_payroll_messagemenu
 #: model:ir.ui.menu,name:hr_payroll_messagemenu.msg_menu_time_report
 msgid "Time Report"
-msgstr "Time Report"
+msgstr "Tidrapport"
 
 #. module: hr_payroll_messagemenu
 #: model:ir.filters,name:hr_payroll_messagemenu.timesheet_validation_filter
 msgid "Timesheet Validation Finished"
-msgstr "Timesheet Validation Finished"
+msgstr "Tidrapport granskad"
 
 #. module: hr_payroll_messagemenu
 #: model:ir.actions.server,name:hr_payroll_messagemenu.timesheet_validation_message_action
 msgid "Timesheet Validation Message Action"
-msgstr "Timesheet Validation Message Action"
+msgstr "Tidrapport granskningsmeddelande"
 
 #. module: hr_payroll_messagemenu
 #: code:addons/hr_payroll_messagemenu/hr_payroll_messagemenu.py:40
 #, python-format
 msgid "Week "
-msgstr "Week "
+msgstr "Vecka"
 
 #. module: hr_payroll_messagemenu
 #: code:addons/hr_payroll_messagemenu/hr_payroll_messagemenu.py:58
 #, python-format
 msgid "You cannot %s twice"
-msgstr "You cannot %s twice"
+msgstr "Du kan inte %s dubbelt"
 
 #. module: hr_payroll_messagemenu
 #: code:addons/hr_payroll_messagemenu/hr_payroll_messagemenu.py:51
 #, python-format
 msgid "You lack employment, please contact your HR-officer"
-msgstr "You lack employment, please contact your HR-officer"
+msgstr "Du saknar anställdning, vänligen kontakta personalavdelningen"
 
 #. module: hr_payroll_messagemenu
 #: view:messagemenu.change_project:hr_payroll_messagemenu.act_messagemenu_change_project
 msgid "_Change Project"
-msgstr "_Change Project"
+msgstr "_Byt Projekt"
 
 #. module: hr_payroll_messagemenu
 #: view:messagemenu.change_project:hr_payroll_messagemenu.act_messagemenu_change_project
 msgid "or"
-msgstr "or"
-
+msgstr "eller"
