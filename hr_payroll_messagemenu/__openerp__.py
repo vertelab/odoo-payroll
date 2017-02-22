@@ -2,7 +2,7 @@
 ##############################################################################
 #
 # OpenERP, Open Source Management Solution, third party addon
-# Copyright (C) 2017- Vertel AB (<http://vertel.se>).
+# Copyright (C) 2016- Vertel AB (<http://vertel.se>).
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -19,16 +19,16 @@
 #
 ##############################################################################
 {
-'name': 'Event Message Menu',
+'name': 'Payroll Message Menu',
 'version': '0.1',
-'summary': 'Menu for event calendar in message menu',
-'category': 'event',
-'description': """Menu for event calendar in message menu
+'summary': 'Human Resource',
+'category': 'hr',
+'description': """show time report menus in messaging menu
 
 """,
 'author': 'Vertel AB',
 'website': 'http://www.vertel.se',
-'depends': ['event',],
-'data': ['event_messagemenu_view.xml', 'event_messagemenu_data.xml',],
+'depends': ['hr_timesheet_sheet', 'hr_payroll_flex100', 'hr_holidays','project'],
+'data': ['hr_payroll_messagemenu_view.xml', 'hr_payroll_messagemenu_data.xml',],
 'installable': True,
 }
