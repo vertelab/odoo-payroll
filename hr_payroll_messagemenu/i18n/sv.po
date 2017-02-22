@@ -54,7 +54,7 @@ msgstr "Stäng"
 #: model:ir.actions.act_window,name:hr_payroll_messagemenu.open_ask_compensatory
 #: model:ir.ui.menu,name:hr_payroll_messagemenu.menu_open_ask_compensatory
 msgid "Compensary Allocation Requests"
-msgstr "Kompensationstidsbegäran"
+msgstr "Begäran kompensationsledigt"
 
 #. module: hr_payroll_messagemenu
 #: field:messagemenu.change_project,create_uid:0

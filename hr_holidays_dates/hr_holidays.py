@@ -46,13 +46,9 @@ class hr_holidays(models.Model):
     @api.onchange('number_of_hours', 'number_of_minutes')
     def _set_converted_time(self):
         if self.holiday_status_id.time_unit == 'hour':
-            number_of_days_temp = self.number_of_hours / (self.employee_id.get_working_hours() or 8)   # Assume 8 hours if 0
-            if self.number_of_days_temp != number_of_days_temp:
-                self.number_of_days_temp  = number_of_days_temp
+            self.number_of_days_temp = self.number_of_hours / (self.employee_id.get_working_hours() or 8)   # Assume 8 hours if 0
         elif self.holiday_status_id.time_unit == 'minute':
-            number_of_days_temp = (self.number_of_minutes / (self.employee_id.get_working_hours() or 8)) / 60
-            if self.number_of_days_temp != number_of_days_temp:
-                self.number_of_days_temp  = number_of_days_temp
+            self.number_of_days_temp = (self.number_of_minutes / (self.employee_id.get_working_hours() or 8)) / 60
     
     @api.one
     def _get_number_of_days_temp_show(self):
@@ -67,7 +63,6 @@ class hr_holidays(models.Model):
     @api.onchange('number_of_days_temp')
     def onchange_number_of_days_temp(self):
         self._get_number_of_days_temp_show()
-        self._get_converted_time()
     
     #~ @api.one
     #~ def _get_number_of_hours(self):

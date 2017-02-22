@@ -50,17 +50,10 @@ class hr_attendance(models.Model):
                     self.employee_id.sudo().contract_id.working_hours.id,
                     start_dt=today, leaves=leaves)
             att = self.env['hr.attendance'].sudo().search([('employee_id','=',self.employee_id.id),('name','>',self.name[:10] + ' 00:00:00'),('name','<',self.name[:10] + ' 23:59:59')],order='name')
-            flextime = 0.0
             if len(job_intervals) > 0:
-                # positive flextime: begin early
-                if job_intervals[0][0] > fields.Datetime.from_string(att[0].name):
-                    flextime += (job_intervals[0][0] - fields.Datetime.from_string(att[0].name)).total_seconds()
-                # positive flextime: end late
-                if job_intervals[-1][-1] < fields.Datetime.from_string(att[-1].name):
-                    flextime += (fields.Datetime.from_string(att[-1].name) - job_intervals[-1][-1]).total_seconds()
-                # negative flextime: missing time inside the schedule (begin late or end early)
-                flextime -= (self.working_hours_on_day - self.get_working_hours) * 3600
-                self.flextime = round(flextime / 60.0)
+                flex_begin =  job_intervals[0][0] - fields.Datetime.from_string(att[0].name)
+                flex_end = fields.Datetime.from_string(att[-1].name) - job_intervals[-1][1]
+                self.flextime = round((flex_begin + flex_end).total_seconds() / 60.0)
     flextime = fields.Integer(compute='_flextime', string='Flex Time (m)')
 
     @api.one
