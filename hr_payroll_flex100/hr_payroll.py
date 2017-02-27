@@ -43,14 +43,15 @@ class hr_attendance(models.Model):
                 resource = self.env['resource.resource'].search([('resource_type', '=', 'user'), ('user_id', '=', self.employee_id.user_id.id)])
             else:
                 resource = None
+            flextime = 0.0
             leaves = self.employee_id.sudo().contract_id.working_hours.get_leave_intervals(resource_id = resource and resource.id or None)[0]
-            for holiday in self.env['hr.holidays'].search([('date_from', '>=', fields.Datetime.to_string(today)),('date_to', '<', tomorrow), ('employee_id', '=', self.employee_id.id)]):
+            for holiday in self.env['hr.holidays'].search([('date_from', '>=', fields.Datetime.to_string(today)),('date_to', '<', tomorrow), ('employee_id', '=', self.employee_id.id), ('type', '=', 'remove')]):
                 leaves.append((fields.Datetime.from_string(holiday.date_from), fields.Datetime.from_string(holiday.date_to)))
+                flextime += holiday.number_of_minutes * 60
             job_intervals = self.pool.get('resource.calendar').get_working_intervals_of_day(self.env.cr,SUPERUSER_ID,
                     self.employee_id.sudo().contract_id.working_hours.id,
                     start_dt=today, leaves=leaves)
             att = self.env['hr.attendance'].sudo().search([('employee_id','=',self.employee_id.id),('name','>',self.name[:10] + ' 00:00:00'),('name','<',self.name[:10] + ' 23:59:59')],order='name')
-            flextime = 0.0
             if len(job_intervals) > 0:
                 # positive flextime: begin early
                 if job_intervals[0][0] > fields.Datetime.from_string(att[0].name):
