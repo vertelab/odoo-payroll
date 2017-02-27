@@ -58,24 +58,11 @@ class hr_holidays(models.Model):
     def _get_number_of_days_temp_show(self):
         self.number_of_days_temp_show = self.number_of_days_temp
     
-    #~ @api.one
-    #~ @api.onchange('holiday_status_id')
-    #~ def onchange_holiday_status_id(self):
-        #~ raise Warning('Hello')
-    
     @api.one
     @api.onchange('number_of_days_temp')
     def onchange_number_of_days_temp(self):
         self._get_number_of_days_temp_show()
         self._get_converted_time()
-    
-    #~ @api.one
-    #~ def _get_number_of_hours(self):
-        #~ employee = self.employee_id.sudo()
-        #~ if employee and employee.sudo().contract_id and employee.sudo().contract_id.working_hours and self.number_of_days_temp <= 1:
-            #~ self.number_of_hours = self.number_of_days_temp * employee.sudo().contract_id.working_hours.get_working_hours_of_date(
-                #~ fields.Datetime.from_string(self.date_from),
-                #~ fields.Datetime.from_string(self.date_to))[0]
     
     def _get_default_date_from(self, employee, date_from):
         if employee and employee.sudo().contract_id and employee.sudo().contract_id.working_hours and date_from:
@@ -91,52 +78,46 @@ class hr_holidays(models.Model):
             intervals = employee.sudo().contract_id.working_hours.get_working_intervals_of_day(date)[0]
             return  intervals and fields.Datetime.to_string(intervals[-1][-1]) or date_to
     
-    def _get_number_of_days_temp(self, employee, date_from, date_to):
-        if employee and employee.sudo().contract_id and employee.sudo().contract_id.working_hours and date_from and date_to:
-            hours = employee.sudo().contract_id.working_hours.get_working_hours_of_date(fields.Datetime.from_string(date_from), fields.Datetime.from_string(date_to))[0]
-            hours_on_day = employee.sudo().contract_id.working_hours.get_working_hours_of_date(fields.Datetime.from_string(date_from).replace(hour = 0, minute = 0))[0]
-            if hours_on_day != 0:
-                return hours / hours_on_day
-        return 1
+    @api.one
+    def _update_number_of_days_temp(self):
+        if self.employee_id and self.employee_id.sudo().contract_id and self.employee_id.sudo().contract_id.working_hours and self.date_from and self.date_to and self.number_of_days_temp <= 1.0:
+            hours = self.employee_id.sudo().contract_id.working_hours.get_working_hours_of_date(fields.Datetime.from_string(self.date_from), fields.Datetime.from_string(self.date_to))[0]
+            #hours_on_day = self.employee_id.sudo().contract_id.working_hours.get_working_hours_of_date(fields.Datetime.from_string(self.date_from).replace(hour = 0, minute = 0))[0]
+            self.number_of_days_temp = hours / (self.employee_id.get_working_hours_per_day() or 8) #Assume 8 if 0
+        self.onchange_number_of_days_temp()
     
-    @api.cr_uid_ids
-    def onchange_employee(self, cr, uid, ids, employee_id, date_to = None, date_from = None):
-        env = api.Environment(cr, uid, {})
-        result = super(hr_holidays, self).onchange_employee(cr, uid, ids, employee_id)
-        employee = env['hr.employee'].browse(employee_id)
-        if employee.sudo().contract_id and employee.sudo().contract_id.working_hours:
-            date_from = self._get_default_date_from(employee, date_from)
-            if date_from:
-                result['value']['date_from'] = date_from
-            date_to = self._get_default_date_to(employee, date_to)
-            if date_to:
-                result['value']['date_to'] = date_to
-        return result
-         
-    @api.cr_uid_ids
-    def onchange_date_from(self, cr, uid, ids, date_to, date_from, employee_id = []):
-        result = super(hr_holidays, self).onchange_date_from(cr, uid, ids, date_to, date_from)
-        env = api.Environment(cr, uid, {})
-        employee = env['hr.employee'].browse(employee_id)
-        if employee:
-            if date_from and not date_to:
-                date_to = result['value']['date_to'] = self._get_default_date_to(employee, date_from)
-            if date_from and date_to and result['value'].get('number_of_days_temp', 2) <= 1.0:
-                result['value']['number_of_days_temp'] = self._get_number_of_days_temp(employee, date_from, date_to)
-        return result
-        
-    @api.cr_uid_ids
-    def onchange_date_to(self, cr, uid, ids, date_to, date_from, employee_id = []):
-        result = super(hr_holidays, self).onchange_date_to(cr, uid, ids, date_to, date_from)
-        _logger.warn(result)
-        env = api.Environment(cr, uid, {})
-        employee = env['hr.employee'].browse(employee_id)
-        if employee:
-            if date_to and not date_from:
-                date_from = result['value']['date_from'] = self._get_default_date_from(employee, date_to)
-            if date_from and date_to and result['value'].get('number_of_days_temp', 2) <= 1.0:
-                result['value']['number_of_days_temp'] = self._get_number_of_days_temp(employee, date_from, date_to)
-        return result
+    @api.one
+    @api.onchange('employee_id')
+    def _onchange_employee_id(self):
+        res = self.onchange_employee(self.employee_id.id)['value']
+        for v in res:
+            setattr(self, v, res[v])
+        if self.sudo().employee_id.contract_id and self.sudo().employee_id.contract_id.working_hours:
+            self.date_from = self._get_default_date_from(self.employee_id, self.date_from)
+            self.date_to = None
+            self._onchange_date_from()
+    
+    @api.one
+    @api.onchange('date_from')
+    def _onchange_date_from(self):
+        res = self.onchange_date_from(self.date_to, self.date_from)['value']
+        date_to = self.date_to
+        for v in res:
+            setattr(self, v, res[v])
+        if not date_to:
+            self.date_to = self._get_default_date_to(self.employee_id, self.date_from)
+        self._update_number_of_days_temp()
+    
+    @api.one
+    @api.onchange('date_to')
+    def _onchange_date_to(self):
+        res = self.onchange_date_to(self.date_to, self.date_from)['value']
+        date_from = self.date_from
+        for v in res:
+            setattr(self, v, res[v])
+        if not date_from:
+            self.date_from = self._get_default_date_from(self.employee_id, self.date_to)
+        self._update_number_of_days_temp()
     
     @api.model
     def create(self,values):
