@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_resource_holiday_settings,Resource Holiday Settings,model_resource_holiday_settings,base.group_system,1,1,1,1

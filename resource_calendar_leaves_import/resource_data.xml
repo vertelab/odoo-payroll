@@ -1,0 +1,16 @@
+<openerp>
+  <data noupdate="1">
+    
+    <record model="ir.cron" id="calendar_leave_cron_job">
+      <field name="name">Update Resource Calendar Holidays</field>
+      <field name="interval_number">1</field>
+      <field name="interval_type">days</field>
+      <field name="numbercall">-1</field>
+      <field name="model">resource.calendar</field>
+      <field name="function">update_all_calendar_leaves</field>
+      <field name="args">()</field>
+      <field name="doall" eval="True"/>
+    </record>
+    
+  </data>
+</openerp>
