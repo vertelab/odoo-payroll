@@ -304,6 +304,8 @@ class hr_employee(models.Model):
         self.ensure_one()
         if abs(self.get_unbanked_flextime()) > int(self.env['ir.config_parameter'].get_param('max flextime hours (+/-)','10')):
             subject = 'Flextime overdue %s' % self.name
+            
+            #~ self.env['mail.nodup'].check()
             id = self.env['mail.message'].create({
                     'body': _("Flextime overdue %s hours for %s\n" % (self.self.get_unbanked_flextime(), self.name),
                     'subject': subject,
