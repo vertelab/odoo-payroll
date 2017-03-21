@@ -297,6 +297,30 @@ class hr_employee(models.Model):
         for attendance in attendances:
             res += attendance['flextime']
         return res
+    
+    @api.multi
+    def check_unbanked_flextime(self):
+        """checks all flextime since last payslip."""
+        self.ensure_one()
+        if abs(self.get_unbanked_flextime()) > int(self.env['ir.config_parameter'].get_param('max flextime hours (+/-)','10')):
+            subject = 'Flextime overdue %s' % self.name
+            id = self.env['mail.message'].create({
+                    'body': _("Flextime overdue %s hours for %s\n" % (self.self.get_unbanked_flextime(), self.name),
+                    'subject': subject,
+                    'author_id': self.env['res.users'].browse(self.env.uid).partner_id.id,
+                    'res_id': self.id,
+                    'model': self._name,
+                    'type': 'notification',})
+# boss
+            id = self.env['mail.message'].create({
+                    'body': _("Flextime overdue %s hours for %s\n" % (self.self.get_unbanked_flextime(), self.name),
+                    'subject': subject,
+                    'author_id': self.env['res.users'].browse(self.env.uid).partner_id.id,
+                    'res_id': self.id,
+                    'model': self._name,
+                    'type': 'notification',})
+            _logger.error('Flextime overdue:  %s hours for %s ' % (self.self.get_unbanked_flextime(), self.name))
+
 
 class hr_timesheet_sheet(models.Model):
     _inherit = "hr_timesheet_sheet.sheet"
