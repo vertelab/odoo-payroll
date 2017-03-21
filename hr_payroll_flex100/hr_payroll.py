@@ -302,6 +302,7 @@ class hr_employee(models.Model):
     def check_unbanked_flextime(self):
         """checks all flextime since last payslip."""
         self.ensure_one()
+        # Flextidsgräns per schema
         if abs(self.get_unbanked_flextime()) > int(self.env['ir.config_parameter'].get_param('max flextime hours (+/-)','10')):
             subject = 'Flextime overdue %s' % self.name
             
