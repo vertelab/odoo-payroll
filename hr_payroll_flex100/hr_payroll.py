@@ -308,7 +308,7 @@ class hr_employee(models.Model):
             
             #~ self.env['mail.nodup'].check()
             id = self.env['mail.message'].create({
-                    'body': _("Flextime overdue %s hours for %s\n" % (self.self.get_unbanked_flextime(), self.name),
+                    'body': _("Flextime overdue %s hours for %s\n" % (self.get_unbanked_flextime(), self.name)),
                     'subject': subject,
                     'author_id': self.env['res.users'].browse(self.env.uid).partner_id.id,
                     'res_id': self.id,
@@ -316,13 +316,13 @@ class hr_employee(models.Model):
                     'type': 'notification',})
 # boss
             id = self.env['mail.message'].create({
-                    'body': _("Flextime overdue %s hours for %s\n" % (self.self.get_unbanked_flextime(), self.name),
+                    'body': _("Flextime overdue %s hours for %s\n" % (self.get_unbanked_flextime(), self.name)),
                     'subject': subject,
                     'author_id': self.env['res.users'].browse(self.env.uid).partner_id.id,
                     'res_id': self.id,
                     'model': self._name,
                     'type': 'notification',})
-            _logger.error('Flextime overdue:  %s hours for %s ' % (self.self.get_unbanked_flextime(), self.name))
+            _logger.error('Flextime overdue:  %s hours for %s ' % (self.get_unbanked_flextime(), self.name))
 
 
 class hr_timesheet_sheet(models.Model):
