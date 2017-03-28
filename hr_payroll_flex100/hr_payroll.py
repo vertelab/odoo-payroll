@@ -124,6 +124,7 @@ class hr_payslip(models.Model):
         self.flex_working_days = len(self.env['hr.attendance'].search([('employee_id', '=',self.employee_id.id), ('name', '>', self.date_from + ' 00:00:00'), ('name', '<', self.date_to + ' 23:59:59')]).filtered(lambda a: a._check_last_sign_out(a) == True))
     flex_working_days = fields.Float(compute='_flex_working_days', string='Flex Worked Days')
     @api.one
+    
     def _compensary_leave(self):
         # TODO: Fix issues with leaves spanning two or more months.
         if self.state == 'draft':
@@ -298,36 +299,47 @@ class hr_employee(models.Model):
             res += attendance['flextime']
         return res
     
-    @api.multi
-    def check_unbanked_flextime(self):
-        """checks all flextime since last payslip."""
-        self.ensure_one()
+    @api.one
+    def check_flextime_limit(self):
+        """Checks if flextime has passed the warning limit."""
+        _logger.warn(self.name)
+        _logger.warn(self.get_flextime_total())
         # Flextidsgräns per schema
-        if abs(self.get_unbanked_flextime()) > int(self.env['ir.config_parameter'].get_param('max flextime hours (+/-)','10')):
+        if self.contract_id and self.contract_id.working_hours and self.contract_id.working_hours.flextime_warning and abs(self.get_flextime_total()) > self.contract_id.working_hours.flextime_warning:
             subject = 'Flextime overdue %s' % self.name
-            
-            #~ self.env['mail.nodup'].check()
-            id = self.env['mail.message'].create({
-                    'body': _("Flextime overdue %s hours for %s\n" % (self.get_unbanked_flextime(), self.name)),
-                    'subject': subject,
-                    'author_id': self.env['res.users'].browse(self.env.uid).partner_id.id,
-                    'res_id': self.id,
-                    'model': self._name,
-                    'type': 'notification',})
-# boss
-            id = self.env['mail.message'].create({
-                    'body': _("Flextime overdue %s hours for %s\n" % (self.get_unbanked_flextime(), self.name)),
-                    'subject': subject,
-                    'author_id': self.env['res.users'].browse(self.env.uid).partner_id.id,
-                    'res_id': self.id,
-                    'model': self._name,
-                    'type': 'notification',})
-            _logger.error('Flextime overdue:  %s hours for %s ' % (self.get_unbanked_flextime(), self.name))
-
+            _logger.warn(subject)
+            if not self.env['mail.nodup'].check_dup(self.user_id.partner_id.email, subject):
+                partner_ids = []
+                if self.user_id:
+                    partner_ids.append(self.user_id.partner_id.id)
+                if self.parent_id and self.parent_id.user_id:
+                    partner_ids.append(self.parent_id.user_id.partner_id.id)
+                if partner_ids:
+                    id = self.env['mail.message'].create({
+                            'body': _("Flextime overdue %s minutes for %s\n" % (self.get_flextime_total(), self.name)),
+                            'subject': subject,
+                            'author_id': self.env.user.partner_id.id,
+                            'partner_ids': [(6, 0, partner_ids)],
+                            'res_id': self.id,
+                            'model': self._name,
+                            'type': 'email',
+                        })
+            _logger.info('Flextime overdue:  %s hours for %s ' % (self.get_flextime_total(), self.name))
+    
+    @api.multi
+    def get_flextime_total(self):
+        self.ensure_one()
+        return self.get_unbanked_flextime() + self.with_context({'employee_id': self.id}).env.ref("hr_holidays.holiday_status_comp").remaining_leaves * 60 * (self.get_working_hours_per_day() or 8)
+    
+    @api.model
+    def run_flextime_limit_check(self):
+        _logger.info("Running flextime limit check")
+        for employee in self.search([]):
+            employee.check_flextime_limit()
 
 class hr_timesheet_sheet(models.Model):
     _inherit = "hr_timesheet_sheet.sheet"
-
+    
     @api.one
     @api.depends('attendances_ids','attendances_ids.sheet_id')
     def _flex_working_hours(self):
@@ -381,6 +393,11 @@ class hr_contract_type(models.Model):
     _inherit = 'hr.contract.type'
 
     work_time = fields.Selection(selection_add=[('flex','Flex Time')])
+
+class ResourceCalendar(models.Model):
+    _inherit = 'resource.calendar'
+    
+    flextime_warning = fields.Integer(string='Flextime Warning Limit', help="Send warning mails to employee and boss when this limit is passed.", default=480)
 
 class hr_holidays_earning(models.Model):
     _name = "hr.holidays.earning"
