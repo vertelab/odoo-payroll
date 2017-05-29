@@ -12,7 +12,7 @@
     <!-- Compensary leave -->
     <record id="cron_flextime_warning" model="ir.cron">
       <field name="name">Flextime Warning</field>
-      <field name="user_id" ref="base.user_admin"/>
+      <field name="user_id" ref="base.user_root"/>
       <field name="model">hr.employee</field>
       <field name="function">run_flextime_limit_check</field>
       <field name="interval_number">1</field>
