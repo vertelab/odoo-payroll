@@ -71,7 +71,7 @@ class hr_employee(models.Model):
             date = fields.Date.today()
         res = 0
         for contract in self.sudo().contract_ids:
-            if contract.date_start <= date and contract.date_end >= date:
+            if contract.date_start <= date and (not contract.date_end or contract.date_end >= date):
                 res += contract.weekly_working_hours
         if not res and date != fields.Date.today():
             res = self.get_working_hours()
@@ -84,7 +84,7 @@ class hr_employee(models.Model):
             date = fields.Date.today()
         res = 0
         for contract in self.sudo().contract_ids:
-            if contract.date_start <= date and contract.date_end >= date:
+            if contract.date_start <= date and (not contract.date_end or contract.date_end >= date):
                 res += contract.wwh_days_intermittent
         if not res and date != fields.Date.today():
             res = self.get_working_days()
