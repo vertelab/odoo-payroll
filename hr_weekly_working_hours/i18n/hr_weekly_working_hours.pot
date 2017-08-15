@@ -1,0 +1,87 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+#	* hr_weekly_working_hours
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 8.0-20170809\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-08-15 06:11+0000\n"
+"PO-Revision-Date: 2017-08-15 06:11+0000\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: hr_weekly_working_hours
+#: model:ir.model,name:hr_weekly_working_hours.model_hr_contract
+msgid "Contract"
+msgstr ""
+
+#. module: hr_weekly_working_hours
+#: help:hr.contract,working_percent:0
+msgid "Currently not used."
+msgstr ""
+
+#. module: hr_weekly_working_hours
+#: model:ir.model,name:hr_weekly_working_hours.model_hr_employee
+msgid "Employee"
+msgstr ""
+
+#. module: hr_weekly_working_hours
+#: view:hr.contract:hr_weekly_working_hours.hr_contract_view_form
+msgid "Notes"
+msgstr ""
+
+#. module: hr_weekly_working_hours
+#: model:ir.model,name:hr_weekly_working_hours.model_resource_calendar
+msgid "Resource Calendar"
+msgstr ""
+
+#. module: hr_weekly_working_hours
+#: field:hr.contract,scheduled_working_hours:0
+msgid "Scheduled Working Hours"
+msgstr ""
+
+#. module: hr_weekly_working_hours
+#: help:hr.contract,scheduled_working_hours:0
+msgid "The amount of hours in the schedule for this contract."
+msgstr ""
+
+#. module: hr_weekly_working_hours
+#: help:hr.contract,weekly_working_hours:0
+msgid "The amount of hours/working week that should be used in calculations. Ought to be the same as the amount of hours in the schedule."
+msgstr ""
+
+#. module: hr_weekly_working_hours
+#: help:hr.contract,wwh_days_full:0
+msgid "The number of worked days/week for a full time employee. Currently not used."
+msgstr ""
+
+#. module: hr_weekly_working_hours
+#: help:hr.contract,wwh_days_intermittent:0
+msgid "The number of worked days/week for a part time employee. Currently used for both full and part time."
+msgstr ""
+
+#. module: hr_weekly_working_hours
+#: field:hr.contract,wwh_days_full:0
+msgid "WWH Days Full Time"
+msgstr ""
+
+#. module: hr_weekly_working_hours
+#: field:hr.contract,wwh_days_intermittent:0
+msgid "WWH Days Intermittent"
+msgstr ""
+
+#. module: hr_weekly_working_hours
+#: field:hr.contract,weekly_working_hours:0
+msgid "Weekly Working Hours"
+msgstr ""
+
+#. module: hr_weekly_working_hours
+#: field:hr.contract,working_percent:0
+msgid "Working Percent"
+msgstr ""
+
