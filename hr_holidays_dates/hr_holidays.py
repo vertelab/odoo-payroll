@@ -118,21 +118,6 @@ class hr_holidays(models.Model):
         if not date_from:
             self.date_from = self._get_default_date_from(self.employee_id, self.date_to)
         self._update_number_of_days_temp()
-    
-    @api.model
-    def create(self,values):
-        if values.get('holiday_type') == 'category' or values.get('type') == 'add' or values.get('employee_id') == None:
-            pass
-        else:
-            leave = self.env['hr.holidays.status'].browse(values['holiday_status_id'])
-            if not leave.limit:
-                leave_days = leave.get_days(values.get('employee_id'))[leave.id]
-                if float_compare(leave_days['remaining_leaves'], values.get('number_of_days_temp'), precision_digits=2) == -1 or \
-                   float_compare(leave_days['virtual_remaining_leaves'], values.get('number_of_days_temp'), precision_digits=2) == -1:
-                    # Raising a warning gives a more user-friendly feedback than the default constraint error
-                    raise Warning(_('The number of remaining leaves is not sufficient for this leave type.\n'
-                                'Please verify also the leaves waiting for validation.'))
-        return super(hr_holidays, self).create(values)
 
 class hr_holidays_status(models.Model):
     _inherit = "hr.holidays.status"
