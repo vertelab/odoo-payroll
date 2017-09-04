@@ -190,9 +190,9 @@ openerp.jsonRpc("/hr/attendance/" + id, 'call', {
                 workedMinute = hour2HourMinute(data.attendance.worked_hours)[1];
             }
             $("#employee_message").html("<h2>" + _t("Goodbye!") + "</h2><h2>" + data.employee.name +"</h2>");
-            $("#employee_worked_hour").html("<h4><strong>" + _t("Worked Hours") + ": </strong>" + workedHour + _t(" hours and ") + workedMinute + _t(" minutes") + "</h4>");
+            $("#employee_worked_hour").html("<h4><strong>" + _t("Worked Hours") + ": </strong>" + workedHour + _t(" hours and ") + Math.round(workedMinute) + _t(" minutes") + "</h4>");
             if(data.attendance.work_time === 'flex'){
-                $("#employee_flex_time").html("<h4><strong>" + _t("Flex Time") + ": </strong>" + data.attendance.flextime + _t(" minutes") + "</h4><h4><strong>" + _t("Flex Time Bank") + ": </strong>" + data.attendance.flextime_total + _t(" minutes") + "</h4>");
+                $("#employee_flex_time").html("<h4><strong>" + _t("Flex Time") + ": </strong>" + Math.round(data.attendance.flextime) + _t(" minutes") + "</h4><h4><strong>" + _t("Flex Time Bank") + ": </strong>" + Math.round(data.attendance.flextime_total) + _t(" minutes") + "</h4>");
             }
             number_employees();
         }
