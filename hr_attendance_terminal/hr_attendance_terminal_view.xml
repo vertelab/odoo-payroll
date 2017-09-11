@@ -34,7 +34,7 @@
                     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300" rel="stylesheet"/>
                 </head>
                 <body onload="clock()">
-                    <div id="main_div" class="container">
+                    <div id="attendance_main_div" class="container">
                         <div id="time_div" class="pull-right col-md-1 col-sm-1 col-xs-1">
                             <h1 id="time" class="text-center"/>
                             <p id="week_day_d" class="text-center"/>
