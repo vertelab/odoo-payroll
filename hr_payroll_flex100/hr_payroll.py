@@ -36,6 +36,19 @@ class hr_attendance(models.Model):
 
     @api.one
     def _flextime(self):
+        
+        def get_attendance_intervals(att):
+            res = []
+            pair = []
+            for a in att:
+                if a.action == 'sign_in' and not pair:
+                    pair.append(fields.Datetime.from_string(a.name))
+                elif a.action == 'sign_out' and len(pair) == 1:
+                    pair.append(fields.Datetime.from_string(a.name))
+                    res.append(pair)
+                    pair = []
+            return res
+                 
         if self.employee_id.sudo().contract_id and self._check_last_sign_out(self) and self.employee_id.sudo().contract_id.working_hours:
             today = fields.Datetime.from_string(self.name).replace(hour=0, minute=0, microsecond=0)
             tomorrow = fields.Datetime.to_string(today + timedelta(days=1))
@@ -47,21 +60,58 @@ class hr_attendance(models.Model):
             leaves = self.employee_id.sudo().contract_id.working_hours.get_leave_intervals(resource_id = resource and resource.id or None)[0]
             for holiday in self.env['hr.holidays'].search([('date_from', '>=', fields.Datetime.to_string(today)),('date_to', '<', tomorrow), ('employee_id', '=', self.employee_id.id), ('type', '=', 'remove')]):
                 leaves.append((fields.Datetime.from_string(holiday.date_from), fields.Datetime.from_string(holiday.date_to)))
-                flextime += holiday.number_of_minutes * 60
             job_intervals = self.pool.get('resource.calendar').get_working_intervals_of_day(self.env.cr,SUPERUSER_ID,
                     self.employee_id.sudo().contract_id.working_hours.id,
                     start_dt=today, leaves=leaves)
-            att = self.env['hr.attendance'].sudo().search([('employee_id','=',self.employee_id.id),('name','>',self.name[:10] + ' 00:00:00'),('name','<',self.name[:10] + ' 23:59:59')],order='name')
-            if len(job_intervals) > 0:
-                # positive flextime: begin early
-                if job_intervals[0][0] > fields.Datetime.from_string(att[0].name):
-                    flextime += (job_intervals[0][0] - fields.Datetime.from_string(att[0].name)).total_seconds()
-                # positive flextime: end late
-                if job_intervals[-1][-1] < fields.Datetime.from_string(att[-1].name):
-                    flextime += (fields.Datetime.from_string(att[-1].name) - job_intervals[-1][-1]).total_seconds()
-                # negative flextime: missing time inside the schedule (begin late or end early)
-                flextime -= (self.working_hours_on_day - self.get_working_hours) * 3600
-                self.flextime = round(flextime / 60.0)
+            for i in range(len(job_intervals)):
+                job_intervals[i] = list(job_intervals[i])
+            attendances = self.env['hr.attendance'].sudo().search([('employee_id','=',self.employee_id.id),('name','>',self.name[:10] + ' 00:00:00'),('name','<',self.name[:10] + ' 23:59:59')],order='name')
+            _logger.debug('job_intervals: %s' % job_intervals)
+            _logger.debug('att: %s' % attendances)
+            attendance_intervals = get_attendance_intervals(attendances)
+            _logger.debug('attendance_intervals: %s' % attendance_intervals)
+            # Easier than keeping track of when we add new intervals to job_intervals
+            missing_intervals = []
+            if job_intervals and attendance_intervals:
+                # Positive flex time can only occur before first or after last interval
+                if job_intervals[0][0] > attendance_intervals[0][0]:
+                    flextime += (job_intervals[0][0] - attendance_intervals[0][0]).total_seconds()
+                    _logger.debug('1: %s' % flextime)
+                if job_intervals[-1][1] < attendance_intervals[-1][1]:
+                    flextime += (attendance_intervals[-1][1] - job_intervals[-1][1]).total_seconds()
+                    _logger.debug('2: %s' % flextime)
+                for a_i in attendance_intervals:
+                    _logger.debug('attendance_interval: %s' % a_i)
+                    i = 0
+                    while i < len(job_intervals):
+                        j_i = job_intervals[i]
+                        # a_i intersects j_i if it starts before job interval ends, and ends after j_i starts
+                        if a_i[0] <= j_i[1] and a_i[1] >= j_i[0]:
+                            if a_i[0] <= j_i[0] and a_i[1] >= j_i[1]:
+                                # j_i is completely inside a_i
+                                del job_intervals[i]
+                                _logger.debug('\n1 deleted\n')
+                            else:
+                                if a_i[0] > j_i[0]:
+                                    # a_i starts after j_i
+                                    missing_intervals.append([j_i[0], a_i[0]])
+                                if a_i[1] < j_i[1]:
+                                    # a_i ends before j_i. Replace start time of j_i
+                                    j_i[0] = a_i[1]
+                                    _logger.debug('\n2 changed\n')
+                                    i += 1
+                                else:
+                                    del job_intervals[i]
+                                    _logger.debug('\n2 deleted\n')
+                            _logger.debug('\n%s: %s' % (i, job_intervals))
+                        else:
+                            i += 1
+                _logger.debug('job_intervals: %s' % (job_intervals + missing_intervals))
+                # Any remaining intervals have not been worked
+                for j_i in job_intervals + missing_intervals:
+                    flextime -= (j_i[1] - j_i[0]).seconds
+                    _logger.debug('\nflextime: %s\n' % flextime)
+            self.flextime = round(flextime / 60.0)
     flextime = fields.Integer(compute='_flextime', string='Flex Time (m)')
 
     @api.one
@@ -70,7 +120,9 @@ class hr_attendance(models.Model):
         leaves = 0.0
         if self._check_last_sign_out(self):
             att = self.env['hr.attendance'].sudo().search([('employee_id','=',self.employee_id.id),('name','>',self.name[:10] + ' 00:00:00'),('name','<',self.name[:10] + ' 23:59:59')],order='name')
+            _logger.warn(att)
             job_intervals = self.pool.get('resource.calendar').get_working_intervals_of_day(self.env.cr,SUPERUSER_ID, self.employee_id.sudo().contract_id.working_hours.id, start_dt=fields.Datetime.from_string(self.name).replace(hour=0,minute=0))
+            _logger.warn(job_intervals)
             if len(job_intervals) > 0:
                 if self.flextime > 0.0: #if got positive flex time, worked flex = worked on schedule + flex time
                     self.flex_working_hours = self.get_working_hours + self.flextime / 60.0
