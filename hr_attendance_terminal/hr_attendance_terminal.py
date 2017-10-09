@@ -159,10 +159,10 @@ class attendanceReport(http.Controller):
         return {'attendance': {
                     'name': attendance.name,
                     'action': attendance.action,
-                    'work_time': int(round(attendance.sudo().employee_id.contract_id.type_id.work_time),
-                    'worked_hours': int(round(attendance.sudo().flex_working_hours if attendance.sudo().employee_id.contract_id.type_id.work_time == 'flex' else attendance.get_working_hours),
-                    'flextime_total': int(round(attendance.flextime_total),
-                    'flextime': int(round(attendance.sudo().flextime),
+                    'work_time': int(round(attendance.sudo().employee_id.contract_id.type_id.work_time)),
+                    'worked_hours': int(round(attendance.sudo().flex_working_hours if attendance.sudo().employee_id.contract_id.type_id.work_time == 'flex' else attendance.get_working_hours)),
+                    'flextime_total': int(round(attendance.flextime_total)),
+                    'flextime': int(round(attendance.sudo().flextime)),
                 },
                 'employee': {
                     'img': attendance.employee_id.image_medium,
