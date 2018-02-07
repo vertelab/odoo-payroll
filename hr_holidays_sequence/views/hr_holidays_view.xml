@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
+<odoo>
   <data>
     <record model="ir.ui.view" id="view_holiday_status_normal_tree">
       <field name="name">hr.holidays.status.tree.sequence</field>
@@ -12,4 +12,4 @@
       </field>
     </record>
   </data>
-</openerp>
+</odoo>
