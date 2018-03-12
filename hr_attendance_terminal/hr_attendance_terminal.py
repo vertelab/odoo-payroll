@@ -161,7 +161,6 @@ class attendanceReport(http.Controller):
                     'action': attendance.action,
                     'work_time': int(round(attendance.sudo().employee_id.contract_id.type_id.work_time)),
                     'worked_hours': int(round(attendance.sudo().flex_working_hours if attendance.sudo().employee_id.contract_id.type_id.work_time == 'flex' else attendance.get_working_hours)),
-                    'flextime_total': int(round(attendance.flextime_total)),
                     'flextime': int(round(attendance.sudo().flextime)),
                 },
                 'employee': {
@@ -170,5 +169,9 @@ class attendanceReport(http.Controller):
                     'state': attendance.employee_id.state,
                 }
             }
+    
+    @http.route(['/hr/attendance/flextotal/<model("hr.attendance"):attendance>'], type='json', auth="user", website=True)
+    def get_flex_total(self, attendance=None, **kw):
+        return {'flextime_total': int(round(attendance.flextime_total))}
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -41,10 +41,10 @@ class hr_attendance(models.Model):
             res = []
             pair = []
             for a in att:
-                if a.action == 'sign_in' and not pair:
-                    pair.append(fields.Datetime.from_string(a.name))
-                elif a.action == 'sign_out' and len(pair) == 1:
-                    pair.append(fields.Datetime.from_string(a.name))
+                if a['action'] == 'sign_in' and not pair:
+                    pair.append(fields.Datetime.from_string(a['name']))
+                elif a['action'] == 'sign_out' and len(pair) == 1:
+                    pair.append(fields.Datetime.from_string(a['name']))
                     res.append(pair)
                     pair = []
             return res
@@ -53,19 +53,19 @@ class hr_attendance(models.Model):
             today = fields.Datetime.from_string(self.name).replace(hour=0, minute=0, microsecond=0)
             tomorrow = fields.Datetime.to_string(today + timedelta(days=1))
             if self.employee_id.user_id:
-                resource = self.env['resource.resource'].search([('resource_type', '=', 'user'), ('user_id', '=', self.employee_id.user_id.id)])
+                resource = self.env['resource.resource'].search_read([('resource_type', '=', 'user'), ('user_id', '=', self.employee_id.user_id.id)], ['id'])
             else:
                 resource = None
             flextime = 0.0
-            leaves = self.employee_id.sudo().contract_id.working_hours.get_leave_intervals(resource_id = resource and resource.id or None)[0]
-            for holiday in self.env['hr.holidays'].search([('date_from', '>=', fields.Datetime.to_string(today)),('date_to', '<', tomorrow), ('employee_id', '=', self.employee_id.id), ('type', '=', 'remove')]):
-                leaves.append((fields.Datetime.from_string(holiday.date_from), fields.Datetime.from_string(holiday.date_to)))
-            job_intervals = self.pool.get('resource.calendar').get_working_intervals_of_day(self.env.cr,SUPERUSER_ID,
+            leaves = self.employee_id.sudo().contract_id.working_hours.get_leave_intervals(resource_id = resource and resource[0]['id'] or None)[0]
+            for holiday in self.env['hr.holidays'].search_read([('date_from', '>=', fields.Datetime.to_string(today)),('date_to', '<', tomorrow), ('employee_id', '=', self.employee_id.id), ('type', '=', 'remove')], ['date_from', 'date_to']):
+                leaves.append((fields.Datetime.from_string(holiday['date_from']), fields.Datetime.from_string(holiday['date_to'])))
+            job_intervals = self.env['resource.calendar'].sudo().get_working_intervals_of_day(
                     self.employee_id.sudo().contract_id.working_hours.id,
                     start_dt=today, leaves=leaves)
             for i in range(len(job_intervals)):
                 job_intervals[i] = list(job_intervals[i])
-            attendances = self.env['hr.attendance'].sudo().search([('employee_id','=',self.employee_id.id),('name','>',self.name[:10] + ' 00:00:00'),('name','<',self.name[:10] + ' 23:59:59')],order='name')
+            attendances = self.env['hr.attendance'].sudo().search_read([('employee_id','=',self.employee_id.id),('name','>',self.name[:10] + ' 00:00:00'),('name','<',self.name[:10] + ' 23:59:59')], ['action', 'name'], order='name')
             _logger.debug('job_intervals: %s' % job_intervals)
             _logger.debug('att: %s' % attendances)
             attendance_intervals = get_attendance_intervals(attendances)

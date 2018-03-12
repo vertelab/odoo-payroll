@@ -42,9 +42,13 @@ class hr_attendance(models.Model):
     _inherit = 'hr.attendance'
 
     @api.model
-    def _check_last_sign_out(self,this_attendance):
-        attendance = self.env['hr.attendance'].search([('employee_id','=',this_attendance.employee_id.id),('action','=','sign_out'),('name','>',this_attendance.name[:10] + ' 00:00:00'),('name','<',this_attendance.name[:10] + ' 23:59:59')],order='name')
-        return len(attendance)>0 and this_attendance.name == attendance[-1].name
+    def _check_last_sign_out(self, this_attendance):
+        attendance = self.env['hr.attendance'].search_count([
+            ('employee_id', '=', this_attendance.employee_id.id),
+            ('action', '=', 'sign_out'),
+            ('name', '>', this_attendance.name),
+            ('name', '<', this_attendance.name[:10] + ' 23:59:59')])
+        return attendance == 0
 
     @api.one
     def _working_hours_on_day(self): # working hours on the contract
