@@ -28,6 +28,7 @@ Attendance report in web form
 
 """,
 'author': 'Vertel AB',
+    'license': 'AGPL-3',
 'website': 'http://www.vertel.se',
 'depends': ['hr_attendance', 'bus', 'website'],
 'data': [

@@ -22,6 +22,7 @@
     'name': 'HR Department Access Rights - Attendance',
     'category': 'hr',
     'author': 'Vertel AB',
+    'license': 'AGPL-3',
     'depends': ['hr_department_access_rights', 'hr_attendance'],
     'version': '1.0',
     'description': """

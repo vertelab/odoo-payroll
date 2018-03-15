@@ -29,6 +29,7 @@
        return = contract.benefit_value('car')
 """,
 'author': 'Vertel AB',
+    'license': 'AGPL-3',
 'website': 'http://www.vertel.se',
 'depends': ['hr_payroll','hr_payroll_schema'],
 'data': ['payslip_view.xml', 'security/ir.model.access.csv','hr_salary_rule_data.xml'],

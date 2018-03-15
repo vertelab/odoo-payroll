@@ -22,6 +22,7 @@
     'name': 'HR Department Access Rights',
     'category': 'hr',
     'author': 'Vertel AB',
+    'license': 'AGPL-3',
     'depends': ['hr'],
     'version': '1.0',
     'description': """

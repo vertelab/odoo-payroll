@@ -26,6 +26,7 @@
 'description': """
 """,
 'author': 'Vertel AB',
+    'license': 'AGPL-3',
 'website': 'http://www.vertel.se',
 'depends': ['hr_timesheet_sheet'],
 'data': ['hr_timesheet_view.xml'],

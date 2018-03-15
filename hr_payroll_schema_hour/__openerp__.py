@@ -27,6 +27,7 @@
 
 """,
 'author': 'Vertel AB',
+    'license': 'AGPL-3',
 'website': 'http://www.vertel.se',
 'depends': ['hr_payroll_schema'],
 'data': ['hr_salary_rule_data.xml'],

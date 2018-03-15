@@ -28,6 +28,7 @@ Attendance notification
 
 """,
 'author': 'Vertel AB',
+    'license': 'AGPL-3',
 'website': 'http://www.vertel.se',
 'depends': ['hr_attendance', 'hr_payroll_flex100', 'hr_holidays'],
 'data': [
