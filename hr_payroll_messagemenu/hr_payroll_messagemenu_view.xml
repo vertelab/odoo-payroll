@@ -160,6 +160,60 @@
     </record>
     <menuitem id="menu_action_messagemenu_worked_days" name="Worked Days" parent="msg_menu_time_report" action="action_messagemenu_worked_days" sequence="70" />
     
+<!-- Assets -->
 
+
+    <record model="ir.ui.view" id="view_account_asset_asset_tree">
+        <field name="name">account.asset.asset.sign.tree</field>
+        <field name="model">account.asset.asset</field>
+        <field name="arch" type="xml">
+            <tree string="Assets" colors="blue:(is_signed == False);grey:(is_signed == True)">
+                <field name="name"/>
+                <field name="category_id"/>
+                    
+                
+                <field name="field_code" />
+                <field name="field_serialno" />
+                <field name="field_imei" />
+                <field name="field_license_plate" />
+<!--
+                <button type="object" name="do_sign" string="Sign"  icon="terp-gtk-jump-to-ltr" attr="{'invisible': [('is_signed','=',True)]}" />
+-->
+            <field name="is_signed"/>
+                <field name="state" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+        <record id="asset_filter" model="ir.filters">
+            <field name="name">My Assets</field>
+            <field name="model_id">account.asset.asset</field>
+            <field name="user_id"></field>
+            <field name="domain">[('employee_id', '=', 1)]</field>
+            <field name="context">{}</field>
+        </record>
+
+  <record model="ir.actions.act_window" id="action_sign_assets">
+        <field name="name">Assets on loan</field>
+        <field name="res_model">account.asset.asset</field>
+        <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="sequence" eval="99"/>
+        <field name="domain">[('employee_id','=',1)]</field>
+        <field name="view_id" ref="view_account_asset_asset_tree"/>
+        <field name="context">{'search_employee_id':1}</field>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Your assets on outloan.
+              </p><p>
+                Once you have got assets on loan, it will be listed here. You sign them as soon you have recieved it.
+              </p>
+            </field>
+
+    </record>
+
+        <menuitem parent="msg_menu_time_report" id="menu_sign_assets" action="action_sign_assets" sequence="50"/>
+    
+ 
   </data>
 </openerp>
