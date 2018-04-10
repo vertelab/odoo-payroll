@@ -29,7 +29,7 @@
 'author': 'Vertel AB',
     'license': 'AGPL-3',
 'website': 'http://www.vertel.se',
-'depends': ['hr_timesheet_sheet', 'hr_payroll_flex100', 'hr_holidays','project','hr_certifications'],
+'depends': ['hr_timesheet_sheet', 'hr_payroll_flex100', 'hr_holidays','project',],
 'data': ['hr_payroll_messagemenu_view.xml', 'hr_payroll_messagemenu_data.xml',],
 'installable': True,
 }
