@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
+<odoo>
   <data>
     <!--employee attendance tree view-->
     <record id="view_attendance_who" model="ir.ui.view">
@@ -58,7 +58,7 @@
       <field name="model">hr.payslip</field>
       <field name="inherit_id" ref="hr_payroll.view_hr_payslip_form" />
       <field name="arch" type="xml">
-        <page string="Worked Days &amp; Inputs" position="after">
+        <notebook position="inside">
           <page string="Time funds">
             <group>
               <field name="work_time"/>
@@ -67,9 +67,9 @@
               <field name="get_working_hours" attrs="{'invisible': [('work_time', '!=', 'schema')]}"/>
             </group>
           </page>
-        </page>
+        </notebook>
       </field>
     </record>
 
   </data>
-</openerp>
+</odoo>

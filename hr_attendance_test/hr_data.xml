@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
+<odoo>
   <data>
     <!-- server action -->
     <record model="ir.actions.server" id="test_attendance_year">
@@ -36,4 +36,4 @@ for o in object.browse(context.get('active_ids', [])):
       <field name="value" eval="'ir.actions.server,%d' % test_attendance_2today" />
     </record>
   </data>
-</openerp>
+</odoo>

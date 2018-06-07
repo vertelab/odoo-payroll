@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-#    OpenERP, Open Source Management Solution, third party addon
-#    Copyright (C) 2004-2017 Vertel AB (<http://vertel.se>).
+#    Odoo, Open Source Enterprise Management Solution, third party addon
+#    Copyright (C) 2018 Vertel AB (<http://vertel.se>).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -18,8 +18,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from openerp import models, fields, api
-from openerp.exceptions import except_orm, Warning, RedirectWarning
+from odoo import models, fields, api
+from odoo.exceptions import except_orm, Warning, RedirectWarning
 from datetime import datetime
 import pytz
 
@@ -29,12 +29,12 @@ _logger = logging.getLogger(__name__)
 class ResourceCalendarHoliday(models.Model):
     _name = 'resource.holiday.settings'
     _description = 'Translates a calendar entry to a resource leave.'
-    
+
     name = fields.Char(string='Name')
     time_start = fields.Float(string='Start Time', help="Fill this out if this holiday isn't all day.")
     time_stop = fields.Float(string='End Time', help="Fill this out if this holiday isn't all day.")
     calendar_ids = fields.Many2many(comodel_name='resource.calendar', relation="resource_calendar_holiday_settings_rel", column1="holiday_setting_id", column2="calendar_id", string='Resource Calendar')
-    
+
     @api.model
     def convert_to_utc(self, record, dt):
         if isinstance(record, basestring):
@@ -43,13 +43,13 @@ class ResourceCalendarHoliday(models.Model):
             tz_name = record._context.get('tz') or record.env.user.tz
         utc_dt = pytz.timezone(tz_name).localize(dt).astimezone(pytz.utc)
         return fields.Datetime.to_string(utc_dt)
-    
+
     @api.model
     def get_datetime(self, date, time_float):
         h = int(time_float)
         m = int(round((time_float - h) * 60))
         return datetime.strptime('%s %s:%s:00' % (date, h, m), '%Y-%m-%d %H:%M:%S')
-    
+
     @api.multi
     def convert_to_leave(self, event, timezone):
         for record in self:
@@ -70,23 +70,23 @@ def _tz_get(self):
 
 class ResourceCalendar(models.Model):
     _inherit = 'resource.calendar'
-    
+
     @api.model
     def _default_timezone(self):
         return self.env.user.tz
-    
+
     timezone = fields.Selection(selection=_tz_get, string="Timezone", help="Timezone to use when importing holidays.", default=_default_timezone)
     holidays_start_date = fields.Date(string='Earliest Import Date', help="Don't import holidays earlier than this date.")
     holidays_partner_id = fields.Many2one(comodel_name='res.partner', string='Holidays Calendar',
         help="Import holiday entries from the calendar belonging to this partner.")
     holiday_settings_ids = fields.Many2many(comodel_name='resource.holiday.settings', relation="resource_calendar_holiday_settings_rel",
         column1="calendar_id", column2="holiday_setting_id", string='Holiday Import Lines', help="Rules for translating calendar entries to leaves.")
-    
+
     @api.multi
     def _check_if_leave_exists(self, leave):
         self.ensure_one()
         return self.env['resource.calendar.leaves'].search_count([('calendar_id', '=', self.id), ('name', '=', leave[0]), ('date_from', '=', leave[1]), ('date_to', '=', leave[2])]) and True or False
-    
+
     @api.one
     def import_holidays_calendar(self):
         if self.holidays_partner_id and self.timezone:
@@ -102,11 +102,11 @@ class ResourceCalendar(models.Model):
                         'date_from': leave[1],
                         'date_to': leave[2],
                     })
-    
+
     @api.one
     def clear_calendar_leaves(self):
         self.leave_ids = None
-    
+
     @api.model
     def update_all_calendar_leaves(self, clear=False):
         _logger.warn('update_all_calendar_leaves')

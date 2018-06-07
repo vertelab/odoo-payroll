@@ -18,16 +18,19 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+{
+'name': 'Payroll Employee Fund',
+'version': '0.1',
+'summary': 'Extends hr.contract with an analytic account for a fund',
+'category': 'hr',
+'description': """Extends the Employee Contract with an analytic account to be used as a fund.
+This can be used as a flexible time bank (hours) or monetary values (cost/revenue).
 
-from odoo import models, fields, api, _
-
-import logging
-_logger = logging.getLogger(__name__)
-
-class hr_employee(models.Model):
-    _inherit = 'hr.employee'
-
-    rfid = fields.Char(string='RFID')
-
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+Financed by Dermanord-Svensk Hudvård AB
+""",
+'author': 'Vertel AB',
+'website': 'http://www.vertel.se',
+'depends': ['hr_payroll_account'],
+'data': ['payslip_view.xml'],
+'installable': True,
+}

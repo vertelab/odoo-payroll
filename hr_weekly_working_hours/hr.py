@@ -1,25 +1,25 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-# OpenERP, Open Source Management Solution, third party addon
-# Copyright (C) 2004-2016 Vertel AB (<http://vertel.se>).
+#    Odoo, Open Source Enterprise Management Solution, third party addon
+#    Copyright (C) 2018 Vertel AB (<http://vertel.se>).
 #
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License as
-# published by the Free Software Foundation, either version 3 of the
-# License, or (at your option) any later version.
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
 #
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU Affero General Public License for more details.
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
 #
-# You should have received a copy of the GNU Affero General Public License
-# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
 
-from openerp import models, fields, api, _
+from odoo import models, fields, api, _
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -36,13 +36,13 @@ _logger = logging.getLogger(__name__)
 
 class hr_contract(models.Model):
     _inherit = "hr.contract"
-    
+
     weekly_working_hours = fields.Float('Weekly Working Hours', default=40, help="The amount of hours/working week that should be used in calculations. Ought to be the same as the amount of hours in the schedule.")
     scheduled_working_hours = fields.Float('Scheduled Working Hours', compute='get_scheduled_working_hours', store=True, help="The amount of hours in the schedule for this contract.")
     wwh_days_full = fields.Float('WWH Days Full Time', default=5, help="The number of worked days/week for a full time employee. Currently not used.")
     wwh_days_intermittent = fields.Float('WWH Days Intermittent', default=5, help="The number of worked days/week for a part time employee. Currently used for both full and part time.")
     working_percent = fields.Float('Working Percent',default=100, help="Currently not used.")
-    
+
     @api.one
     @api.depends('working_hours', 'working_hours.attendance_ids',
         'working_hours.attendance_ids.hour_from',
@@ -52,7 +52,7 @@ class hr_contract(models.Model):
 
 class resource_calendar(models.Model):
     _inherit = "resource.calendar"
-    
+
     @api.multi
     def get_weekly_working_hours(self):
         self.ensure_one()
@@ -63,7 +63,7 @@ class resource_calendar(models.Model):
 
 class hr_employee(models.Model):
     _inherit = "hr.employee"
-    
+
     @api.multi
     def get_working_hours(self, date = None):
         self.ensure_one()
@@ -76,7 +76,7 @@ class hr_employee(models.Model):
         if not res and date != fields.Date.today():
             res = self.get_working_hours()
         return res
-    
+
     @api.multi
     def get_working_days(self, date = None):
         self.ensure_one()
@@ -89,7 +89,7 @@ class hr_employee(models.Model):
         if not res and date != fields.Date.today():
             res = self.get_working_days()
         return res
-    
+
     @api.multi
     def get_working_hours_per_day(self, date = None):
         return self.get_working_hours(date) / (self.get_working_days(date) or 5) # Assume 5 day week if 0

@@ -18,16 +18,26 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+{
+    'name': 'Attendance Test Data',
+    'category': 'hr',
+    'author': 'Vertel AB',
+    'depends': ['hr_attendance', 'l10n_se_hr_holidays'],
+    'version': '1.2',
+    'description': """
+Generating test data for employees
+======================
 
-from odoo import models, fields, api, _
+    """,
 
-import logging
-_logger = logging.getLogger(__name__)
-
-class hr_employee(models.Model):
-    _inherit = 'hr.employee'
-
-    rfid = fields.Char(string='RFID')
-
+    'auto_install': False,
+    'website': 'http://www.vertel.se',
+    'data':[
+        'hr_data.xml',
+    ],
+    'demo':[
+    ],
+    'installable': True
+}
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

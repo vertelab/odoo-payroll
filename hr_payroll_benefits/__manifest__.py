@@ -18,16 +18,19 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+{
+'name': 'Payroll Benefits',
+'version': '0.1',
+'summary': 'Extends contract with benefits',
+'category': 'hr',
+'description': """Extends the contract with benefits for use in rules
 
-from odoo import models, fields, api, _
-
-import logging
-_logger = logging.getLogger(__name__)
-
-class hr_employee(models.Model):
-    _inherit = 'hr.employee'
-
-    rfid = fields.Char(string='RFID')
-
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+    In rules you can use benefits like this both in conditions and computation:
+       return = contract.benefit_value('car')
+""",
+'author': 'Vertel AB',
+'website': 'http://www.vertel.se',
+'depends': ['hr_payroll','hr_payroll_schema'],
+'data': ['payslip_view.xml', 'security/ir.model.access.csv','hr_salary_rule_data.xml'],
+'installable': True,
+}

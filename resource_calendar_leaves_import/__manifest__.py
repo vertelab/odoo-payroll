@@ -18,16 +18,23 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-from odoo import models, fields, api, _
-
-import logging
-_logger = logging.getLogger(__name__)
-
-class hr_employee(models.Model):
-    _inherit = 'hr.employee'
-
-    rfid = fields.Char(string='RFID')
-
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+{
+    'name': "Holidays Schedule",
+    'summary': 'Import holidays to work schedule.',
+    'description': """""",
+    'author': "Vertel AB",
+    'website': "http://www.vertel.se",
+    # Categories can be used to filter modules in modules listing
+    # Check https://github.com/odoo/odoo/blob/master/openerp/addons/base/module/module_data.xml
+    # for the full list
+    'category': 'Uncategorized',
+    'version': '0.1',
+    'depends': ['resource'],
+    'data': [
+        'security/ir.model.access.csv',
+        'resource_view.xml',
+        'resource_data.xml',
+    ],
+    'demo': [
+    ],
+}

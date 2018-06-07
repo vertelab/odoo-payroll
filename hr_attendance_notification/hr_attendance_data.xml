@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<openerp>
+<odoo>
   <data noupdate="1">
 
     <record model="ir.cron" id="auto_log_out">
@@ -42,4 +42,4 @@
     </record>
 
   </data>
-</openerp>
+</odoo>

@@ -1,30 +1,30 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-# Odoo, Open Source Management Solution, third party addon
-# Copyright (C) 2016- Vertel AB (<http://vertel.se>).
+#    Odoo, Open Source Enterprise Management Solution, third party addon
+#    Copyright (C) 2018 Vertel AB (<http://vertel.se>).
 #
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License as
-# published by the Free Software Foundation, either version 3 of the
-# License, or (at your option) any later version.
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
 #
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU Affero General Public License for more details.
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
 #
-# You should have received a copy of the GNU Affero General Public License
-# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
 
-from openerp import tools
-from openerp import models, fields, api, _
+from odoo import tools
+from odoo import models, fields, api, _
 
-import openerp.tools
+import odoo.tools
 from datetime import datetime, timedelta
-from openerp import SUPERUSER_ID
+from odoo import SUPERUSER_ID
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -36,7 +36,7 @@ class hr_attendance(models.Model):
 
     @api.one
     def _flextime(self):
-        
+
         def get_attendance_intervals(att):
             res = []
             pair = []
@@ -48,7 +48,7 @@ class hr_attendance(models.Model):
                     res.append(pair)
                     pair = []
             return res
-                 
+
         if self.employee_id.sudo().contract_id and self._check_last_sign_out(self) and self.employee_id.sudo().contract_id.working_hours:
             today = fields.Datetime.from_string(self.name).replace(hour=0, minute=0, microsecond=0)
             tomorrow = fields.Datetime.to_string(today + timedelta(days=1))
@@ -176,7 +176,7 @@ class hr_payslip(models.Model):
         self.flex_working_days = len(self.env['hr.attendance'].search([('employee_id', '=',self.employee_id.id), ('name', '>', self.date_from + ' 00:00:00'), ('name', '<', self.date_to + ' 23:59:59')]).filtered(lambda a: a._check_last_sign_out(a) == True))
     flex_working_days = fields.Float(compute='_flex_working_days', string='Flex Worked Days')
     @api.one
-    
+
     def _compensary_leave(self):
         # TODO: Fix issues with leaves spanning two or more months.
         if self.state == 'draft':
@@ -350,7 +350,7 @@ class hr_employee(models.Model):
         for attendance in attendances:
             res += attendance['flextime']
         return res
-    
+
     @api.one
     def check_flextime_limit(self):
         """Checks if flextime has passed the warning limit."""
@@ -377,12 +377,12 @@ class hr_employee(models.Model):
                             'type': 'email',
                         })
             _logger.info('Flextime overdue:  %s hours for %s ' % (self.get_flextime_total(), self.name))
-    
+
     @api.multi
     def get_flextime_total(self):
         self.ensure_one()
         return self.get_unbanked_flextime() + self.with_context({'employee_id': self.id}).env.ref("hr_holidays.holiday_status_comp").remaining_leaves * 60 * (self.get_working_hours_per_day() or 8)
-    
+
     @api.model
     def run_flextime_limit_check(self):
         _logger.info("Running flextime limit check")
@@ -391,7 +391,7 @@ class hr_employee(models.Model):
 
 class hr_timesheet_sheet(models.Model):
     _inherit = "hr_timesheet_sheet.sheet"
-    
+
     @api.one
     @api.depends('attendances_ids','attendances_ids.sheet_id')
     def _flex_working_hours(self):
@@ -448,7 +448,7 @@ class hr_contract_type(models.Model):
 
 class ResourceCalendar(models.Model):
     _inherit = 'resource.calendar'
-    
+
     flextime_warning = fields.Integer(string='Flextime Warning Limit', help="Send warning mails to employee and boss when this limit is passed.", default=480)
 
 class hr_holidays_earning(models.Model):

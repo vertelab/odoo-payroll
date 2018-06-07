@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
-  <data>
+<odoo>
+    <data>
         <!-- contract.type -->
         <record id="hr_contract_type_view_form" model="ir.ui.view">
-      <field name="name">hr.contract.form.type.schema.inherit</field>
-      <field name="model">hr.contract.type</field>
-      <field name="inherit_id" ref="hr_contract.hr_contract_type_view_form" />
-      <field name="arch" type="xml">
-        <data>
-            <field name="name" position="after">
-                <field name="work_time" />
-            </field>
-        </data>
-      </field>
-    </record>
+          <field name="name">hr.contract.form.type.schema.inherit</field>
+          <field name="model">hr.contract.type</field>
+          <field name="inherit_id" ref="hr_contract.hr_contract_type_view_form" />
+          <field name="arch" type="xml">
+            <data>
+                <field name="name" position="after">
+                    <field name="work_time" />
+                </field>
+            </data>
+          </field>
+        </record>
 
-  </data>
-
-</openerp>
+    </data>
+</odoo>

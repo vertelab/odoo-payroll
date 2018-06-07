@@ -18,16 +18,21 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+{
+    'name': 'HR Department Access Rights - Recruitment',
+    'category': 'hr',
+    'author': 'Vertel AB',
+    'depends': ['hr_department_access_rights', 'hr_recruitment'],
+    'version': '1.0',
+    'description': """
+    """,
 
-from odoo import models, fields, api, _
-
-import logging
-_logger = logging.getLogger(__name__)
-
-class hr_employee(models.Model):
-    _inherit = 'hr.employee'
-
-    rfid = fields.Char(string='RFID')
-
+    'auto_install': True,
+    'website': 'http://www.vertel.se',
+    'data':['security/hr_security.xml'],
+    'demo':[
+    ],
+    'installable': True
+}
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

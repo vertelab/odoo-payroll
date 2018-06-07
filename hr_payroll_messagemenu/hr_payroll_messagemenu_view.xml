@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
+<odoo>
   <data>
     <!-- time report -->
     <menuitem name="Time Report" id="msg_menu_time_report" parent="mail.mail_feeds_main" sequence="50" groups="base.group_user" />
     <menuitem name="My Current Timesheet" id="msg_menu_act_hr_timesheet_sheet_form_my_current" parent="msg_menu_time_report" action="hr_timesheet_sheet.ir_actions_server_timsheet_sheet" sequence="10" />
-    
-    
+
+
         <record model="ir.actions.act_window" id="open_ask_holidays">
             <field name="name">My Leave Requests</field>
             <field name="res_model">hr.holidays</field>
@@ -48,9 +48,9 @@
         </record>
 
         <menuitem parent="msg_menu_time_report" id="menu_open_ask_holidays_new" action="open_ask_holidays" sequence="20"/>
-    
- 
- 
+
+
+
          <record model="ir.actions.act_window" id="open_ask_compensatory">
             <field name="name">Compensary Allocation Requests</field>
             <field name="res_model">hr.holidays</field>
@@ -75,20 +75,20 @@
             <field name="view_id" ref="hr_holidays.edit_holiday_new"/>
             <field name="act_window_id" ref="open_ask_compensatory"/>
         </record>
- 
+
         <menuitem parent="msg_menu_time_report" id="menu_open_ask_compensatory" action="open_ask_compensatory" sequence="30"/>
-    
- 
-    
+
+
+
     <!--
          <menuitem id="msg_sign_in_out" parent="msg_menu_hr_attendance" action="hr_timesheet.action_hr_timesheet_sign_in" sequence="1" groups="base.group_hr_attendance"/>
-         
+
          <menuitem id="msg_menu_request_approve_holidays" name="Leave Requests to Approve" parent="msg_menu_open_ask_holidays" action="hr_holidays.request_approve_holidays" groups="base.group_hr_user"/>
-         
+
          <menuitem id="msg_menu_open_allocation_holidays" parent="msg_menu_open_ask_holidays" action="hr_holidays.open_allocation_holidays"/>
-         
+
          <menuitem id="msg_menu_request_approve_allocation" parent="msg_menu_open_ask_holidays" action="hr_holidays.request_approve_allocation" groups="base.group_hr_manager"/>
-         
+
          <menuitem id="msg_menu_open_company_allocation" name="Leaves Summary" parent="msg_menu_open_ask_holidays" action="hr_holidays.open_company_allocation"/>
     -->
     <record id="act_messagemenu_change_project" model="ir.ui.view">
@@ -131,4 +131,4 @@
     </record>
 
   </data>
-</openerp>
+</odoo>
