@@ -49,8 +49,7 @@ class hr_attendance(models.Model):
     @api.one
     def _working_hours_on_day(self): # working hours on the contract
         if self.employee_id.sudo().contract_id and self._check_last_sign_out(self):
-            self.working_hours_on_day = self.pool.get('resource.calendar').working_hours_on_day(self.env.cr, SUPERUSER_ID,
-                self.employee_id.sudo().contract_id.working_hours, fields.Datetime.from_string(self.name))
+            self.working_hours_on_day = self.env['resource.calendar'].working_hours_on_day(fields.Datetime.from_string(self.check_in))
         else:
             self.working_hours_on_day = 0.0
     working_hours_on_day = fields.Float(compute='_working_hours_on_day', string='Planned Hours')
@@ -60,10 +59,7 @@ class hr_attendance(models.Model):
         if self.employee_id.sudo().contract_id and self._check_last_sign_out(self):
             att = self.env['hr.attendance'].search([('employee_id','=',self.employee_id.id),('name','>',self.name[:10] + ' 00:00:00'),('name','<',self.name[:10] + ' 23:59:59')],order='name')
             for (start,end) in zip(att,att[1:])[::2]:
-                self.get_working_hours += self.pool.get('resource.calendar').get_working_hours(
-                    self.env.cr, SUPERUSER_ID, self.employee_id.sudo().contract_id.working_hours.id,
-                    fields.Datetime.from_string(start.name),
-                    fields.Datetime.from_string(end.name))
+                self.get_working_hours += self.env['resource.calendar'].get_working_hours(self.employee_id.sudo().contract_id.working_hours.id, fields.Datetime.from_string(start.name), fields.Datetime.from_string(end.name))
         else:
             self.get_working_hours = 0.0
     get_working_hours = fields.Float(compute='_get_working_hours', string='Worked in schedule (h)')
@@ -179,17 +175,16 @@ class hr_payslip(models.Model):
         @param contract_ids: list of contract id
         @return: returns a list of dict containing the input that should be applied for the given contract between date_from and date_to
         """
-        cr, uid, context = self._cr, self.env.user.id, self._context
         def was_on_leave(employee_id, datetime_day, context=None):
             res = False
             day = datetime_day.strftime("%Y-%m-%d")
-            holiday_ids = self.pool.get('hr.holidays').search(cr, uid, [('state','=','validate'),('employee_id','=',employee_id),('type','=','remove'),('date_from','<=',day),('date_to','>=',day)])
+            holiday_ids = self.env['hr.holidays'].search([('state','=','validate'),('employee_id','=',employee_id),('type','=','remove'),('date_from','<=',day),('date_to','>=',day)])
             if holiday_ids:
-                res = self.pool.get('hr.holidays').browse(cr, uid, holiday_ids, context=context)[0].holiday_status_id.name
+                res = self.pool.get('hr.holidays').browse(holiday_ids)[0].holiday_status_id.name
             return res
 
         res = []
-        for contract in self.pool.get('hr.contract').browse(cr, SUPERUSER_ID, contract_ids, context=context):
+        for contract in self.env['hr.contract'].browse(contract_ids):
             if not contract.working_hours:
                 #fill only if the contract as a working schedule linked
                 continue
@@ -206,7 +201,7 @@ class hr_payslip(models.Model):
             day_to = datetime.strptime(date_to,"%Y-%m-%d")
             nb_of_days = (day_to - day_from).days + 1
             for day in range(0, nb_of_days):
-                working_hours_on_day = self.pool.get('resource.calendar').working_hours_on_day(cr, SUPERUSER_ID, contract.working_hours, day_from + timedelta(days=day), context)
+                working_hours_on_day = self.env['resource.calendar'].working_hours_on_day(day_from + timedelta(days=day))
                 if working_hours_on_day:
                     #the employee had to work
                     leave_type = was_on_leave(contract.employee_id.id, day_from + timedelta(days=day), context=context)
