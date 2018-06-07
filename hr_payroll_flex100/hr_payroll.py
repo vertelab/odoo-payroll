@@ -147,7 +147,7 @@ class hr_attendance(models.Model):
         else:
             month += 1
         date_end = datetime(year, month, 1) - timedelta(days=1)
-        self.flextime_month = round(sum(self.search([('employee_id', '=',self.employee_id.id), ('name', '>', fields.Date.to_string(date_start) + ' 00:00:00'), ('name', '<', fields.Date.to_string(date_end) + ' 23:59:59')]).mapped("flextime")))
+        self.flextime_month = round(sum(self.search([('employee_id', '=',self.employee_id.id), ('check_in', '>', fields.Date.to_string(date_start) + ' 00:00:00'), ('check_out', '<', fields.Date.to_string(date_end) + ' 23:59:59')]).mapped("flextime")))
     flextime_month = fields.Integer(compute="_flextime_month")
 
     @api.one
@@ -166,14 +166,14 @@ class hr_payslip(models.Model):
 
     @api.one
     def _flextime(self):
-        self.flextime = sum(self.env['hr.attendance'].search([('employee_id', '=',self.employee_id.id), ('name', '>', self.date_from + ' 00:00:00'), ('name', '<', self.date_to + ' 23:59:59')]).mapped("flextime"))
-        self.flex_working_hours = sum(self.env['hr.attendance'].search([('employee_id','=',self.employee_id.id),('name','>',self.date_from + ' 00:00:00'),('name','<',self.date_to + ' 23:59:59')]).mapped("flex_working_hours"))
+        self.flextime = sum(self.env['hr.attendance'].search([('employee_id', '=',self.employee_id.id), ('check_in', '>', self.date_from + ' 00:00:00'), ('check_out', '<', self.date_to + ' 23:59:59')]).mapped("flextime"))
+        self.flex_working_hours = sum(self.env['hr.attendance'].search([('employee_id','=',self.employee_id.id),('check_in','>',self.date_from + ' 00:00:00'),('check_out','<',self.date_to + ' 23:59:59')]).mapped("flex_working_hours"))
     flextime = fields.Float(string='Flex Time This Period (m)',compute="_flextime")
     flex_working_hours = fields.Float(compute='_flextime', string='Worked Flex (h)')
 
     @api.one
     def _flex_working_days(self):
-        self.flex_working_days = len(self.env['hr.attendance'].search([('employee_id', '=',self.employee_id.id), ('name', '>', self.date_from + ' 00:00:00'), ('name', '<', self.date_to + ' 23:59:59')]).filtered(lambda a: a._check_last_sign_out(a) == True))
+        self.flex_working_days = len(self.env['hr.attendance'].search([('employee_id', '=',self.employee_id.id), ('check_in', '>', self.date_from + ' 00:00:00'), ('check_out', '<', self.date_to + ' 23:59:59')]).filtered(lambda a: a._check_last_sign_out(a) == True))
     flex_working_days = fields.Float(compute='_flex_working_days', string='Flex Worked Days')
     @api.one
 

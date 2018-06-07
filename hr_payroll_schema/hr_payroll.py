@@ -75,12 +75,12 @@ class hr_attendance(models.Model):
     timesheet_amount = fields.Float(compute="_timesheet_amount",string="Reported time")
     timesheet_amount_invoiceable = fields.Float(compute="_timesheet_amount",string="Reported time (invoiceable)")
 
-class hr_analytic_timesheet(models.Model):
-    _inherit = 'hr.analytic.timesheet'
+class account_analytic_line(models.Model):
+    _inherit = 'account.analytic.line'
 
     @api.model
     def get_day_amount(self,date,employee):
-        time = self.env['hr.analytic.timesheet'].search([('user_id','=',employee.user_id.id),('date','=',date)])
+        time = self.env['account.analytic.line'].search([('user_id','=',employee.user_id.id),('date','=',date)])
         amount = sum([t.unit_amount for t in time])
         amount_invoiceable = sum([t.unit_amount * t.to_invoice.factor for t in time])
         return (amount,amount_invoiceable)
@@ -143,8 +143,7 @@ class hr_payslip(models.Model):
             for day in range(0, (fields.Date.from_string(self.date_to) - fields.Date.from_string(self.date_from)).days + 1):
                 #~ working_hours_on_day = self.pool.get('resource.calendar').working_hours_on_day(self.env.cr, self.env.uid, slip.employee_id.contract_id.working_hours.id, fields.Date.from_string(slip.date_from) + timedelta(days=day), self.env.context)
                 if self.employee_id.sudo().contract_id and self.employee_id.sudo().contract_id.working_hours:
-                    working_hours_on_day = self.employee_id.sudo().contract_id.working_hours.get_working_hours_of_date(start_dt=fields.Datetime.from_string(self.date_from) + timedelta(days=day))[0]
-                    _logger.warn('working_h_on day %s' %working_hours_on_day )
+                    working_hours_on_day = self.employee_id.sudo().contract_id.working_hours.get_working_hours_of_date(start_dt=fields.Datetime.from_string(self.date_from) + timedelta(days=day))
                     if working_hours_on_day:
                         nbr += 1.0
                         nbr_hours += working_hours_on_day
@@ -155,7 +154,7 @@ class hr_payslip(models.Model):
 
     @api.one
     def _get_working_hours(self): # worked hours in schedule
-        self.get_working_hours = sum(self.env['hr.attendance'].search([('employee_id','=',self.employee_id.id),('name','>',self.date_from),('name','<',self.date_to)]).mapped('get_working_hours'))
+        self.get_working_hours = sum(self.env['hr.attendance'].search([('employee_id','=',self.employee_id.id),('check_in','>',self.date_from + ' 00:00:00'),('check_out','<',self.date_to  + ' 23:59:59')]).mapped('get_working_hours'))
     get_working_hours = fields.Float(compute='_get_working_hours', string='Worked in schedule (h)')
 
     @api.one
