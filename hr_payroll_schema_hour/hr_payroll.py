@@ -57,7 +57,7 @@ class hr_payslip(models.Model):
                  'name': _("Normal Working Hours paid at 100%"),
                  'sequence': 1,
                  'code': 'HOUR',
-                 'number_of_days': 0.0,
+                 'number_of_days': number_of_hours / 8.0,
                  'number_of_hours': number_of_hours,
                  'contract_id': contract.id,
             })
