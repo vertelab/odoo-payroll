@@ -168,36 +168,8 @@ class hr_payslip(models.Model):
         self.slip_number_of_days = sum(self.worked_days_line_ids.mapped('number_of_days'))
     slip_number_of_days = fields.Float(computed="_slip_number_of_days")
 
-    @api.multi
-    def get_worked_time(self, date_from, date_to):
-        #TODO: how to identify worked time based on contract?
-        amount = 0.0
-        for line in self.env['account.analytic.line'].search([('date', '>=', date_from), ('date', '<=', date_to), ('user_id', '=', self.employee_id.user_id.id)]):
-            if line.to_invoice:
-                amount += line.unit_amount * (100.00 - line.to_invoice.factor) / 100.00
-            else:
-                amount += line.unit_amount
-        return amount
-
-    @api.model
-    def get_worked_day_lines(self, contract_ids, date_from, date_to):
-        res = super(hr_payslip, self).get_worked_day_lines(contract_ids, date_from, date_to)
-        #fill all contracts that are hourly
-        hourly_contracts = self.env['hr.contract'].browse(contract_ids).filtered(lambda contract: contract.hourly)
-        number_of_hours = 0.0
-        if len(hourly_contracts) > 0:
-            number_of_hours = self.get_worked_time(date_from, date_to)
-        attendances = []
-        for contract in hourly_contracts:
-            attendances.append({
-                 'name': _("Normal Working Hours paid at 100%"),
-                 'sequence': 1,
-                 'code': 'HOUR',
-                 'number_of_days': 0.0,
-                 'number_of_hours': number_of_hours,
-                 'contract_id': contract.id,
-            })
-        return res + attendances
+    # ~ @api.model
+    # ~ def get_worked_day_lines(self, contract_ids, date_from, date_to):
 
         # ~ """
         # ~ @param contract_ids: list of contract id
