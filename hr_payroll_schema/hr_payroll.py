@@ -67,7 +67,7 @@ class hr_attendance(models.Model):
     @api.one
     def _timesheet_amount(self):
         if self.employee_id and self.employee_id.user_id and self._check_last_sign_out(self):
-            (self.timesheet_amount,self.timesheet_amount_invoiceable) = self.env['hr.analytic.timesheet'].get_day_amount(self.name[:10],self.employee_id)
+            (self.timesheet_amount,self.timesheet_amount_invoiceable) = self.env['account.analytic.line'].get_day_amount(self.name[:10],self.employee_id)
     timesheet_amount = fields.Float(compute="_timesheet_amount",string="Reported time")
     timesheet_amount_invoiceable = fields.Float(compute="_timesheet_amount",string="Reported time (invoiceable)")
 
