@@ -1,26 +1,26 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-# OpenERP, Open Source Management Solution, third party addon
-# Copyright (C) 2004-2016 Vertel AB (<http://vertel.se>).
+#    Odoo, Open Source Enterprise Management Solution, third party addon
+#    Copyright (C) 2018 Vertel AB (<http://vertel.se>).
 #
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License as
-# published by the Free Software Foundation, either version 3 of the
-# License, or (at your option) any later version.
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
 #
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU Affero General Public License for more details.
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
 #
-# You should have received a copy of the GNU Affero General Public License
-# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
 
-from openerp import models, fields, api, _, http, tools
-from openerp.http import request
+from odoo import models, fields, api, _, http, tools
+from odoo.http import request
 from datetime import datetime, timedelta
 import pytz
 import time
@@ -42,7 +42,7 @@ class hr_attendance(models.Model):
 
 class hr_employee(models.Model):
     _inherit = 'hr.employee'
-    
+
     #TODO: Move to separate module?
     @api.multi
     def get_breaks_in_s(self, start, stop):
@@ -70,7 +70,7 @@ class hr_employee(models.Model):
                     res += (breaks[i][1] - breaks[i][0]).total_seconds()
                     i+= 1
         return res
-        
+
 
 class attendanceReport(http.Controller):
 

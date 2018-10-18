@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<openerp>
+<odoo>
   <data noupdate="1">
 
     <!-- Automatic action -->
@@ -27,4 +27,4 @@ env['bus.bus'].sendone('attendance',object.id)
     </record>
 
   </data>
-</openerp>
+</odoo>

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
+<odoo>
   <data>
     <record id="view_hr_payslip_form" model="ir.ui.view">
       <field name="name">hr.payslip.form.flex100</field>
       <field name="model">hr.payslip</field>
       <field name="inherit_id" ref="hr_payroll.view_hr_payslip_form" />
       <field name="arch" type="xml">
-        <page string="Worked Days &amp; Inputs" position="after">
+        <notebook position="inside">
           <page string="Time funds">
             <group>
               <field name="compensary_leave" />
@@ -24,9 +24,9 @@
             </field>
 -->
           </page>
-        </page>
+        </notebook>
       </field>
     </record>
-    
+
   </data>
-</openerp>
+</odoo>

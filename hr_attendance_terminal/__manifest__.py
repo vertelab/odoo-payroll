@@ -18,16 +18,22 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+{
+'name': 'Attendance Terminal',
+'version': '0.1',
+'summary': 'Human Resource',
+'category': 'hr',
+'description': """
+Attendance report in web form
 
-from odoo import models, fields, api, _
-
-import logging
-_logger = logging.getLogger(__name__)
-
-class hr_employee(models.Model):
-    _inherit = 'hr.employee'
-
-    rfid = fields.Char(string='RFID')
-
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+""",
+'author': 'Vertel AB',
+'website': 'http://www.vertel.se',
+'depends': ['hr_attendance', 'bus', 'website'],
+'data': [
+    'hr_attendance_terminal_view.xml',
+    'hr_employee_view.xml',
+    'hr_attendance_terminal_data.xml',
+    ],
+'installable': True,
+}

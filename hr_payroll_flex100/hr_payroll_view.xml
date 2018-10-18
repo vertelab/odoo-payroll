@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
+<odoo>
     <data>
 
 
@@ -22,7 +22,7 @@
 
 
         <!--employee attendance tree view-->
-    
+
     <record id="resource_calendar_form" model="ir.ui.view">
       <field name="name">resource.calendar.flextime.limit.form</field>
       <field name="model">resource.calendar</field>
@@ -33,13 +33,13 @@
         </field>
       </field>
     </record>
-    
-    <record id="view_attendance_who" model="ir.ui.view">
+
+    <record id="view_attendance_tree" model="ir.ui.view">
       <field name="name">hr.attendance.flextime.tree</field>
       <field name="model">hr.attendance</field>
-      <field name="inherit_id" ref="hr_payroll_schema.view_attendance_who" />
+      <field name="inherit_id" ref="hr_payroll_schema.view_attendance_tree" />
       <field name="arch" type="xml">
-        <field name="get_working_hours" position="after">
+        <field name="check_out" position="after">
           <field name="flextime" sum="Total Hours (h)" />
           <field name="flex_working_hours" sum="Total Hours (h)" />
         </field>
@@ -77,5 +77,5 @@
 
 
     </data>
-</openerp>
+</odoo>
 

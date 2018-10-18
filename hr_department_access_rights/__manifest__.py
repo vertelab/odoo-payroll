@@ -18,16 +18,26 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+{
+    'name': 'HR Department Access Rights',
+    'category': 'hr',
+    'author': 'Vertel AB',
+    'depends': ['hr'],
+    'version': '1.0',
+    'description': """
+Limits access rights for Officers to data regarding employees belonging to their own department.
+* Jobs
+* Contracts
+* Attendance
+* Holidays
+    """,
 
-from odoo import models, fields, api, _
-
-import logging
-_logger = logging.getLogger(__name__)
-
-class hr_employee(models.Model):
-    _inherit = 'hr.employee'
-
-    rfid = fields.Char(string='RFID')
-
+    'auto_install': False,
+    'website': 'http://www.vertel.se',
+    'data':['security/hr_security.xml', 'hr_view.xml'],
+    'demo':[
+    ],
+    'installable': True
+}
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

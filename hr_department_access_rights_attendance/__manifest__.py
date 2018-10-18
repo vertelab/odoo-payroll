@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-#    OpenERP, Open Source Management Solution, third party addon
-#    Copyright (C) 2004-2017 Vertel AB (<http://vertel.se>).
+#    Odoo, Open Source Enterprise Management Solution, third party addon
+#    Copyright (C) 2018 Vertel AB (<http://vertel.se>).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,22 +19,20 @@
 #
 ##############################################################################
 {
-    'name': "Holidays Schedule",
-    'summary': 'Import holidays to work schedule.',
-    'description': """""",
-    'author': "Vertel AB",
-    'website': "http://www.vertel.se",
-    # Categories can be used to filter modules in modules listing
-    # Check https://github.com/odoo/odoo/blob/master/openerp/addons/base/module/module_data.xml
-    # for the full list
-    'category': 'Uncategorized',
-    'version': '0.1',
-    'depends': ['resource'],
-    'data': [
-        'security/ir.model.access.csv',
-        'resource_view.xml',
-        'resource_data.xml',
+    'name': 'HR Department Access Rights - Attendance',
+    'category': 'hr',
+    'author': 'Vertel AB',
+    'depends': ['hr_department_access_rights', 'hr_attendance'],
+    'version': '1.0',
+    'description': """
+    """,
+
+    'auto_install': True,
+    'website': 'http://www.vertel.se',
+    'data':['security/hr_security.xml'],
+    'demo':[
     ],
-    'demo': [
-    ],
+    'installable': True
 }
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

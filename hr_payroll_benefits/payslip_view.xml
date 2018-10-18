@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
+<odoo>
   <data>
     <record id="hr_contract_form_inherit" model="ir.ui.view">
       <field name="name">hr.contract.form.inherit</field>
@@ -8,7 +8,7 @@
       <field name="inherit_id" ref="hr_contract.hr_contract_view_form" />
       <field name="arch" type="xml">
         <data>
-          <page string="Work Permit" position='before'>
+          <xpath expr="//notebook/page[2]" position='before'>
             <page string="Benefits">
               <field name="benefit_ids">
                 <tree editable="bottom">
@@ -18,9 +18,9 @@
                 </tree>
               </field>
             </page>
-          </page>
+          </xpath>
         </data>
       </field>
     </record>
   </data>
-</openerp>
+</odoo>

@@ -18,16 +18,17 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+{
+'name': 'Payroll Schema Hour Salary',
+'version': '0.1',
+'summary': 'Extends hr.attendance with nomalized days using resource schema',
+'category': 'hr',
+'description': """Extends hr.attendance with nomalized days using resource schema for Hour based Salary
 
-from odoo import models, fields, api, _
-
-import logging
-_logger = logging.getLogger(__name__)
-
-class hr_employee(models.Model):
-    _inherit = 'hr.employee'
-
-    rfid = fields.Char(string='RFID')
-
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+""",
+'author': 'Vertel AB',
+'website': 'http://www.vertel.se',
+'depends': ['hr_payroll_schema'],
+'data': ['hr_salary_rule_data.xml'],
+'installable': True,
+}

@@ -18,16 +18,16 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-from odoo import models, fields, api, _
-
-import logging
-_logger = logging.getLogger(__name__)
-
-class hr_employee(models.Model):
-    _inherit = 'hr.employee'
-
-    rfid = fields.Char(string='RFID')
-
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+{
+'name': 'Payroll Contract Type WorkTime',
+'version': '0.1',
+'summary': 'Extends hr.contract.type with a selection of WorkTime',
+'category': 'hr',
+'description': """Extends hr.contract.type with a selection of WorkTime
+""",
+'author': 'Vertel AB',
+'website': 'http://www.vertel.se',
+'depends': ['hr_contract', 'hr_payroll'],
+'data': ['hr_contract_view.xml'],
+'installable': True,
+}

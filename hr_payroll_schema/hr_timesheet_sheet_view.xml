@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
+<odoo>
   <data>
     <!--employee attendance tree view-->
-    <record id="view_attendance_who" model="ir.ui.view">
+    <record id="view_attendance_tree" model="ir.ui.view">
       <field name="name">hr.attendance.schema.tree</field>
       <field name="model">hr.attendance</field>
-      <field name="inherit_id" ref="hr_attendance.view_attendance_who" />
+      <field name="inherit_id" ref="hr_attendance.view_attendance_tree" />
       <field name="arch" type="xml">
-        <field name="action" position="after">
+        <field name="check_out" position="after">
           <field name="working_hours_on_day" sum="Total Hours (h)" />
           <field name="get_working_hours" sum="Worked in schadule (h)" />
           <!--
@@ -17,12 +17,12 @@
       </field>
     </record>
     <!--employee attendance form view-->
-    <record id="view_hr_attendance_form" model="ir.ui.view">
+    <record id="hr_attendance_view_form" model="ir.ui.view">
       <field name="name">hr.attendance.schema.form</field>
       <field name="model">hr.attendance</field>
-      <field name="inherit_id" ref="hr_attendance.view_attendance_form" />
+      <field name="inherit_id" ref="hr_attendance.hr_attendance_view_form" />
       <field name="arch" type="xml">
-        <field name="action_desc" position="after">
+        <field name="check_out" position="after">
           <field name="working_hours_on_day" string="Total Hours (h)" />
           <field name="get_working_hours" sum="Worked in schadule (h)" />
           <!--
@@ -58,7 +58,7 @@
       <field name="model">hr.payslip</field>
       <field name="inherit_id" ref="hr_payroll.view_hr_payslip_form" />
       <field name="arch" type="xml">
-        <page string="Worked Days &amp; Inputs" position="after">
+        <notebook position="inside">
           <page string="Time funds">
             <group>
               <field name="work_time"/>
@@ -67,9 +67,9 @@
               <field name="get_working_hours" attrs="{'invisible': [('work_time', '!=', 'schema')]}"/>
             </group>
           </page>
-        </page>
+        </notebook>
       </field>
     </record>
 
   </data>
-</openerp>
+</odoo>
