@@ -43,8 +43,11 @@ class hr_attendance(models.Model):
 
     @api.model
     def _check_last_sign_out(self,this_attendance):
-        attendance = self.env['hr.attendance'].search([('employee_id','=',this_attendance.employee_id.id),('action','=','sign_out'),('name','>',this_attendance.name[:10] + ' 00:00:00'),('name','<',this_attendance.name[:10] + ' 23:59:59')],order='name')
-        return len(attendance)>0 and this_attendance.name == attendance[-1].name
+        if this_attendance.check_out:
+            attendance = self.env['hr.attendance'].search([('employee_id','=',this_attendance.employee_id.id),('check_out','>',this_attendance.check_out[:10] + ' 00:00:00'),('check_out','<',this_attendance.check_out[:10] + ' 23:59:59')],order='check_out')
+            return len(attendance)>0 and this_attendance.check_out == attendance[-1].check_out
+        else:
+            return False
 
     @api.one
     def _working_hours_on_day(self): # working hours on the contract
@@ -57,9 +60,9 @@ class hr_attendance(models.Model):
     @api.one
     def _get_working_hours(self): # worked hours in schedule
         if self.employee_id.sudo().contract_id and self._check_last_sign_out(self):
-            att = self.env['hr.attendance'].search([('employee_id','=',self.employee_id.id),('name','>',self.name[:10] + ' 00:00:00'),('name','<',self.name[:10] + ' 23:59:59')],order='name')
+            att = self.env['hr.attendance'].search([('employee_id','=',self.employee_id.id),('check_in','>',self.check_in[:10] + ' 00:00:00'),('check_out','<',self.check_out[:10] + ' 23:59:59')],order='check_out')
             for (start,end) in zip(att,att[1:])[::2]:
-                self.get_working_hours += self.env['resource.calendar'].get_working_hours(self.employee_id.sudo().contract_id.working_hours.id, fields.Datetime.from_string(start.name), fields.Datetime.from_string(end.name))
+                self.get_working_hours += self.env['resource.calendar'].get_working_hours(self.employee_id.sudo().contract_id.working_hours.id, fields.Datetime.from_string(start.check_in), fields.Datetime.from_string(end.check_out))
         else:
             self.get_working_hours = 0.0
     get_working_hours = fields.Float(compute='_get_working_hours', string='Worked in schedule (h)')
@@ -67,7 +70,7 @@ class hr_attendance(models.Model):
     @api.one
     def _timesheet_amount(self):
         if self.employee_id and self.employee_id.user_id and self._check_last_sign_out(self):
-            (self.timesheet_amount,self.timesheet_amount_invoiceable) = self.env['account.analytic.line'].get_day_amount(self.name[:10],self.employee_id)
+            (self.timesheet_amount,self.timesheet_amount_invoiceable) = self.env['account.analytic.line'].get_day_amount(self.check_out[:10],self.employee_id)
     timesheet_amount = fields.Float(compute="_timesheet_amount",string="Reported time")
     timesheet_amount_invoiceable = fields.Float(compute="_timesheet_amount",string="Reported time (invoiceable)")
 
@@ -85,7 +88,7 @@ class account_analytic_line(models.Model):
     def _timesheet_amount(self):
         pass
         #~ if self.employee_id and self._check_last_sign_out(self):
-            #~ (self.timesheet_amount,self.timesheet_amount_invoiceable) = self.env['hr.analytic.timesheet'].get_day_amount(self.name[:10],self.employee_id)
+            #~ (self.timesheet_amount,self.timesheet_amount_invoiceable) = self.env['hr.analytic.timesheet'].get_day_amount(self.check_out[:10],self.employee_id)
     timesheet_amount = fields.Float(compute="_timesheet_amount",string="Reported time")
     timesheet_amount_invoiceable = fields.Float(compute="_timesheet_amount",string="Reported time (invoiceable)")
 
