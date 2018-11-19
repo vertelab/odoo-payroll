@@ -30,7 +30,7 @@
 """,
 'author': 'Vertel AB',
 'website': 'http://www.vertel.se',
-'depends': ['hr_payroll','hr_payroll_schema'],
-'data': ['payslip_view.xml', 'security/ir.model.access.csv','hr_salary_rule_data.xml'],
+'depends': ['hr_attendance', 'website' ],
+'data': ['payslip_view.xml', ],
 'installable': True,
 }

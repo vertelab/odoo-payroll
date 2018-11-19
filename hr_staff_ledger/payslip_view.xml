@@ -1,26 +1,268 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
-  <data>
-    <record id="hr_contract_form_inherit" model="ir.ui.view">
-      <field name="name">hr.contract.form.inherit</field>
-      <field name="model">hr.contract</field>
-      <field name="priority">20</field>
-      <field name="inherit_id" ref="hr_contract.hr_contract_view_form" />
-      <field name="arch" type="xml">
-        <data>
-          <page string="Work Permit" position='before'>
-            <page string="Benefits">
-              <field name="benefit_ids">
-                <tree editable="bottom">
-                  <field name="name" />
-                  <field name="desc" />
-                  <field name="value" />
+    <data>
+        <template id="staffledger">
+            <t t-call="website.layout">
+                <nav class="navbar bg-primary">
+                    <div class="container-fluid">
+                        <div class="navbar-header">
+                            <span class="navbar-brand mb-0 h1">Staff Ledger</span>
+                        </div>
+                    </div>
+                </nav>
+                <div class="container">
+                    <div id="wrap" class="oe_structure oe_empty text-center">
+                        <p t-if="employee.attendance_state == 'checked_out'">
+                            <h1>
+                                <i class="fa fa-user fa-1x" style="color: #f00;" />
+                                <span t-esc="employee.name" />
+                            </h1>
+                            Senast utcheckad:
+                            <span t-if="attendance" t-esc="attendance.check_out" />
+                        </p>
+                        <p t-if="employee.attendance_state == 'checked_in'">
+                            <h1>
+                                <i class="fa fa-user fa-1x" style="color: #0f0;" />
+                                <span t-esc="employee.name" />
+                            </h1>
+                            Senast incheckad:
+                            <span t-if="attendance" t-esc="attendance.check_in" />
+                        </p>
+                        <div align="center">
+                            <div id="test" />
+                            <div id="mapholder" />
+                            <script src="https://maps.google.com/maps/api/js?key=AIzaSyAcYeANSsgIWPOWk4JjKNIlz5LyZuZCCVE" />
+                        </div>
+                        <br />
+                        <form action="/staffledger" method="post" enctype="multipart/form-data">
+                            <t t-if="len(employee.location_ids) &gt; 1">
+                                <select name="location" id="locationSelect">
+                                    <t t-foreach="employee.location_ids" t-as="location">
+                                        <option t-att-value="location.id" t-esc="location.name" />
+                                    </t>
+                                </select>
+                            </t>
+                            <t t-if="len(employee.location_ids) == 1">
+                                <input name="location" t-att-value="employee.location_ids[0].id" type="hidden" />
+                            </t>
+                            <t t-if="len(employee.location_ids) == 0">
+                                <input name="location" t-att-value="default_location.id" type="hidden" />
+                            </t>
+                            <br />
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
+                            <t t-if="employee.attendance_state == 'checked_out'">
+                                <div class="container">
+                                    <button type="submit" name="sign" value="in" class="btn btn-success btn-md center-block" style="margin-top: 7px;">
+                                        <i class="fa fa-sign-in" aria-hidden="true" />
+                                        CHECKA IN
+                                    </button>
+                                </div>
+                            </t>
+                        </form>
+                        <form action="/staffledger" method="post" enctype="multipart/form-data">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
+                            <t t-if="employee.attendance_state == 'checked_in'">
+                                <div class="container">
+                                    <button type="submit" name="sign" value="out" class="btn btn-danger btn-md center-block" style="margin-top: 7px;">
+                                        <i class="fa fa-sign-out" aria-hidden="true" />
+                                        CHECKA UT
+                                    </button>
+                                </div>
+                            </t>
+                        </form>
+                    </div>
+                </div>
+            </t>
+        </template>
+        <template id="assets_frontend_override" inherit_id="website.assets_frontend">
+            <xpath expr="." position="inside">
+                <script type="text/javascript" src="/hr_staff_ledger/static/src/js/main.js" />
+            </xpath>
+        </template>
+        <template id="timereportlist" name="time report list">
+            <t t-call="website.layout">
+                <div id="wrap" class="oe_structure oe_empty">
+                    <!--
+                         
+                         <t t-set="employees" t-value="request.env['hr.employee'].search([])" />
+                         <table class="table table-striped">
+                         <tbody>
+                         <t t-foreach="employees" t-as="e">
+                         <tr>
+                         <td>
+                         <img class="img-rounded" t-att-src="'/web/image?model=hr.employee&amp;id=%s&amp;field=image_medium' %e.id" />
+                         </td>
+                         <td>
+                         <t t-if="e.attendance_state == 'checked_out'">
+                         <div align="center">
+                         <h3>
+                         <i class="fa fa-user fa-1x" style="color: #f00;" />
+                         <span t-field="e.name" />
+                         </h3>
+                         <br />
+                         <t t-if="e.user_id">
+                         <a type="submit" t-att-href="'/treport/%s' %e.user_id.id" class="btn btn-success btn-md center-block" style="margin-top: 7px;">
+                         <i class="fa fa-sign-in" aria-hidden="true" />
+                         CHECKA IN
+                         </a>
+                         </t>
+                         </div>
+                         </t>
+                         <t t-if="e.attendance_state == 'checked_in'">
+                         <div align="center">
+                         <h3>
+                         <i class="fa fa-user fa-1x" style="color: #0f0;" />
+                         <span t-field="e.name" />
+                         </h3>
+                         <br />
+                         <t t-if="e.user_id">
+                         <a type="submit" t-att-href="'/treport/%s' %e.user_id.id" class="btn btn-danger btn-md center-block" style="margin-top: 7px;">
+                         <i class="fa fa-sign-out" aria-hidden="true" />
+                         CHECKA UT
+                         </a>
+                         </t>
+                         </div>
+                         </t>
+                         </td>
+                         </tr>
+                         </t>
+                         </tbody>
+                         </table>
+                    -->
+                </div>
+            </t>
+        </template>
+        <record id="view_staff_ledger_transaction_form" model="ir.ui.view">
+            <field name="name">hr.staff.ledger.transaction.form</field>
+            <field name="model">hr.staff.ledger.transaction</field>
+            <field name="arch" type="xml">
+                <form string="Employee">
+                    <sheet>
+                        <div class="oe_button_box" name="button_box" />
+                        <group>
+                            <group>
+                                <field name="status" widget="hr_attendance_form_presence_indicator"/>
+                                <field name="employee_id" />
+                                <field name="identification_id" />
+                                <field name="address_id" />
+                                <field name="company_registry" />
+                            </group>
+                            <group>
+                                <field name="date" />
+                                <field name="date_in" />
+                                <field name="date_out" />
+                                <field name="location_id" />
+                                <field name="idnumber" />
+                            </group>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers" groups="base.group_user" />
+                        <field name="message_ids" widget="mail_thread" />
+                    </div>
+                </form>
+            </field>
+        </record>
+        <record id="view_staff_ledger_transaction_filter" model="ir.ui.view">
+            <field name="name">hr.staff.ledger.transaction.search</field>
+            <field name="model">hr.staff.ledger.transaction</field>
+            <field name="arch" type="xml">
+                <search string="Staff ledger">
+                    <field name="date" />
+                    <field name="location_id" />
+                    <field name="status" />
+                    <filter string="Today" name="date_today" domain="[('date_in', '&gt;=', time.strftime('%%Y-%%m-%%d 00:00:00')), ('date_out', '&lt;=', time.strftime('%%Y-%%m-%%d 23:59:59'))]" />
+                    <filter string="This Month" name="date_month" domain="[('date_in', '&gt;=', time.strftime('%%Y-%%m-01 00:00:00')), ('date_out', '&lt;=', time.strftime('%%Y-%%m-%%d 23:59:59'))]" />
+                    <filter string="This Year" name="date_year" domain="[('date_in', '&gt;=', time.strftime('%%Y-01-01 00:00:00')), ('date_out', '&lt;=', time.strftime('%%Y-12-31 23:59:59'))]" />
+                    <group expand="0" string="Group By">
+                        <filter string="Date" domain="[]" context="{'group_by':'date'}" />
+                        <filter string="Location Id" domain="[]" context="{'group_by':'location_id'}" />
+                        <filter string="Status" domain="[]" context="{'group_by':'status'}" />
+                    </group>
+                </search>
+            </field>
+        </record>
+        <record id="view_staff_ledger_transaction_calendar" model="ir.ui.view">
+            <field name="name">staff.ledger.transaction.calendar</field>
+            <field name="model">hr.staff.ledger.transaction</field>
+            <field name="priority" eval="2" />
+            <field name="arch" type="xml">
+                <calendar string="Staff Ledger Calendar" date_start="date_in" date_stop="date_out" mode="month" color="employee_id">
+                    <field name="employee_id" />
+                    <field name="location_id" />
+                </calendar>
+            </field>
+        </record>
+        <record id="view_staff_ledger_transaction_tree" model="ir.ui.view">
+            <field name="name">hr.staff.ledger.transaction.tree</field>
+            <field name="model">hr.staff.ledger.transaction</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Staff ledger transaction" colors="red:status=='checked_out';green:status=='checked_in'">
+                    <field name="address_id" />
+                    <field name="company_registry" />
+                    <field name="location_id" />
+                    <field name="idnumber" />
+                    <field name="employee_id" />
+                    <field name="identification_id" />
+                    <field name="date_in" />
+                    <field name="date_out" />
+                    <field name="status" invisible="1"/>
                 </tree>
-              </field>
-            </page>
-          </page>
-        </data>
-      </field>
-    </record>
-  </data>
+            </field>
+        </record>
+        <record id="view_staff_ledger_location_tree" model="ir.ui.view">
+            <field name="name">hr.staff.ledger.location.tree</field>
+            <field name="model">hr.staff.ledger.location</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Staff ledger location">
+                    <field name="name" />
+                </tree>
+            </field>
+        </record>
+        <record id="view_staff_ledger_location_form" model="ir.ui.view">
+            <field name="name">hr.staff.ledger.location.form</field>
+            <field name="model">hr.staff.ledger.location</field>
+            <field name="arch" type="xml">
+                <form string="Employee">
+                    <sheet>
+                        <div class="oe_button_box" name="button_box" />
+                        <group>
+                            <group>
+                                <field name="name" />
+                                <field name="street" />
+                                <field name="street2" />
+                                <field name="zip" />
+                                <field name="city" />
+                                <field name="country_id" />
+                            </group>
+                            <group>
+                                <field name="registered" />
+                                <field name="idnumber" />
+                                <field name="longitude" />
+                                <field name="latitude" />
+                                <field name="comment" />
+                                <field name="default_location" />
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <act_window context="{}" id="staff_ledger_action" name="Staff Ledger Transactions" view_type="form" view_mode="tree,form,calendar" res_model="hr.staff.ledger.transaction" target="current" view_id="hr_staff_ledger.view_staff_ledger_transaction_tree" />
+        <menuitem id="staffledger_menu" name="Staff Ledger" parent="hr_attendance.menu_hr_attendance_manage_attendances" sequence="25" action="hr_staff_ledger.staff_ledger_action" />
+        <act_window context="{}" id="staff_ledger_location_action" name="Locations" view_type="form" view_mode="tree,form" res_model="hr.staff.ledger.location" target="current" view_id="hr_staff_ledger.view_staff_ledger_location_tree" />
+        <menuitem id="staffledger_location_menu" name="Locations" parent="hr_attendance.menu_hr_attendance_settings" sequence="10" action="hr_staff_ledger.staff_ledger_location_action" />
+        <record id="view_employee_form" model="ir.ui.view">
+            <field name="name">hr.employee.form.location</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr.view_employee_form" />
+            <field name="arch" type="xml">
+                <field name="calendar_id" position="after">
+                    <field name="location_ids" widget="many2many_tags" />
+                </field>
+            </field>
+        </record>
+    </data>
 </openerp>
