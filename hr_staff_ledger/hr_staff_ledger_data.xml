@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+        <record id="default_location" model="hr.staff.ledger.location">
+            <field name="name">Default location</field>
+            <field name="street">Street 1</field>
+            <field name="zip">000 00</field>
+            <field name="city">City</field>
+            <field name="country_id" ref="base.se" />
+            <field name="registered" eval="False" />
+            <field name="idnumber">AA12345678901</field>
+            <field name="longitude">0.000000</field>
+            <field name="latitude">0.000000</field>
+            <field name="default_location" eval="True" />
+        </record>
+    </data>
+</openerp>

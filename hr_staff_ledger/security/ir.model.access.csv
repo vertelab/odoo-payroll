@@ -1,5 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_hr_benefit_user,hr.benefit.user,model_hr_benefit,base.group_hr_user,1,1,1,1
-access_hr_benefit_manager,hr.benefit.manager,model_hr_benefit,base.group_hr_manager,1,1,1,1
-access_hr_contract_benefit_user,hr.contract.benefit.user,model_hr_contract_benefit,base.group_hr_user,1,0,0,0
-access_hr_contract_benefit_manager,hr.contract.benefit.manager,model_hr_contract_benefit,base.group_hr_manager,1,1,1,1
+access_hr_staff_ledger_transaction,hr.staff.ledger.transaction.user,model_hr_staff_ledger_transaction,base.group_user,1,1,1,1
+access_hr_staff_ledger_location,hr.staff.ledger.location.user,model_hr_staff_ledger_location,base.group_user,1,1,1,1
+access_hr_staff_ledger,hr.staff.ledger.user,model_hr_staff_ledger,base.group_user,1,1,1,1
+

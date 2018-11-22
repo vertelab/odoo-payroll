@@ -74,8 +74,9 @@ class hr_staff_ledger_transaction(models.Model):
     status = fields.Selection([('checked_in', 'Log In'),('checked_out', 'Log Out'),], string='Status', readonly=True, track_visibility='always')
     address_id = fields.Many2one(related="employee_id.address_id")
     company_registry = fields.Char(related="employee_id.company_id.company_registry")
-    # ~ longitude = fields.Float()
-    # ~ latitude = fields.Float()
+    longitude = fields.Float(digits=(8,6))
+    latitude = fields.Float(digits=(8,6))
+    # ~ device = fields.Char()
     
 
 class hr_employee(models.Model):
@@ -115,9 +116,12 @@ class project_timereport(http.Controller):
         if not employee:
             request.render('website.403')
         sign = post.get('sign', False)
+        trans = request.env['hr.staff.ledger.transaction'].search([('employee_id', '=', employee.id )], order='date_in desc', limit=1)
+        location = None
+        if trans and trans.status == 'checked_in':
+            location = trans.location_id
         if sign:
             employee.attendance_manual('hr_attendance.hr_attendance_action_my_attendances')
-            trans = request.env['hr.staff.ledger.transaction'].search([('employee_id', '=', employee.id ), ('date_in', '>=', fields.Date.today()+' 00:00:00'), ('date_in', '<=', fields.Date.today()+' 23:59:59')])
             if trans and len(trans) == 1:
                 if trans.status == 'checked_in':
                     trans.date_out =  fields.Datetime.now()
@@ -128,21 +132,25 @@ class project_timereport(http.Controller):
                     trans.location_id = post.get('location')
                     trans.date_out =  None
                     trans.status = 'checked_in'
+                    trans.longitude = post.get('location_lon')
+                    trans.latitude = post.get('location_lat')
+                    # ~ trans.device = request.user_agent.device.family()
             elif not trans:
                 request.env['hr.staff.ledger.transaction'].create({'date_in': fields.Datetime.now(), 'date': fields.Datetime.now(), 'location_id': post.get('location'), 'employee_id': employee.id, 'status': 'checked_in'})
-                
-            return request.redirect('/staffledger')
-                        
-        else:
-            ctx = {
-                'employee' : employee,
-                'attendance': employee.last_attendance_id,
-                'default_location': request.env['hr.staff.ledger.location'].search([('default_location', '=', True)], limit=1),
-            }
-            return request.render('hr_staff_ledger.staffledger', ctx)
+        
+        if not location and post.get('location'):
+            location = request.env['hr.staff.ledger.location'].browse(int(post.get('location')))        
+
+        ctx = {
+            'employee' : employee,
+            'attendance': employee.last_attendance_id,
+            'location' : location,
+            'default_location': request.env['hr.staff.ledger.location'].search([('default_location', '=', True)], limit=1),
+        }
+        return request.render('hr_staff_ledger.staffledger', ctx)
 
     @http.route('/staffledger/closest_pos', type='json', auth="user")
-    def closest_position(self, lat=False, long=False, **post):
+    def closest_position(self, lat=False, long=False, default_location=0, **post):
         locations = request.env['hr.staff.ledger.location'].search([])
         result = None
         employee = request.env['hr.employee'].search([('user_id', '=', request.env.user.id)])
@@ -154,8 +162,34 @@ class project_timereport(http.Controller):
                         result = location
                 else:
                     result = location
-            return result.id
+            if result:
+                return result.id
+            else:
+                return default_location
         return 0
     
-
+    @http.route(['/staffledger/staffledgerlist'], type='http', auth="user", website=True)
+    def staffledgerlist(self, user=False, clicked=False, **post):
+            employee = request.env['hr.employee'].search([('user_id', '=', request.env.user.id)])
+            location = None
+            if post.get('location'):
+                location = request.env['hr.staff.ledger.location'].browse(int(post.get('location')))
+            else :
+                trans = request.env['hr.staff.ledger.transaction'].search([('employee_id', '=', employee.id ), ('date_in', '>=', fields.Date.today()+' 00:00:00'), ('date_in', '<=', fields.Date.today()+' 23:59:59')])
+                if trans.status == 'checked_in':
+                    location = trans.location_id
+                    
+            if not location:    
+                location = request.env['hr.staff.ledger.location'].search([('default_location', '=', True)], limit=1)
+                
+                
+            ctx = {
+                'employee' : employee,
+                'attendance': employee.last_attendance_id,
+                'location' : location,
+                'default_location': request.env['hr.staff.ledger.location'].search([('default_location', '=', True)], limit=1),
+            }
+            return request.render('hr_staff_ledger.staffledgerlist', ctx)
+            
+            
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

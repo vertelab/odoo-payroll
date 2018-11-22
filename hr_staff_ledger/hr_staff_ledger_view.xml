@@ -3,20 +3,20 @@
     <data>
         <template id="staffledger">
             <t t-call="website.layout">
-                <nav class="navbar bg-primary">
-                    <div class="container-fluid">
-                        <div class="navbar-header">
-                            <span class="navbar-brand mb-0 h1">Staff Ledger</span>
-                        </div>
-                    </div>
-                </nav>
                 <div class="container">
+                    <nav class="navbar bg-primary">
+                        <div class="container-fluid">
+                            <div class="navbar-header">
+                                <h1 class="navbar-brand mb-0">Time Report</h1>
+                            </div>
+                        </div>
+                    </nav>
                     <div id="wrap" class="oe_structure oe_empty text-center">
                         <p t-if="employee.attendance_state == 'checked_out'">
-                            <h1>
+                            <h2>
                                 <i class="fa fa-user fa-1x" style="color: #f00;" />
                                 <span t-esc="employee.name" />
-                            </h1>
+                            </h2>
                             Senast utcheckad:
                             <span t-if="attendance" t-esc="attendance.check_out" />
                         </p>
@@ -29,44 +29,51 @@
                             <span t-if="attendance" t-esc="attendance.check_in" />
                         </p>
                         <div align="center">
-                            <div id="test" />
                             <div id="mapholder" />
-                            <script src="https://maps.google.com/maps/api/js?key=AIzaSyAcYeANSsgIWPOWk4JjKNIlz5LyZuZCCVE" />
+                            <script t-att-src="'https://maps.google.com/maps/api/js?key=%s' % request.env['ir.config_parameter'].get_param('hr_staff_ledger.googlemapkey')" />
                         </div>
                         <br />
                         <form action="/staffledger" method="post" enctype="multipart/form-data">
-                            <t t-if="len(employee.location_ids) &gt; 1">
-                                <select name="location" id="locationSelect">
-                                    <t t-foreach="employee.location_ids" t-as="location">
-                                        <option t-att-value="location.id" t-esc="location.name" />
-                                    </t>
-                                </select>
-                            </t>
-                            <t t-if="len(employee.location_ids) == 1">
-                                <input name="location" t-att-value="employee.location_ids[0].id" type="hidden" />
-                            </t>
-                            <t t-if="len(employee.location_ids) == 0">
-                                <input name="location" t-att-value="default_location.id" type="hidden" />
-                            </t>
-                            <br />
-                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
+                            <input id="location_lat" name="location_lat" value="" type="hidden"/>
+                            <input id="location_lon" name="location_lon" value="" type="hidden"/>
                             <t t-if="employee.attendance_state == 'checked_out'">
+                                <t t-if="len(employee.location_ids) &gt; 1">
+                                    <select name="location" id="locationSelect">
+                                        <t t-foreach="employee.location_ids" t-as="location">
+                                            <option t-att-value="location.id" t-esc="location.name" />
+                                        </t>
+                                    </select>
+                                </t>
+                                <t t-if="len(employee.location_ids) == 1">
+                                    <input name="location" t-att-value="employee.location_ids[0].id" type="hidden" />
+                                </t>
+                                <t t-if="len(employee.location_ids) == 0">
+                                    <input name="location" t-att-value="default_location.id" type="hidden" />
+                                </t>
+                                <br />
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
                                 <div class="container">
-                                    <button type="submit" name="sign" value="in" class="btn btn-success btn-md center-block" style="margin-top: 7px;">
-                                        <i class="fa fa-sign-in" aria-hidden="true" />
-                                        CHECKA IN
-                                    </button>
+                                    <div class="btn-group" role="group" aria-label="...">
+                                        <button type="submit" name="sign" value="in" class="btn btn-success btn-md center-block" style="margin-top: 7px;">
+                                            <i class="fa fa-sign-in" aria-hidden="true" />
+                                            CHECKA IN
+                                        </button>
+                                        <button type="button" class="btn btn-info btn-md center-block disabled" style="margin-top: 7px;">Personalliggare</button>
+                                    </div>
                                 </div>
                             </t>
-                        </form>
-                        <form action="/staffledger" method="post" enctype="multipart/form-data">
                             <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
                             <t t-if="employee.attendance_state == 'checked_in'">
+                                Incheckad på:
+                                <span t-esc="location and location.name" />
                                 <div class="container">
-                                    <button type="submit" name="sign" value="out" class="btn btn-danger btn-md center-block" style="margin-top: 7px;">
-                                        <i class="fa fa-sign-out" aria-hidden="true" />
-                                        CHECKA UT
-                                    </button>
+                                    <div class="btn-group" role="group">
+                                        <button type="submit" name="sign" value="out" class="btn btn-danger btn-md center-block" style="margin-top: 7px;">
+                                            <i class="fa fa-sign-out" aria-hidden="true" />
+                                            CHECKA UT
+                                        </button>
+                                        <button type="submit" formaction="/staffledger/staffledgerlist" name="btn_staffledger" class="btn btn-info btn-md center-block" style="margin-top: 7px;">Personalliggare</button>
+                                    </div>
                                 </div>
                             </t>
                         </form>
@@ -79,58 +86,69 @@
                 <script type="text/javascript" src="/hr_staff_ledger/static/src/js/main.js" />
             </xpath>
         </template>
-        <template id="timereportlist" name="time report list">
+        <template id="staffledgerlist" name="Staff Ledger List">
             <t t-call="website.layout">
                 <div id="wrap" class="oe_structure oe_empty">
-                    <!--
-                         
-                         <t t-set="employees" t-value="request.env['hr.employee'].search([])" />
-                         <table class="table table-striped">
-                         <tbody>
-                         <t t-foreach="employees" t-as="e">
-                         <tr>
-                         <td>
-                         <img class="img-rounded" t-att-src="'/web/image?model=hr.employee&amp;id=%s&amp;field=image_medium' %e.id" />
-                         </td>
-                         <td>
-                         <t t-if="e.attendance_state == 'checked_out'">
-                         <div align="center">
-                         <h3>
-                         <i class="fa fa-user fa-1x" style="color: #f00;" />
-                         <span t-field="e.name" />
-                         </h3>
-                         <br />
-                         <t t-if="e.user_id">
-                         <a type="submit" t-att-href="'/treport/%s' %e.user_id.id" class="btn btn-success btn-md center-block" style="margin-top: 7px;">
-                         <i class="fa fa-sign-in" aria-hidden="true" />
-                         CHECKA IN
-                         </a>
-                         </t>
-                         </div>
-                         </t>
-                         <t t-if="e.attendance_state == 'checked_in'">
-                         <div align="center">
-                         <h3>
-                         <i class="fa fa-user fa-1x" style="color: #0f0;" />
-                         <span t-field="e.name" />
-                         </h3>
-                         <br />
-                         <t t-if="e.user_id">
-                         <a type="submit" t-att-href="'/treport/%s' %e.user_id.id" class="btn btn-danger btn-md center-block" style="margin-top: 7px;">
-                         <i class="fa fa-sign-out" aria-hidden="true" />
-                         CHECKA UT
-                         </a>
-                         </t>
-                         </div>
-                         </t>
-                         </td>
-                         </tr>
-                         </t>
-                         </tbody>
-                         </table>
-                    -->
+                    <div class="container">
+                        <nav class="navbar bg-primary">
+                            <div class="container-fluid">
+                                <div class="navbar-header">
+                                    <span class="navbar-brand mb-0 h1">Personalliggare</span>
+                                </div>
+                            </div>
+                        </nav>
+                        <a href="/staffledger/" class="btn btn-info btn-sm">Tillbaka</a>
+                        <a href="#" class="btn btn-warning btn-sm">E-posta</a>
+                        <br/>
+                        <br/>
+                        <div class="text-center">
+                            <h3>
+                                <b>
+                                    <span t-esc="location and location.name" />
+                                </b>
+                            </h3>
+                            <h5>
+                                <b>Skatteverkets ID:</b>
+                                <span t-esc="location and location.idnumber" />
+                                <br/>
+                                <b>Utskriftsdatum: </b>
+                                <span t-esc="time.strftime('%%Y-%%m-%%d %%H:%%M:%%S')" />
+                            </h5>
+                        </div>
+                        <br />
+                        <t t-set="transaction" t-value="request.env['hr.staff.ledger.transaction'].search([('location_id', '=' , location.id), ('date_in', '&gt;=', time.strftime('%%Y-%%m-%%d 00:00:00')), ('date_in', '&lt;=', time.strftime('%%Y-%%m-%%d 23:59:59'))])" />
+                        <t t-foreach="transaction" t-as="trans">
+                            <h5>
+                                <b>
+                                    <span t-field="trans.employee_id" />
+                                    (
+                                    <span t-field="trans.identification_id" />
+                                    )
+                                </b>
+                            </h5>
+                            <h6>
+                                <b>
+                                    <span t-field="trans.address_id" />
+                                    (
+                                    <span t-field="trans.company_registry" />
+                                    )
+                                </b>
+                                <br />
+                                Check in:
+                                <span t-field="trans.date_in" />
+                                <br />
+                                Check ut:
+                                <span t-field="trans.date_out" />
+                            </h6>
+                            <hr />
+                        </t>
+                    </div>
                 </div>
             </t>
+        </template>
+         <template id="timereportlist">
+            <t t-call="website.layout">
+                </t>
         </template>
         <record id="view_staff_ledger_transaction_form" model="ir.ui.view">
             <field name="name">hr.staff.ledger.transaction.form</field>
@@ -141,7 +159,7 @@
                         <div class="oe_button_box" name="button_box" />
                         <group>
                             <group>
-                                <field name="status" widget="hr_attendance_form_presence_indicator"/>
+                                <field name="status" widget="hr_attendance_form_presence_indicator" />
                                 <field name="employee_id" />
                                 <field name="identification_id" />
                                 <field name="address_id" />
@@ -153,6 +171,11 @@
                                 <field name="date_out" />
                                 <field name="location_id" />
                                 <field name="idnumber" />
+                                <field name="longitude" />
+                                <field name="latitude" />
+<!--
+                                <field name="device" />
+-->
                             </group>
                         </group>
                     </sheet>
@@ -171,9 +194,10 @@
                     <field name="date" />
                     <field name="location_id" />
                     <field name="status" />
-                    <filter string="Today" name="date_today" domain="[('date_in', '&gt;=', time.strftime('%%Y-%%m-%%d 00:00:00')), ('date_out', '&lt;=', time.strftime('%%Y-%%m-%%d 23:59:59'))]" />
-                    <filter string="This Month" name="date_month" domain="[('date_in', '&gt;=', time.strftime('%%Y-%%m-01 00:00:00')), ('date_out', '&lt;=', time.strftime('%%Y-%%m-%%d 23:59:59'))]" />
-                    <filter string="This Year" name="date_year" domain="[('date_in', '&gt;=', time.strftime('%%Y-01-01 00:00:00')), ('date_out', '&lt;=', time.strftime('%%Y-12-31 23:59:59'))]" />
+                    <filter string="Current Staff ledger" name="current_staffledger" domain="[('status', '=', 'checked_in')]" />
+                    <filter string="Today" name="date_today" domain="[('date', '&gt;=', time.strftime('%%Y-%%m-%%d 00:00:00')), ('date', '&lt;=', time.strftime('%%Y-%%m-%%d 23:59:59'))]" />
+                    <filter string="This Month" name="date_month" domain="[('date', '&gt;=', time.strftime('%%Y-%%m-01 00:00:00')), ('date', '&lt;=', time.strftime('%%Y-%%m-%%d 23:59:59'))]" />
+                    <filter string="This Year" name="date_year" domain="[('date', '&gt;=', time.strftime('%%Y-01-01 00:00:00')), ('date', '&lt;=', time.strftime('%%Y-12-31 23:59:59'))]" />
                     <group expand="0" string="Group By">
                         <filter string="Date" domain="[]" context="{'group_by':'date'}" />
                         <filter string="Location Id" domain="[]" context="{'group_by':'location_id'}" />
@@ -199,6 +223,7 @@
             <field name="type">tree</field>
             <field name="arch" type="xml">
                 <tree string="Staff ledger transaction" colors="red:status=='checked_out';green:status=='checked_in'">
+                    <field name="date" />
                     <field name="address_id" />
                     <field name="company_registry" />
                     <field name="location_id" />
@@ -207,7 +232,7 @@
                     <field name="identification_id" />
                     <field name="date_in" />
                     <field name="date_out" />
-                    <field name="status" invisible="1"/>
+                    <field name="status" invisible="1" />
                 </tree>
             </field>
         </record>
@@ -218,6 +243,7 @@
             <field name="arch" type="xml">
                 <tree string="Staff ledger location">
                     <field name="name" />
+                    <field name="default_location" />
                 </tree>
             </field>
         </record>
