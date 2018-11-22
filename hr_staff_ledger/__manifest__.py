@@ -19,7 +19,7 @@
 #
 ##############################################################################
 {
-'name': 'Payroll Benefits',
+'name': 'Staff Ledger',
 'version': '0.1',
 'summary': 'Extends contract with benefits',
 'category': 'hr',

@@ -3,14 +3,14 @@
     <data>
         <template id="staffledger">
             <t t-call="website.layout">
-                <div class="container">
-                    <nav class="navbar bg-primary">
-                        <div class="container-fluid">
-                            <div class="navbar-header">
-                                <h1 class="navbar-brand mb-0">Time Report</h1>
-                            </div>
+                <nav class="navbar bg-primary">
+                    <div class="container-fluid">
+                        <div class="navbar-header">
+                            <h1 class="navbar-brand mb-0">Time Report</h1>
                         </div>
-                    </nav>
+                    </div>
+                </nav>
+                <div class="container">
                     <div id="wrap" class="oe_structure oe_empty text-center">
                         <p t-if="employee.attendance_state == 'checked_out'">
                             <h2>
@@ -34,8 +34,8 @@
                         </div>
                         <br />
                         <form action="/staffledger" method="post" enctype="multipart/form-data">
-                            <input id="location_lat" name="location_lat" value="" type="hidden"/>
-                            <input id="location_lon" name="location_lon" value="" type="hidden"/>
+                            <input id="location_lat" name="location_lat" value="" type="hidden" />
+                            <input id="location_lon" name="location_lon" value="" type="hidden" />
                             <t t-if="employee.attendance_state == 'checked_out'">
                                 <t t-if="len(employee.location_ids) &gt; 1">
                                     <select name="location" id="locationSelect">
@@ -99,8 +99,8 @@
                         </nav>
                         <a href="/staffledger/" class="btn btn-info btn-sm">Tillbaka</a>
                         <a href="#" class="btn btn-warning btn-sm">E-posta</a>
-                        <br/>
-                        <br/>
+                        <br />
+                        <br />
                         <div class="text-center">
                             <h3>
                                 <b>
@@ -110,8 +110,8 @@
                             <h5>
                                 <b>Skatteverkets ID:</b>
                                 <span t-esc="location and location.idnumber" />
-                                <br/>
-                                <b>Utskriftsdatum: </b>
+                                <br />
+                                <b>Utskriftsdatum:</b>
                                 <span t-esc="time.strftime('%%Y-%%m-%%d %%H:%%M:%%S')" />
                             </h5>
                         </div>
@@ -146,9 +146,8 @@
                 </div>
             </t>
         </template>
-         <template id="timereportlist">
-            <t t-call="website.layout">
-                </t>
+        <template id="timereportlist">
+            <t t-call="website.layout" />
         </template>
         <record id="view_staff_ledger_transaction_form" model="ir.ui.view">
             <field name="name">hr.staff.ledger.transaction.form</field>
@@ -173,9 +172,9 @@
                                 <field name="idnumber" />
                                 <field name="longitude" />
                                 <field name="latitude" />
-<!--
-                                <field name="device" />
--->
+                                <!--
+                                     <field name="device" />
+                                -->
                             </group>
                         </group>
                     </sheet>
