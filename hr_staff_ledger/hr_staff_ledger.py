@@ -90,6 +90,19 @@ class hr_employee(models.Model):
     _inherit = 'hr.employee'
     
     location_ids = fields.Many2many(comodel_name="hr.staff.ledger.location")
+    transaction_ids = fields.Many2many(comodel_name="hr.staff.ledger.transaction")
+    
+    @api.one
+    def _staff_ledger_location(self):
+        transactions = self.env['hr.staff.ledger.transaction'].search([('employee_id','=', self.id)], order='date asc', limit=1)
+        _logger.warn('Transaction %s' % transactions)
+        self.staff_ledger_location = transactions.mapped('location_id') if len(transactions)>0 else None
+        # ~ self.staff_ledger_date = transactions.mapped('date') if len(transactions)>0 else None
+        # ~ self.staff_ledger_status = transactions.mapped('status') or 'checked_out'
+                
+    staff_ledger_location = fields.Many2one(comodel_name="hr.staff.ledger.location", compute='_staff_ledger_location')
+    staff_ledger_date = fields.Datetime(compute='_staff_ledger_location')
+    staff_ledger_status = fields.Selection([('checked_in', 'Log In'),('checked_out', 'Log Out')], compute='_staff_ledger_location')
   
   
 class hr_staff_ledger_location(models.Model):
@@ -251,8 +264,18 @@ class project_timereport(http.Controller):
                 'default_location': request.env['hr.staff.ledger.location'].search([('default_location', '=', True)], limit=1),
             }
             return request.render('hr_staff_ledger.staffledgerlist', ctx)
- 
- 
-   
+
+    @http.route(['/staffledger/managerlist'], type='http', auth="user", website=True)
+    def staffledgermanagerlist(self, user=False, clicked=False, **post):
+            return request.render('hr_staff_ledger.staffledger_managerlist', { 'employee_ids' : request.env['hr.employee'].search([], order='name') })
+#            >>> self.search([('is_company', '=', True)], limit=1).name
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+
+
+
+
+
+
+
+

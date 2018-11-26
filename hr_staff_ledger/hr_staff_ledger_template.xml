@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+    <template id="staffledger_managerlist">
+      <t t-call="website.layout">
+        <nav class="navbar bg-primary">
+          <div class="container-fluid">
+            <div class="navbar-header">
+              <span class="navbar-brand mb-0 h1">Staff Ledger - Manager list</span>
+            </div>
+          </div>
+        </nav>
+        <div class="container">
+          <div class="row">
+            <div class="col-sm-4">
+            </div>
+            <div class="col-sm-4 staffLedger">
+             <t t-foreach="employee_ids" t-as="employee">
+                <b><span t-field="employee.name" /></b>
+                <span t-esc="employee.staff_ledger_location.name or 'none'" />dd
+                <span t-esc="employee.staff_ledger_date" />ee
+                <span t-esc="employee.staff_ledger_status" />rr
+              <!--  request.env['hr.staff.ledger.transaction'].search([( 'employee_id', '=', employee.id )]) -->
+              <br />
+            </t>
+            </div>
+            <div class="col-sm-4">
+            </div>
+          </div>
+        </div>
+          <br />
+          <br />
+      </t>
+<style>
+    .staffLedger {
+    border: 2px solid #b4b4b4;
+    border-radius: 5px;
+    padding: 10px 10px 10px 10px;
+    background-color: #f0f0f0;
+    margin: 0 15px;
+}
+</style>
+    </template>
+  </data>
+</openerp>
+
+

@@ -31,6 +31,6 @@
 'author': 'Vertel AB',
 'website': 'http://www.vertel.se',
 'depends': ['hr_attendance', 'website' ],
-'data': ['hr_staff_ledger_data.xml', 'hr_staff_ledger_view.xml', 'security/ir.model.access.csv'],
+'data': ['hr_staff_ledger_data.xml', 'hr_staff_ledger_view.xml', 'security/ir.model.access.csv', 'hr_staff_ledger_template.xml'],
 'installable': True,
 }
