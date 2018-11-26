@@ -22,6 +22,7 @@
 from odoo import models, fields, api, _
 from odoo.http import request
 from odoo import http
+from math import sin, cos, sqrt, atan2, radians
 import werkzeug
 
 import logging
@@ -76,7 +77,12 @@ class hr_staff_ledger_transaction(models.Model):
     company_registry = fields.Char(related="employee_id.company_id.company_registry")
     longitude = fields.Float(digits=(8,6))
     latitude = fields.Float(digits=(8,6))
-    # ~ device = fields.Char()
+    device = fields.Char(string='Device', track_visibility='always')
+    distance = fields.Integer(string='Distance', track_visibility='always')
+    
+    @api.one
+    def measure_distance(self):
+        self.distance = self.location_id.measure((self.latitude, self.longitude))
     
 
 class hr_employee(models.Model):
@@ -107,6 +113,56 @@ class hr_staff_ledger_location(models.Model):
     latitude = fields.Float(digits=(8,6))
     default_location = fields.Boolean(help="Check this box if this is the default location")
     
+    @api.model
+    def measure(self, point1, point2 = False):
+        point2 = point2 or (self.latitude, self.longitude)
+        R = 6378.137 
+        dlon = radians(point2[1] - point1[1])
+        dlat = radians(point2[0] - point1[0])
+
+        a = sin(dlat / 2)**2 + cos(point1[0]) * cos(point2[0]) * sin(dlon / 2)**2
+        c = 2 * atan2(sqrt(a), sqrt(1 - a))
+
+        d = R * c
+        return d * 1000
+    
+    @api.multi
+    def action_report_send(self):
+        '''
+        This function opens a window to compose an email, with the edi sale template message loaded by default
+        '''
+        self.ensure_one()
+        ir_model_data = self.env['ir.model.data']
+        try:
+            template_id = ir_model_data.get_object_reference('sale', 'email_template_edi_sale')[1]
+        except ValueError:
+            template_id = False
+        try:
+            compose_form_id = ir_model_data.get_object_reference('mail', 'email_compose_message_wizard_form')[1]
+        except ValueError:
+            compose_form_id = False
+        ctx = dict()
+        ctx.update({
+            'default_model': 'hr.staff.ledger.location',
+            'default_res_id': self.ids[0],
+            'default_use_template': bool(template_id),
+            'default_template_id': template_id,
+            'default_composition_mode': 'comment',
+            'mark_so_as_sent': True,
+            'custom_layout': "sale.mail_template_data_notification_email_sale_order"
+        })
+        return {
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'mail.compose.message',
+            'views': [(compose_form_id, 'form')],
+            'view_id': compose_form_id,
+            'target': 'new',
+            'context': ctx,
+        }
+        
+    
     
 class project_timereport(http.Controller):
         
@@ -126,15 +182,20 @@ class project_timereport(http.Controller):
                 if trans.status == 'checked_in':
                     trans.date_out =  fields.Datetime.now()
                     trans.status = 'checked_out'
+                    trans.device = post.get('device')
+                    trans.longitude = post.get('longitude_in')
+                    trans.latitude = post.get('latitude_in')
+                    trans.measure_distance()
                 else:
                     trans.date_in =  fields.Datetime.now()
                     trans.date = fields.Datetime.now()
                     trans.location_id = post.get('location')
                     trans.date_out =  None
                     trans.status = 'checked_in'
-                    trans.longitude = post.get('location_lon')
-                    trans.latitude = post.get('location_lat')
-                    # ~ trans.device = request.user_agent.device.family()
+                    trans.longitude = post.get('longitude_in')
+                    trans.latitude = post.get('latitude_in')
+                    trans.device = post.get('device')
+                    trans.measure_distance() 
             elif not trans:
                 request.env['hr.staff.ledger.transaction'].create({'date_in': fields.Datetime.now(), 'date': fields.Datetime.now(), 'location_id': post.get('location'), 'employee_id': employee.id, 'status': 'checked_in'})
         
@@ -190,6 +251,8 @@ class project_timereport(http.Controller):
                 'default_location': request.env['hr.staff.ledger.location'].search([('default_location', '=', True)], limit=1),
             }
             return request.render('hr_staff_ledger.staffledgerlist', ctx)
-            
-            
+ 
+ 
+   
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

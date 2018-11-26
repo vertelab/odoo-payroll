@@ -31,28 +31,27 @@
                         <div align="center">
                             <div id="mapholder" />
                             <script t-att-src="'https://maps.google.com/maps/api/js?key=%s' % request.env['ir.config_parameter'].get_param('hr_staff_ledger.googlemapkey')" />
-                        </div>
-                        <br />
-                        <form action="/staffledger" method="post" enctype="multipart/form-data">
-                            <input id="location_lat" name="location_lat" value="" type="hidden" />
-                            <input id="location_lon" name="location_lon" value="" type="hidden" />
-                            <t t-if="employee.attendance_state == 'checked_out'">
-                                <t t-if="len(employee.location_ids) &gt; 1">
-                                    <select name="location" id="locationSelect">
-                                        <t t-foreach="employee.location_ids" t-as="location">
-                                            <option t-att-value="location.id" t-esc="location.name" />
-                                        </t>
-                                    </select>
-                                </t>
-                                <t t-if="len(employee.location_ids) == 1">
-                                    <input name="location" t-att-value="employee.location_ids[0].id" type="hidden" />
-                                </t>
-                                <t t-if="len(employee.location_ids) == 0">
-                                    <input name="location" t-att-value="default_location.id" type="hidden" />
-                                </t>
-                                <br />
-                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
-                                <div class="container">
+                            <br />
+                            <form action="/staffledger" method="post" enctype="multipart/form-data">
+                                <input id="latitude_in" name="latitude_in" value="" type="hidden" />
+                                <input id="longitude_in" name="longitude_in" value="" type="hidden" />
+                                <input id="device" name="device" value="" type="hidden" />
+                                <t t-if="employee.attendance_state == 'checked_out'">
+                                    <t t-if="len(employee.location_ids) &gt; 1">
+                                        <select name="location" id="locationSelect" class="form-control" style="width: 240px;">
+                                            <t t-foreach="employee.location_ids" t-as="location">
+                                                <option t-att-value="location.id" t-esc="location.name" />
+                                            </t>
+                                        </select>
+                                    </t>
+                                    <t t-if="len(employee.location_ids) == 1">
+                                        <input name="location" t-att-value="employee.location_ids[0].id" type="hidden" />
+                                    </t>
+                                    <t t-if="len(employee.location_ids) == 0">
+                                        <input name="location" t-att-value="default_location.id" type="hidden" />
+                                    </t>
+                                    <br />
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
                                     <div class="btn-group" role="group" aria-label="...">
                                         <button type="submit" name="sign" value="in" class="btn btn-success btn-md center-block" style="margin-top: 7px;">
                                             <i class="fa fa-sign-in" aria-hidden="true" />
@@ -60,13 +59,12 @@
                                         </button>
                                         <button type="button" class="btn btn-info btn-md center-block disabled" style="margin-top: 7px;">Personalliggare</button>
                                     </div>
-                                </div>
-                            </t>
-                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
-                            <t t-if="employee.attendance_state == 'checked_in'">
-                                Incheckad på:
-                                <span t-esc="location and location.name" />
-                                <div class="container">
+                                </t>
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
+                                <t t-if="employee.attendance_state == 'checked_in'">
+                                    Incheckad på:
+                                    <span t-esc="location and location.name" />
+                                    <br />
                                     <div class="btn-group" role="group">
                                         <button type="submit" name="sign" value="out" class="btn btn-danger btn-md center-block" style="margin-top: 7px;">
                                             <i class="fa fa-sign-out" aria-hidden="true" />
@@ -74,9 +72,9 @@
                                         </button>
                                         <button type="submit" formaction="/staffledger/staffledgerlist" name="btn_staffledger" class="btn btn-info btn-md center-block" style="margin-top: 7px;">Personalliggare</button>
                                     </div>
-                                </div>
-                            </t>
-                        </form>
+                                </t>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </t>
@@ -89,62 +87,75 @@
         <template id="staffledgerlist" name="Staff Ledger List">
             <t t-call="website.layout">
                 <div id="wrap" class="oe_structure oe_empty">
-                    <div class="container">
-                        <nav class="navbar bg-primary">
-                            <div class="container-fluid">
-                                <div class="navbar-header">
-                                    <span class="navbar-brand mb-0 h1">Personalliggare</span>
-                                </div>
+                    <nav class="navbar bg-primary">
+                        <div class="container-fluid">
+                            <div class="navbar-header">
+                                <span class="navbar-brand mb-0 h1">Personalliggare</span>
                             </div>
-                        </nav>
+                        </div>
+                    </nav>
+                    <t t-call="hr_staff_ledger.staffledger_list">
                         <a href="/staffledger/" class="btn btn-info btn-sm">Tillbaka</a>
                         <a href="#" class="btn btn-warning btn-sm">E-posta</a>
                         <br />
                         <br />
-                        <div class="text-center">
-                            <h3>
-                                <b>
-                                    <span t-esc="location and location.name" />
-                                </b>
-                            </h3>
-                            <h5>
-                                <b>Skatteverkets ID:</b>
-                                <span t-esc="location and location.idnumber" />
-                                <br />
-                                <b>Utskriftsdatum:</b>
-                                <span t-esc="time.strftime('%%Y-%%m-%%d %%H:%%M:%%S')" />
-                            </h5>
-                        </div>
-                        <br />
-                        <t t-set="transaction" t-value="request.env['hr.staff.ledger.transaction'].search([('location_id', '=' , location.id), ('date_in', '&gt;=', time.strftime('%%Y-%%m-%%d 00:00:00')), ('date_in', '&lt;=', time.strftime('%%Y-%%m-%%d 23:59:59'))])" />
-                        <t t-foreach="transaction" t-as="trans">
-                            <h5>
-                                <b>
-                                    <span t-field="trans.employee_id" />
-                                    (
-                                    <span t-field="trans.identification_id" />
-                                    )
-                                </b>
-                            </h5>
-                            <h6>
-                                <b>
-                                    <span t-field="trans.address_id" />
-                                    (
-                                    <span t-field="trans.company_registry" />
-                                    )
-                                </b>
-                                <br />
-                                Check in:
-                                <span t-field="trans.date_in" />
-                                <br />
-                                Check ut:
-                                <span t-field="trans.date_out" />
-                            </h6>
-                            <hr />
-                        </t>
-                    </div>
+                    </t>
                 </div>
             </t>
+        </template>
+        <template id="report_staffledger_document">
+			<t t-call="report.external_layout">
+				<t t-set="location" t-value="doc" />
+				<div class="page">
+					<t t-call="hr_staff_ledger.staffledger_list" />
+                </div>
+            </t>
+        </template>
+        <template id="staffledger_list">
+            <div class="container">
+                <t t-raw="0" />
+                <div class="text-center">
+                    <h3>
+                        <b>
+                            <span t-esc="location and location.name" />
+                        </b>
+                    </h3>
+                    <h5>
+                        <b>Skatteverkets ID:</b>
+                        <span t-esc="location and location.idnumber" />
+                        <br />
+                        <b>Utskriftsdatum:</b>
+                        <span t-esc="time.strftime('%%Y-%%m-%%d %%H:%%M:%%S')" />
+                    </h5>
+                </div>
+                <br />
+                <t t-set="transaction" t-value="request.env['hr.staff.ledger.transaction'].search([('location_id', '=' , location.id), ('date_in', '&gt;=', time.strftime('%%Y-%%m-%%d 00:00:00')), ('date_in', '&lt;=', time.strftime('%%Y-%%m-%%d 23:59:59'))])" />
+                <t t-foreach="transaction" t-as="trans">
+                    <h5>
+                        <b>
+                            <span t-field="trans.employee_id" />
+                            (
+                            <span t-field="trans.identification_id" />
+                            )
+                        </b>
+                    </h5>
+                    <h6>
+                        <b>
+                            <span t-field="trans.address_id" />
+                            (
+                            <span t-field="trans.company_registry" />
+                            )
+                        </b>
+                        <br />
+                        Check in:
+                        <span t-field="trans.date_in" />
+                        <br />
+                        Check ut:
+                        <span t-field="trans.date_out" />
+                    </h6>
+                    <hr />
+                </t>
+            </div>
         </template>
         <template id="timereportlist">
             <t t-call="website.layout" />
@@ -172,9 +183,11 @@
                                 <field name="idnumber" />
                                 <field name="longitude" />
                                 <field name="latitude" />
-                                <!--
-                                     <field name="device" />
-                                -->
+                                <label for="distance" />
+                                <span>
+                                    <field name="distance" />
+                                    Meter
+                                </span>
                             </group>
                         </group>
                     </sheet>
@@ -252,6 +265,7 @@
             <field name="arch" type="xml">
                 <form string="Employee">
                     <sheet>
+						<button name="action_report_send" string="Email Staff Ledger" type="object" />
                         <div class="oe_button_box" name="button_box" />
                         <group>
                             <group>
@@ -288,6 +302,68 @@
                     <field name="location_ids" widget="many2many_tags" />
                 </field>
             </field>
+        </record>
+        <report id="report_staff_ledger_list" string="Staff Ledger" model="hr.staff.ledger.location" report_type="qweb-pdf" file="hr_staff_ledger.report_staffledger" name="hr_staff_ledger.report_staffledger" />
+        <template id="report_staffledger">
+            <t t-call="report.html_container">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-call="hr_staff_ledger.report_staffledger_document" t-lang="user.lang" />
+                    <!--
+                         t-lang="doc.partner_id.lang"
+                    -->
+                </t>
+            </t>
+        </template>
+        <record id="mail_template_staff_ledger" model="mail.template">
+            <field name="name">Staff Ledger Report</field>
+            <field name="email_from">${(object.user_id.email and '%s &lt;%s&gt;' % (object.user_id.name, object.user_id.email) or '')|safe}</field>
+            <field name="subject">${object.company_id.name} ${object.state in ('draft', 'sent') and 'Quotation' or 'Order'} (Ref ${object.name or 'n/a' })</field>
+            <field name="partner_to">${object.partner_id.id}</field>
+            <field name="model_id" ref="hr_staff_ledger.model_hr_staff_ledger_location"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="report_template" ref="report_staff_ledger_list"/>
+            <field name="report_name">${(object.name or '').replace('/','_')}${object.state == 'draft' and '_draft' or ''}</field>
+            <field name="lang">${object.partner_id.lang}</field>
+            <field name="body_html"><![CDATA[
+<p>Dear ${object.partner_id.name}
+% set access_action = object.with_context(force_website=True).get_access_action()
+% set doc_name = 'quotation' if object.state in ('draft', 'sent') else 'order confirmation'
+% set is_online = access_action and access_action['type'] == 'ir.actions.act_url'
+% set access_name = is_online and object.template_id and doc_name == 'quotation' and 'Accept and pay %s online' % doc_name or 'View %s' % doc_name
+% set access_url = is_online and access_action['url'] or None
+
+% if object.partner_id.parent_id:
+    (<i>${object.partner_id.parent_id.name}</i>)
+% endif
+,</p>
+<p>
+Here is your ${doc_name} <strong>${object.name}</strong>
+% if object.origin:
+(with reference: ${object.origin} )
+% endif
+amounting in <strong>${object.amount_total} ${object.pricelist_id.currency_id.name}</strong>
+from ${object.company_id.name}.
+</p>
+
+    <br/><br/>
+% if is_online:
+    <center>
+        <a href="${access_url}" style="background-color: #1abc9c; padding: 20px; text-decoration: none; color: #fff; border-radius: 5px; font-size: 16px;" class="o_default_snippet_text">${access_name}</a>
+        <br/><br/>
+        <span style="color:#888888">(or view attached PDF)</span>
+    </center>
+    <br/>
+% endif
+
+<p>You can reply to this email if you have any questions.</p>
+<p>Thank you,</p>
+
+<p style="color:#eeeeee;">
+% if object.user_id and object.user_id.signature:
+    ${object.user_id.signature | safe}
+% endif
+</p>
+]]></field>
         </record>
     </data>
 </openerp>
