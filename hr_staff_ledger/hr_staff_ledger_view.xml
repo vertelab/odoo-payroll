@@ -1,13 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
     <data>
+        <template id="staffledger_web_layout" inherit_id="web.layout">
+            <xpath expr="//head" position="inside">
+                <title>Staff Ledger</title>
+<!--
+                <link rel="manifest" href="/hr_staff_ledger/static/src/json/manifest_pwa.json" />
+-->
+                <meta name="apple-mobile-web-app-capable" content="yes" />
+                <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+                <meta name="apple-mobile-web-app-title" content="Staff Ledger" />
+                <meta name="mobile-web-app-capable" content="yes" />
+                <link rel="apple-touch-icon" sizes="180x180" href="/hr_staff_ledger/static/src/img/icon180.png" />
+                <link rel="apple-touch-icon" sizes="152x152" href="/hr_staff_ledger/static/src/img/icon152.png" />
+                <link rel="apple-touch-icon" sizes="167x167" href="/hr_staff_ledger/static/src/img/icon167.png" />
+            </xpath>
+        </template>
+        <template id="staffledger_layout" inherit_id="website.layout">
+            <xpath expr="//header" position="attributes">
+                <attribute name="t-att-style">'display:none;' if staffledger else ''</attribute>
+            </xpath>
+            <xpath expr="//footer" position="attributes">
+                <attribute name="t-att-style">'display:none;' if staffledger else ''</attribute>
+            </xpath>
+            <xpath expr="//div[@id='wrapwrap']" position="attributes">
+				<attribute name="t-att-style">'margin-top: -34px;' if staffledger else ''</attribute>
+            </xpath>
+        </template>
+        <template id="staffledger_user_navbar" inherit_id="website.user_navbar">
+            <xpath expr="//nav[@id='oe_main_menu_navbar']" position="attributes">
+                <attribute name="t-att-style">'display:none;' if staffledger else ''</attribute>
+            </xpath>
+        </template>
         <template id="staffledger" name="Staff Ledger">
-            <t t-call="website.layout">
-                <head>
-                    <meta name="apple-mobile-web-app-capable" content="yes" />
-                    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-                    <meta name="apple-mobile-web-app-title" content="StaffLedger" />
-                </head>
+            <t t-call="hr_staff_ledger.staffledger_layout">
+                <t t-set="staffledger" t-value="True" />
                 <nav class="navbar bg-primary">
                     <div class="container-fluid">
                         <div class="navbar-header">
@@ -82,6 +109,42 @@
                         </div>
                     </div>
                 </div>
+                <br />
+                <br />
+                <br />
+                <br />
+                <nav class="navbar navbar-default navbar-fixed-bottom">
+                    <div align="center">
+                        <div class="col-xs-3" style="background-color: #428bca;">
+                            <a href="#" style="">
+                                <p>
+                                    <i class="fa fa-clock-o fa-2x" style="color: #fff; margin-top: 12px;" />
+                                </p>
+                            </a>
+                        </div>
+                        <div class="col-xs-3" style="background-color: #f4f4f4;">
+                            <a href="#">
+                                <p>
+                                    <i class="fa fa-map-o fa-2x" style="color: #999; margin-top: 12px; " />
+                                </p>
+                            </a>
+                        </div>
+                        <div class="col-xs-3" style="background-color: #f4f4f4;">
+                            <a href="#">
+                                <p>
+                                    <i class="fa fa-list-alt fa-2x" style="color: #999; margin-top: 12px; " aria-hidden="true" />
+                                </p>
+                            </a>
+                        </div>
+                        <div class="col-xs-3" style="background-color: #f4f4f4;">
+                            <a href="#">
+                                <p>
+                                    <i class="fa fa-cogs fa-2x" style="color: #999; margin-top: 12px;" />
+                                </p>
+                            </a>
+                        </div>
+                    </div>
+                </nav>
             </t>
         </template>
         <template id="assets_frontend_override" inherit_id="website.assets_frontend">
@@ -90,7 +153,8 @@
             </xpath>
         </template>
         <template id="staffledgerlist" name="Staff Ledger List">
-            <t t-call="website.layout">
+            <t t-call="hr_staff_ledger.staffledger_layout">
+                <t t-set="staffledger" t-value="True" />
                 <div id="wrap" class="oe_structure oe_empty">
                     <nav class="navbar bg-primary">
                         <div class="container-fluid">
@@ -100,14 +164,14 @@
                         </div>
                     </nav>
                     <t t-call="hr_staff_ledger.staffledger_list">
-                        <a href="/staffledger/" class="btn btn-info btn-sm">
+                        <button class="btn-staffledger btn btn-info btn-sm" style="margin-top: 34px;" href="/staffledger/">
                             <i class="fa fa-arrow-circle-left " aria-hidden="true" />
                             Back
-                        </a>
-                        <a  t-att-href="'/staffledger/mail_staffledger/%s' % location.id" name="btn_mail_staffledger" class="btn btn-warning btn-sm">
+                        </button>
+                        <button t-att-href="'/staffledger/mail_staffledger/%s' % location.id" name="btn_mail_staffledger" class="btn-staffledger btn btn-warning btn-sm" style="margin-top: 34px;">
                             <i class="fa fa-envelope " aria-hidden="true" />
                             E-mail
-                        </a>
+                        </button>
                         <br />
                         <br />
                     </t>
@@ -123,50 +187,85 @@
             </t>
         </template>
         <template id="staffledger_list">
-            <div class="container">
-                <t t-raw="0" />
-                <div class="text-center">
-                    <h3>
-                        <b>
-                            <span t-esc="location and location.name" />
-                        </b>
-                    </h3>
-                    <h5>
-                        <b>Skatteverkets ID:</b>
-                        <span t-esc="location and location.idnumber" />
-                        <br />
-                        <b>Utskriftsdatum:</b>
-                        <span t-esc="time.strftime('%%Y-%%m-%%d %%H:%%M:%%S')" />
-                    </h5>
+            <t t-call="hr_staff_ledger.staffledger_layout">
+                <t t-set="staffledger" t-value="True" />
+                <div class="container">
+                    <t t-raw="0" />
+                    <div class="text-center">
+                        <h3>
+                            <b>
+                                <span t-esc="location and location.name" />
+                            </b>
+                        </h3>
+                        <h5>
+                            <b>Skatteverkets ID:</b>
+                            <span t-esc="location and location.idnumber" />
+                            <br />
+                            <b>Utskriftsdatum:</b>
+                            <span t-esc="time.strftime('%%Y-%%m-%%d %%H:%%M:%%S')" />
+                        </h5>
+                    </div>
+                    <br />
+                    <t t-set="transaction" t-value="request.env['hr.staff.ledger.transaction'].search([('location_id', '=' , location.id), ('date_in', '&gt;=', time.strftime('%%Y-%%m-%%d 00:00:00')), ('date_in', '&lt;=', time.strftime('%%Y-%%m-%%d 23:59:59'))])" />
+                    <t t-foreach="transaction" t-as="trans">
+                        <h5>
+                            <b>
+                                <span t-field="trans.employee_id" />
+                                (
+                                <span t-field="trans.identification_id" />
+                                )
+                            </b>
+                        </h5>
+                        <h6>
+                            <b>
+                                <span t-field="trans.address_id" />
+                                (
+                                <span t-field="trans.company_registry" />
+                                )
+                            </b>
+                            <br />
+                            Check in:
+                            <span t-field="trans.date_in" />
+                            <br />
+                            Check ut:
+                            <span t-field="trans.date_out" />
+                        </h6>
+                        <hr />
+                    </t>
                 </div>
-                <br />
-                <t t-set="transaction" t-value="request.env['hr.staff.ledger.transaction'].search([('location_id', '=' , location.id), ('date_in', '&gt;=', time.strftime('%%Y-%%m-%%d 00:00:00')), ('date_in', '&lt;=', time.strftime('%%Y-%%m-%%d 23:59:59'))])" />
-                <t t-foreach="transaction" t-as="trans">
-                    <h5>
-                        <b>
-                            <span t-field="trans.employee_id" />
-                            (
-                            <span t-field="trans.identification_id" />
-                            )
-                        </b>
-                    </h5>
-                    <h6>
-                        <b>
-                            <span t-field="trans.address_id" />
-                            (
-                            <span t-field="trans.company_registry" />
-                            )
-                        </b>
-                        <br />
-                        Check in:
-                        <span t-field="trans.date_in" />
-                        <br />
-                        Check ut:
-                        <span t-field="trans.date_out" />
-                    </h6>
-                    <hr />
-                </t>
-            </div>
+                <nav class="navbar navbar-default navbar-fixed-bottom">
+                    <div align="center">
+                        <div class="col-xs-3" style="background-color: #428bca;">
+                            <a href="#" style="">
+                                <p>
+                                    <i class="fa fa-clock-o fa-2x" style="color: #fff; margin-top: 12px;" />
+                                </p>
+                            </a>
+                        </div>
+                        <div class="col-xs-3" style="background-color: #f4f4f4;">
+                            <a href="#">
+                                <p>
+                                    <i class="fa fa-map-o fa-2x" style="color: #999; margin-top: 12px; " />
+                                </p>
+                            </a>
+                        </div>
+                        <div class="col-xs-3" style="background-color: #f4f4f4;">
+                            <a href="#">
+                                <p>
+                                    <i class="fa fa-list-alt fa-2x" style="color: #999; margin-top: 12px; " aria-hidden="true" />
+                                </p>
+                            </a>
+                        </div>
+                        <div class="col-xs-3" style="background-color: #f4f4f4;">
+                            <a href="#">
+                                <p>
+                                    <i class="fa fa-cogs fa-2x" style="color: #999; margin-top: 12px;" />
+                                </p>
+                            </a>
+                        </div>
+                    </div>
+                </nav>
+            </t>
         </template>
         <template id="timereportlist">
             <t t-call="website.layout" />
@@ -330,7 +429,8 @@
             </t>
         </template>
         <template id="mail_staffledger" name="Mail Staff Ledger">
-            <t t-call="website.layout">
+            <t t-call="hr_staff_ledger.staffledger_layout">
+                <t t-set="staffledger" t-value="True" />
                 <nav class="navbar bg-primary">
                     <div class="container-fluid">
                         <div class="navbar-header">
@@ -339,10 +439,10 @@
                     </div>
                 </nav>
                 <div class="container">
-                    <a href="/staffledger/staffledgerlist" class="btn btn-info btn-sm">
+                    <button class="btn-staffledger btn btn-info btn-sm" href="/staffledger/staffledgerlist/">
                         <i class="fa fa-arrow-circle-left " aria-hidden="true" />
                         Back
-                    </a>
+                    </button>
                     <br />
                     <br />
                     <div align="center">
@@ -361,6 +461,38 @@
                         </form>
                     </div>
                 </div>
+                <nav class="navbar navbar-default navbar-fixed-bottom">
+                    <div align="center">
+                        <div class="col-xs-3" style="background-color: #428bca;">
+                            <a href="#" style="">
+                                <p>
+                                    <i class="fa fa-clock-o fa-2x" style="color: #fff; margin-top: 12px;" />
+                                </p>
+                            </a>
+                        </div>
+                        <div class="col-xs-3" style="background-color: #f4f4f4;">
+                            <a href="#">
+                                <p>
+                                    <i class="fa fa-map-o fa-2x" style="color: #999; margin-top: 12px; " />
+                                </p>
+                            </a>
+                        </div>
+                        <div class="col-xs-3" style="background-color: #f4f4f4;">
+                            <a href="#">
+                                <p>
+                                    <i class="fa fa-list-alt fa-2x" style="color: #999; margin-top: 12px; " aria-hidden="true" />
+                                </p>
+                            </a>
+                        </div>
+                        <div class="col-xs-3" style="background-color: #f4f4f4;">
+                            <a href="#">
+                                <p>
+                                    <i class="fa fa-cogs fa-2x" style="color: #999; margin-top: 12px;" />
+                                </p>
+                            </a>
+                        </div>
+                    </div>
+                </nav>
             </t>
         </template>
         <record id="mail_template_staff_ledger" model="mail.template">
@@ -378,18 +510,18 @@
             <field name="lang" />
             <field name="body_html">
                 <![CDATA[
-                        Hej!
-
-
-						Här kommer personalliggaren för ${object.name}.
-                        
-
-
-						Mvh
-
-						${user.company_name}
-						${user.name}
-						${user.phone}
+                         Hej!
+                         
+                         
+                         Här kommer personalliggaren för ${object.name}.
+                         
+                         
+                         
+                         Mvh
+                         
+                         ${user.company_name}
+                         ${user.name}
+                         ${user.phone}
                 ]]>
             </field>
             <!--
