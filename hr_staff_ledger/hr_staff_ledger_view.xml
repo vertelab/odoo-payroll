@@ -1,8 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
     <data>
-        <template id="staffledger">
-            <t t-call="website.layout">
+        <template id="staffledger_web_layout" inherit_id="web.layout">
+            <xpath expr="//head" position="inside">
+                <title>Staff Ledger</title>
+<!--
+                <link rel="manifest" href="/hr_staff_ledger/static/src/json/manifest_pwa.json" />
+-->
+                <meta name="apple-mobile-web-app-capable" content="yes" />
+                <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+                <meta name="apple-mobile-web-app-title" content="Staff Ledger" />
+                <meta name="mobile-web-app-capable" content="yes" />
+                <link rel="apple-touch-icon" sizes="180x180" href="/hr_staff_ledger/static/src/img/icon180.png" />
+                <link rel="apple-touch-icon" sizes="152x152" href="/hr_staff_ledger/static/src/img/icon152.png" />
+                <link rel="apple-touch-icon" sizes="167x167" href="/hr_staff_ledger/static/src/img/icon167.png" />
+            </xpath>
+        </template>
+        <template id="staffledger_layout" inherit_id="website.layout">
+            <xpath expr="//header" position="attributes">
+                <attribute name="t-att-style">'display:none;' if staffledger else ''</attribute>
+            </xpath>
+            <xpath expr="//footer" position="attributes">
+                <attribute name="t-att-style">'display:none;' if staffledger else ''</attribute>
+            </xpath>
+            <xpath expr="//div[@id='wrapwrap']" position="attributes">
+				<attribute name="t-att-style">'margin-top: -34px;' if staffledger else ''</attribute>
+            </xpath>
+        </template>
+        <template id="staffledger_user_navbar" inherit_id="website.user_navbar">
+            <xpath expr="//nav[@id='oe_main_menu_navbar']" position="attributes">
+                <attribute name="t-att-style">'display:none;' if staffledger else ''</attribute>
+            </xpath>
+        </template>
+        <template id="staffledger" name="Staff Ledger">
+            <t t-call="hr_staff_ledger.staffledger_layout">
+                <t t-set="staffledger" t-value="True" />
                 <nav class="navbar bg-primary">
                     <div class="container-fluid">
                         <div class="navbar-header">
@@ -77,6 +109,42 @@
                         </div>
                     </div>
                 </div>
+                <br />
+                <br />
+                <br />
+                <br />
+                <nav class="navbar navbar-default navbar-fixed-bottom">
+                    <div align="center">
+                        <div class="col-xs-3" style="background-color: #428bca;">
+                            <a href="#" style="">
+                                <p>
+                                    <i class="fa fa-clock-o fa-2x" style="color: #fff; margin-top: 12px;" />
+                                </p>
+                            </a>
+                        </div>
+                        <div class="col-xs-3" style="background-color: #f4f4f4;">
+                            <a href="#">
+                                <p>
+                                    <i class="fa fa-map-o fa-2x" style="color: #999; margin-top: 12px; " />
+                                </p>
+                            </a>
+                        </div>
+                        <div class="col-xs-3" style="background-color: #f4f4f4;">
+                            <a href="#">
+                                <p>
+                                    <i class="fa fa-list-alt fa-2x" style="color: #999; margin-top: 12px; " aria-hidden="true" />
+                                </p>
+                            </a>
+                        </div>
+                        <div class="col-xs-3" style="background-color: #f4f4f4;">
+                            <a href="#">
+                                <p>
+                                    <i class="fa fa-cogs fa-2x" style="color: #999; margin-top: 12px;" />
+                                </p>
+                            </a>
+                        </div>
+                    </div>
+                </nav>
             </t>
         </template>
         <template id="assets_frontend_override" inherit_id="website.assets_frontend">
@@ -85,7 +153,8 @@
             </xpath>
         </template>
         <template id="staffledgerlist" name="Staff Ledger List">
-            <t t-call="website.layout">
+            <t t-call="hr_staff_ledger.staffledger_layout">
+                <t t-set="staffledger" t-value="True" />
                 <div id="wrap" class="oe_structure oe_empty">
                     <nav class="navbar bg-primary">
                         <div class="container-fluid">
@@ -95,8 +164,14 @@
                         </div>
                     </nav>
                     <t t-call="hr_staff_ledger.staffledger_list">
-                        <a href="/staffledger/" class="btn btn-info btn-sm">Tillbaka</a>
-                        <a href="#" class="btn btn-warning btn-sm">E-posta</a>
+                        <button class="btn-staffledger btn btn-info btn-sm" style="margin-top: 34px;" href="/staffledger/">
+                            <i class="fa fa-arrow-circle-left " aria-hidden="true" />
+                            Back
+                        </button>
+                        <button t-att-href="'/staffledger/mail_staffledger/%s' % location.id" name="btn_mail_staffledger" class="btn-staffledger btn btn-warning btn-sm" style="margin-top: 34px;">
+                            <i class="fa fa-envelope " aria-hidden="true" />
+                            E-mail
+                        </button>
                         <br />
                         <br />
                     </t>
@@ -104,58 +179,93 @@
             </t>
         </template>
         <template id="report_staffledger_document">
-			<t t-call="report.external_layout">
-				<t t-set="location" t-value="doc" />
-				<div class="page">
-					<t t-call="hr_staff_ledger.staffledger_list" />
+            <t t-call="report.external_layout">
+                <t t-set="location" t-value="doc" />
+                <div class="page">
+                    <t t-call="hr_staff_ledger.staffledger_list" />
                 </div>
             </t>
         </template>
         <template id="staffledger_list">
-            <div class="container">
-                <t t-raw="0" />
-                <div class="text-center">
-                    <h3>
-                        <b>
-                            <span t-esc="location and location.name" />
-                        </b>
-                    </h3>
-                    <h5>
-                        <b>Skatteverkets ID:</b>
-                        <span t-esc="location and location.idnumber" />
-                        <br />
-                        <b>Utskriftsdatum:</b>
-                        <span t-esc="time.strftime('%%Y-%%m-%%d %%H:%%M:%%S')" />
-                    </h5>
+            <t t-call="hr_staff_ledger.staffledger_layout">
+                <t t-set="staffledger" t-value="True" />
+                <div class="container">
+                    <t t-raw="0" />
+                    <div class="text-center">
+                        <h3>
+                            <b>
+                                <span t-esc="location and location.name" />
+                            </b>
+                        </h3>
+                        <h5>
+                            <b>Skatteverkets ID:</b>
+                            <span t-esc="location and location.idnumber" />
+                            <br />
+                            <b>Utskriftsdatum:</b>
+                            <span t-esc="time.strftime('%%Y-%%m-%%d %%H:%%M:%%S')" />
+                        </h5>
+                    </div>
+                    <br />
+                    <t t-set="transaction" t-value="request.env['hr.staff.ledger.transaction'].search([('location_id', '=' , location.id), ('date_in', '&gt;=', time.strftime('%%Y-%%m-%%d 00:00:00')), ('date_in', '&lt;=', time.strftime('%%Y-%%m-%%d 23:59:59'))])" />
+                    <t t-foreach="transaction" t-as="trans">
+                        <h5>
+                            <b>
+                                <span t-field="trans.employee_id" />
+                                (
+                                <span t-field="trans.identification_id" />
+                                )
+                            </b>
+                        </h5>
+                        <h6>
+                            <b>
+                                <span t-field="trans.address_id" />
+                                (
+                                <span t-field="trans.company_registry" />
+                                )
+                            </b>
+                            <br />
+                            Check in:
+                            <span t-field="trans.date_in" />
+                            <br />
+                            Check ut:
+                            <span t-field="trans.date_out" />
+                        </h6>
+                        <hr />
+                    </t>
                 </div>
-                <br />
-                <t t-set="transaction" t-value="request.env['hr.staff.ledger.transaction'].search([('location_id', '=' , location.id), ('date_in', '&gt;=', time.strftime('%%Y-%%m-%%d 00:00:00')), ('date_in', '&lt;=', time.strftime('%%Y-%%m-%%d 23:59:59'))])" />
-                <t t-foreach="transaction" t-as="trans">
-                    <h5>
-                        <b>
-                            <span t-field="trans.employee_id" />
-                            (
-                            <span t-field="trans.identification_id" />
-                            )
-                        </b>
-                    </h5>
-                    <h6>
-                        <b>
-                            <span t-field="trans.address_id" />
-                            (
-                            <span t-field="trans.company_registry" />
-                            )
-                        </b>
-                        <br />
-                        Check in:
-                        <span t-field="trans.date_in" />
-                        <br />
-                        Check ut:
-                        <span t-field="trans.date_out" />
-                    </h6>
-                    <hr />
-                </t>
-            </div>
+                <nav class="navbar navbar-default navbar-fixed-bottom">
+                    <div align="center">
+                        <div class="col-xs-3" style="background-color: #428bca;">
+                            <a href="#" style="">
+                                <p>
+                                    <i class="fa fa-clock-o fa-2x" style="color: #fff; margin-top: 12px;" />
+                                </p>
+                            </a>
+                        </div>
+                        <div class="col-xs-3" style="background-color: #f4f4f4;">
+                            <a href="#">
+                                <p>
+                                    <i class="fa fa-map-o fa-2x" style="color: #999; margin-top: 12px; " />
+                                </p>
+                            </a>
+                        </div>
+                        <div class="col-xs-3" style="background-color: #f4f4f4;">
+                            <a href="#">
+                                <p>
+                                    <i class="fa fa-list-alt fa-2x" style="color: #999; margin-top: 12px; " aria-hidden="true" />
+                                </p>
+                            </a>
+                        </div>
+                        <div class="col-xs-3" style="background-color: #f4f4f4;">
+                            <a href="#">
+                                <p>
+                                    <i class="fa fa-cogs fa-2x" style="color: #999; margin-top: 12px;" />
+                                </p>
+                            </a>
+                        </div>
+                    </div>
+                </nav>
+            </t>
         </template>
         <template id="timereportlist">
             <t t-call="website.layout" />
@@ -265,7 +375,7 @@
             <field name="arch" type="xml">
                 <form string="Employee">
                     <sheet>
-						<button name="action_report_send" string="Email Staff Ledger" type="object" />
+                        <button name="action_report_send" string="Email Staff Ledger" type="object" />
                         <div class="oe_button_box" name="button_box" />
                         <group>
                             <group>
@@ -286,6 +396,10 @@
                             </group>
                         </group>
                     </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers" groups="base.group_user" />
+                        <field name="message_ids" widget="mail_thread" />
+                    </div>
                 </form>
             </field>
         </record>
@@ -314,56 +428,147 @@
                 </t>
             </t>
         </template>
+        <template id="mail_staffledger" name="Mail Staff Ledger">
+            <t t-call="hr_staff_ledger.staffledger_layout">
+                <t t-set="staffledger" t-value="True" />
+                <nav class="navbar bg-primary">
+                    <div class="container-fluid">
+                        <div class="navbar-header">
+                            <h1 class="navbar-brand mb-0">Mail Staff Ledger</h1>
+                        </div>
+                    </div>
+                </nav>
+                <div class="container">
+                    <button class="btn-staffledger btn btn-info btn-sm" href="/staffledger/staffledgerlist/">
+                        <i class="fa fa-arrow-circle-left " aria-hidden="true" />
+                        Back
+                    </button>
+                    <br />
+                    <br />
+                    <div align="center">
+                        <p>
+                            <h5>Här kan du skicka personalliggaren med e-post till någon på Skatteverket.</h5>
+                        </p>
+                        <form t-att-action="'/staffledger/mail_staffledger/%s' % location.id" method="post">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
+                            <input type="email" name="email" value="@skatteverket.se" class="form-control" style="width: 240px;" required="" />
+                            <br />
+                            <br />
+                            <button type="submit" name="btn_send_mail_staffledger" class="btn btn-info btn-md center-block">
+                                <i class="fa fa-send" aria-hidden="true" />
+                                Send
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <nav class="navbar navbar-default navbar-fixed-bottom">
+                    <div align="center">
+                        <div class="col-xs-3" style="background-color: #428bca;">
+                            <a href="#" style="">
+                                <p>
+                                    <i class="fa fa-clock-o fa-2x" style="color: #fff; margin-top: 12px;" />
+                                </p>
+                            </a>
+                        </div>
+                        <div class="col-xs-3" style="background-color: #f4f4f4;">
+                            <a href="#">
+                                <p>
+                                    <i class="fa fa-map-o fa-2x" style="color: #999; margin-top: 12px; " />
+                                </p>
+                            </a>
+                        </div>
+                        <div class="col-xs-3" style="background-color: #f4f4f4;">
+                            <a href="#">
+                                <p>
+                                    <i class="fa fa-list-alt fa-2x" style="color: #999; margin-top: 12px; " aria-hidden="true" />
+                                </p>
+                            </a>
+                        </div>
+                        <div class="col-xs-3" style="background-color: #f4f4f4;">
+                            <a href="#">
+                                <p>
+                                    <i class="fa fa-cogs fa-2x" style="color: #999; margin-top: 12px;" />
+                                </p>
+                            </a>
+                        </div>
+                    </div>
+                </nav>
+            </t>
+        </template>
         <record id="mail_template_staff_ledger" model="mail.template">
-            <field name="name">Staff Ledger Report</field>
-            <field name="email_from">${(object.user_id.email and '%s &lt;%s&gt;' % (object.user_id.name, object.user_id.email) or '')|safe}</field>
-            <field name="subject">${object.company_id.name} ${object.state in ('draft', 'sent') and 'Quotation' or 'Order'} (Ref ${object.name or 'n/a' })</field>
-            <field name="partner_to">${object.partner_id.id}</field>
-            <field name="model_id" ref="hr_staff_ledger.model_hr_staff_ledger_location"/>
-            <field name="auto_delete" eval="True"/>
-            <field name="report_template" ref="report_staff_ledger_list"/>
-            <field name="report_name">${(object.name or '').replace('/','_')}${object.state == 'draft' and '_draft' or ''}</field>
-            <field name="lang">${object.partner_id.lang}</field>
-            <field name="body_html"><![CDATA[
-<p>Dear ${object.partner_id.name}
-% set access_action = object.with_context(force_website=True).get_access_action()
-% set doc_name = 'quotation' if object.state in ('draft', 'sent') else 'order confirmation'
-% set is_online = access_action and access_action['type'] == 'ir.actions.act_url'
-% set access_name = is_online and object.template_id and doc_name == 'quotation' and 'Accept and pay %s online' % doc_name or 'View %s' % doc_name
-% set access_url = is_online and access_action['url'] or None
-
-% if object.partner_id.parent_id:
-    (<i>${object.partner_id.parent_id.name}</i>)
-% endif
-,</p>
-<p>
-Here is your ${doc_name} <strong>${object.name}</strong>
-% if object.origin:
-(with reference: ${object.origin} )
-% endif
-amounting in <strong>${object.amount_total} ${object.pricelist_id.currency_id.name}</strong>
-from ${object.company_id.name}.
-</p>
-
-    <br/><br/>
-% if is_online:
-    <center>
-        <a href="${access_url}" style="background-color: #1abc9c; padding: 20px; text-decoration: none; color: #fff; border-radius: 5px; font-size: 16px;" class="o_default_snippet_text">${access_name}</a>
-        <br/><br/>
-        <span style="color:#888888">(or view attached PDF)</span>
-    </center>
-    <br/>
-% endif
-
-<p>You can reply to this email if you have any questions.</p>
-<p>Thank you,</p>
-
-<p style="color:#eeeeee;">
-% if object.user_id and object.user_id.signature:
-    ${object.user_id.signature | safe}
-% endif
-</p>
-]]></field>
+            <field name="name">Staff Ledger email</field>
+            <!--
+                 <field name="email_from">${(object.user_id.email and '%s &lt;%s&gt;' % (object.user_id.name, object.user_id.email) or '')|safe}</field>
+            -->
+            <field name="email_from" />
+            <field name="subject">Staff Ledger for ${object.name}</field>
+            <field name="partner_to" />
+            <field name="model_id" ref="hr_staff_ledger.model_hr_staff_ledger_location" />
+            <field name="auto_delete" eval="True" />
+            <field name="report_template" ref="report_staff_ledger_list" />
+            <field name="report_name">${'%s %s' % ((object.name or ''), datetime.datetime.now().strftime('%Y-%m-%d %H:%M'))}</field>
+            <field name="lang" />
+            <field name="body_html">
+                <![CDATA[
+                         Hej!
+                         
+                         
+                         Här kommer personalliggaren för ${object.name}.
+                         
+                         
+                         
+                         Mvh
+                         
+                         ${user.company_name}
+                         ${user.name}
+                         ${user.phone}
+                ]]>
+            </field>
+            <!--
+                 <field name="body_html">
+                 <![CDATA[
+                 
+                 <p>Dear ${object.partner_id.name}
+                 % set access_action = object.with_context(force_website=True).get_access_action()
+                 % set doc_name = 'quotation' if object.state in ('draft', 'sent') else 'order confirmation'
+                 % set is_online = access_action and access_action['type'] == 'ir.actions.act_url'
+                 % set access_name = is_online and object.template_id and doc_name == 'quotation' and 'Accept and pay %s online' % doc_name or 'View %s' % doc_name
+                 % set access_url = is_online and access_action['url'] or None
+                 
+                 % if object.partner_id.parent_id:
+                 (<i>${object.partner_id.parent_id.name}</i>)
+                 % endif
+                 ,</p>
+                 <p>
+                 Here is your ${doc_name} <strong>${object.name}</strong>
+                 % if object.origin:
+                 (with reference: ${object.origin} )
+                 % endif
+                 amounting in <strong>${object.amount_total} ${object.pricelist_id.currency_id.name}</strong>
+                 from ${object.company_id.name}.
+                 </p>
+                 
+                 <br/><br/>
+                 % if is_online:
+                 <center>
+                 <a href="${access_url}" style="background-color: #1abc9c; padding: 20px; text-decoration: none; color: #fff; border-radius: 5px; font-size: 16px;" class="o_default_snippet_text">${access_name}</a>
+                 <br/><br/>
+                 <span style="color:#888888">(or view attached PDF)</span>
+                 </center>
+                 <br/>
+                 % endif
+                 
+                 <p>You can reply to this email if you have any questions.</p>
+                 <p>Thank you,</p>
+                 
+                 <p style="color:#eeeeee;">
+                 % if object.user_id and object.user_id.signature:
+                 ${object.user_id.signature | safe}
+                 % endif
+                 </p>
+                 ]]>
+                 </field>
+            -->
         </record>
     </data>
 </openerp>

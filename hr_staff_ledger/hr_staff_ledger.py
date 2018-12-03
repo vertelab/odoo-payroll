@@ -113,6 +113,7 @@ class hr_staff_ledger_location(models.Model):
     
     """
     _name = 'hr.staff.ledger.location'
+    _inherit = ['mail.thread']
 
     name = fields.Char(string="Name",index=True)
     comment = fields.Text(string='Notes')
@@ -148,7 +149,7 @@ class hr_staff_ledger_location(models.Model):
         self.ensure_one()
         ir_model_data = self.env['ir.model.data']
         try:
-            template_id = ir_model_data.get_object_reference('sale', 'email_template_edi_sale')[1]
+            template_id = ir_model_data.get_object_reference('hr_staff_ledger', 'mail_template_staff_ledger')[1]
         except ValueError:
             template_id = False
         try:
@@ -162,8 +163,6 @@ class hr_staff_ledger_location(models.Model):
             'default_use_template': bool(template_id),
             'default_template_id': template_id,
             'default_composition_mode': 'comment',
-            'mark_so_as_sent': True,
-            'custom_layout': "sale.mail_template_data_notification_email_sale_order"
         })
         return {
             'type': 'ir.actions.act_window',
@@ -271,6 +270,41 @@ class project_timereport(http.Controller):
             return request.render('hr_staff_ledger.staffledger_managerlist', { 'employee_ids' : request.env['hr.employee'].search([], order='name') })
 #            >>> self.search([('is_company', '=', True)], limit=1).name
 
+
+    @http.route(['/staffledger/mail_staffledger/<model("hr.staff.ledger.location"):location>'], type='http', auth="user", website=True)
+    def mail_staffledger(self, location=None, **post):
+            email = post.get('email')
+            if email:
+                partner = request.env['res.partner'].search([('email', '=', email)])
+                if  not partner:
+                    partner = request.env['res.partner'].create({'name' : email, 'email' : email})
+                    
+                ir_model_data = request.env['ir.model.data']
+                try:
+                    template_id = ir_model_data.get_object_reference('hr_staff_ledger', 'mail_template_staff_ledger')[1]
+                except ValueError:
+                    template_id = False
+                composer = request.env['mail.compose.message'].create({
+                    'model': 'hr.staff.ledger.location',
+                    'res_id': location.id,
+                    'use_template': bool(template_id),
+                    'template_id': template_id,
+                    'composition_mode': 'comment',
+                    'partner_ids' : [(6, 0, [partner.id])],
+                    })
+                composer.onchange_template_id_wrapper()
+                composer.send_mail_action()
+                
+            ctx = {
+                # ~ 'employee' : employee,
+                # ~ 'attendance': employee.last_attendance_id,
+                'location' : location,
+                # ~ 'default_location': request.env['hr.staff.ledger.location'].search([('default_location', '=', True)], limit=1),
+            }
+            return request.render('hr_staff_ledger.mail_staffledger', ctx)
+            
+            
+        
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
 
 

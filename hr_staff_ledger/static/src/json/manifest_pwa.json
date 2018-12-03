@@ -1,0 +1,54 @@
+{
+	"short_name":"Staffledger",
+	"name":"Staffledger",
+	"description":"Staff ledger Web App.",
+	"icons":[
+				{
+					"src":"/hr_staff_ledger/static/src/img/icon192.png",
+					"sizes":"192x192","type":"image/png"
+				},
+				{
+					"src":"/hr_staff_ledger/static/src/img/icon512.png",
+					"sizes":"512x512","type":"image/png"
+				}
+			],
+			"start_url":"/staffledger",
+			"display":"standalone",
+			"theme_color":"#428BCA",
+			"background_color":"#428BCA",
+			"scope":"/"
+}
+
+/*{
+    "name": "Staff Ledger",
+    "short_name":"Staff Ledger",
+    "description":"Staff ledger Web App.",
+    "start_url":"/?utm_source=homescreen",
+    "display":"standalone",
+    "orientation":"portrait",
+    "background_color":"#428bca",
+    "theme_color":"#428bca",
+    "icons": [
+		{
+			"src":"/hr_staff_ledger/static/src/img/icon96.png",
+			"sizes":"96x96",
+			"type":"image/png",
+		},
+		{
+			"src":"/hr_staff_ledger/static/src/img/icon144.png",
+			"sizes":"144x144",
+			"type":"image/png",
+		},
+		{
+			"src":"/hr_staff_ledger/static/src/img/icon192.png",
+			"sizes":"192x192",
+			"type":"image/png",
+		},
+		{
+			"src":"/hr_staff_ledger/static/src/img/icon512.png",
+			"sizes":"512x512",
+			"type":"image/png",
+		}
+	]
+	
+}*/
