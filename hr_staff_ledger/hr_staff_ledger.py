@@ -96,9 +96,10 @@ class hr_employee(models.Model):
     def _staff_ledger_location(self):
         transactions = self.env['hr.staff.ledger.transaction'].search([('employee_id','=', self.id)], order='date asc', limit=1)
         _logger.warn('Transaction %s' % transactions)
+        _logger.warn('Date %s' % transactions.mapped('date'))
         self.staff_ledger_location = transactions.mapped('location_id') if len(transactions)>0 else None
-        # ~ self.staff_ledger_date = transactions.mapped('date') if len(transactions)>0 else None
-        # ~ self.staff_ledger_status = transactions.mapped('status') or 'checked_out'
+        self.staff_ledger_date = transactions.mapped('date')[0] if len(transactions)>0 else None
+        self.staff_ledger_status = transactions.mapped('status')[0] if len(transactions)>0 else 'checked_out'
                 
     staff_ledger_location = fields.Many2one(comodel_name="hr.staff.ledger.location", compute='_staff_ledger_location')
     staff_ledger_date = fields.Datetime(compute='_staff_ledger_location')
