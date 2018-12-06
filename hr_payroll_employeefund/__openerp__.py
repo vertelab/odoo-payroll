@@ -29,6 +29,7 @@ This can be used as a flexible time bank (hours) or monetary values (cost/revenu
 Financed by Dermanord-Svensk Hudvård AB
 """,
 'author': 'Vertel AB',
+    'license': 'AGPL-3',
 'website': 'http://www.vertel.se',
 'depends': ['hr_payroll_account'],
 'data': ['payslip_view.xml'],

@@ -26,6 +26,7 @@
 'description': """Extends hr.contract.type with a selection of WorkTime
 """,
 'author': 'Vertel AB',
+    'license': 'AGPL-3',
 'website': 'http://www.vertel.se',
 'depends': ['hr_contract', 'hr_payroll'],
 'data': ['hr_contract_view.xml'],

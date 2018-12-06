@@ -27,6 +27,7 @@
 
 """,
 'author': 'Vertel AB',
+    'license': 'AGPL-3',
 'website': 'http://www.vertel.se',
 'depends': ['hr_holidays'],
 'data': ['hr_holidays_view.xml'],

@@ -1,0 +1,87 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+#	* hr_weekly_working_hours
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 8.0-20170809\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-08-15 06:10+0000\n"
+"PO-Revision-Date: 2017-08-15 06:10+0000\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: hr_weekly_working_hours
+#: model:ir.model,name:hr_weekly_working_hours.model_hr_contract
+msgid "Contract"
+msgstr "Avtal"
+
+#. module: hr_weekly_working_hours
+#: help:hr.contract,working_percent:0
+msgid "Currently not used."
+msgstr "För närvarande ej använd."
+
+#. module: hr_weekly_working_hours
+#: model:ir.model,name:hr_weekly_working_hours.model_hr_employee
+msgid "Employee"
+msgstr "Anställd"
+
+#. module: hr_weekly_working_hours
+#: view:hr.contract:hr_weekly_working_hours.hr_contract_view_form
+msgid "Notes"
+msgstr "Anteckningar"
+
+#. module: hr_weekly_working_hours
+#: model:ir.model,name:hr_weekly_working_hours.model_resource_calendar
+msgid "Resource Calendar"
+msgstr "Resurskalender"
+
+#. module: hr_weekly_working_hours
+#: field:hr.contract,scheduled_working_hours:0
+msgid "Scheduled Working Hours"
+msgstr "Schemalagd Arbetstid"
+
+#. module: hr_weekly_working_hours
+#: help:hr.contract,scheduled_working_hours:0
+msgid "The amount of hours in the schedule for this contract."
+msgstr "Antalet timmar i schemat kopplat till detta avtal."
+
+#. module: hr_weekly_working_hours
+#: help:hr.contract,weekly_working_hours:0
+msgid "The amount of hours/working week that should be used in calculations. Ought to be the same as the amount of hours in the schedule."
+msgstr "Antalet timmar/arbetsvecka som ska användas i beräkningar. Bör vara samma som antalet schemalagda timmar."
+
+#. module: hr_weekly_working_hours
+#: help:hr.contract,wwh_days_full:0
+msgid "The number of worked days/week for a full time employee. Currently not used."
+msgstr "Antalet arbetsdagar/arbetsvecka för en heltidsanställd. För närvarande ej använd."
+
+#. module: hr_weekly_working_hours
+#: help:hr.contract,wwh_days_intermittent:0
+msgid "The number of worked days/week for a part time employee. Currently used for both full and part time."
+msgstr "Antalet arbetsdagar/arbetsvecka för en deltidsanställd. För närvarande använd för både del- och heltid."
+
+#. module: hr_weekly_working_hours
+#: field:hr.contract,wwh_days_full:0
+msgid "WWH Days Full Time"
+msgstr "Veckoarbetstid dagar heltid (VAD)"
+
+#. module: hr_weekly_working_hours
+#: field:hr.contract,wwh_days_intermittent:0
+msgid "WWH Days Intermittent"
+msgstr "Veckoarbetstid dagar intermittent (VADI)"
+
+#. module: hr_weekly_working_hours
+#: field:hr.contract,weekly_working_hours:0
+msgid "Weekly Working Hours"
+msgstr "Veckoarbetstid (VA)"
+
+#. module: hr_weekly_working_hours
+#: field:hr.contract,working_percent:0
+msgid "Working Percent"
+msgstr "Arbetstidsprocent (APR)"
+

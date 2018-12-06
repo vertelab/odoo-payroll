@@ -28,6 +28,7 @@
 
 """,
 'author': 'Vertel AB',
+    'license': 'AGPL-3',
 'website': 'http://www.vertel.se',
 'depends': ['hr_payroll'],
 'data': ['payslip_view.xml'],

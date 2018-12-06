@@ -25,6 +25,7 @@
 'category': 'hr',
 'description': """""",
 'author': 'Vertel AB',
+    'license': 'AGPL-3',
 'website': 'http://www.vertel.se',
 'depends': ['hr_contract'],
 'data': ['hr_view.xml'],

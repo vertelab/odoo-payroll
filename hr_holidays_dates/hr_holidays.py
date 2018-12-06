@@ -39,18 +39,18 @@ class hr_holidays(models.Model):
     
     @api.one
     def _get_converted_time(self):
-        self.number_of_hours = self.number_of_days_temp * (self.employee_id.get_working_hours() or 8)
+        self.number_of_hours = self.number_of_days_temp * (self.employee_id.get_working_hours_per_day() or 8)
         self.number_of_minutes = self.number_of_hours * 60
     
     @api.one
     @api.onchange('number_of_hours', 'number_of_minutes')
     def _set_converted_time(self):
         if self.holiday_status_id.time_unit == 'hour':
-            number_of_days_temp = self.number_of_hours / (self.employee_id.get_working_hours() or 8)   # Assume 8 hours if 0
+            number_of_days_temp = self.number_of_hours / (self.employee_id.get_working_hours_per_day() or 8)   # Assume 8 hours if 0
             if self.number_of_days_temp != number_of_days_temp:
                 self.number_of_days_temp  = number_of_days_temp
         elif self.holiday_status_id.time_unit == 'minute':
-            number_of_days_temp = (self.number_of_minutes / (self.employee_id.get_working_hours() or 8)) / 60
+            number_of_days_temp = (self.number_of_minutes / (self.employee_id.get_working_hours_per_day() or 8)) / 60
             if self.number_of_days_temp != number_of_days_temp:
                 self.number_of_days_temp  = number_of_days_temp
     
@@ -118,21 +118,6 @@ class hr_holidays(models.Model):
         if not date_from:
             self.date_from = self._get_default_date_from(self.employee_id, self.date_to)
         self._update_number_of_days_temp()
-    
-    @api.model
-    def create(self,values):
-        if values.get('holiday_type') == 'category' or values.get('type') == 'add' or values.get('employee_id') == None:
-            pass
-        else:
-            leave = self.env['hr.holidays.status'].browse(values['holiday_status_id'])
-            if not leave.limit:
-                leave_days = leave.get_days(values.get('employee_id'))[leave.id]
-                if float_compare(leave_days['remaining_leaves'], values.get('number_of_days_temp'), precision_digits=2) == -1 or \
-                   float_compare(leave_days['virtual_remaining_leaves'], values.get('number_of_days_temp'), precision_digits=2) == -1:
-                    # Raising a warning gives a more user-friendly feedback than the default constraint error
-                    raise Warning(_('The number of remaining leaves is not sufficient for this leave type.\n'
-                                'Please verify also the leaves waiting for validation.'))
-        return super(hr_holidays, self).create(values)
 
 class hr_holidays_status(models.Model):
     _inherit = "hr.holidays.status"

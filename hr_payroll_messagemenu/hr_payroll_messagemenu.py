@@ -79,4 +79,34 @@ class messagemenu_change_project(models.TransientModel):
     ### Fields
     project_id = fields.Many2one(comodel_name='project.project',string="Project",help="My projects",)
 
+class messagemenu_worked_days(models.TransientModel):
+    _name = 'messagemenu.worked_days'
+    
+    year = fields.Selection([('2017','2017'),('2018','2018'),('2019','2019'),('2020','2020')],string='Year',required=True)
+    worked_days = fields.Integer(string='Worked Days',readonly=True)
+    
+    @api.multi
+    def do_calc(self):
+        assert len(self) == 1,  'This option should only be used for a single id at a time.' # Ensure only one
+        employee = self.env['hr.employee'].search([('user_id','=',self._uid)])
+        if not employee:
+            raise Warnin(_("You lack employment, please contact your HR-officer"))            
+        self.worked_days = len(self.env['hr.attendance'].search([('employee_id', '=', employee.id), ('action', '=', 'sign_in'),('name', '>=', '%s-01-01 00:00:00' % self.year),('name', '<=', '%s-12-31 23:59:59' % self.year)]))
+        
+        
+        #~ domain = [('account_id', 'in', tax_accounts.mapped('id')), ('period_id', 'in', self.get_period_ids(self.period_start, self.period_stop))]
+        #~ if self.ej_bokforda:
+        #~ domain.append(('move_id.state', '=', 'draft'))
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'messagemenu.worked_days',
+            'view_mode': 'form',
+            'view_type': 'form',
+            'res_id': self.id,
+            'views': [(False, 'form')],
+            'target': 'new',
+        }
+
+
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

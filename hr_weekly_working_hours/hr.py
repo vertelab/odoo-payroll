@@ -37,11 +37,11 @@ _logger = logging.getLogger(__name__)
 class hr_contract(models.Model):
     _inherit = "hr.contract"
     
-    weekly_working_hours = fields.Float('Weekly Working Hours', default=40)
-    scheduled_working_hours = fields.Float('Scheduled Working Hours', compute='get_scheduled_working_hours', store=True)
-    wwh_days_full = fields.Float('WWH Days Full Time', default=5)
-    wwh_days_intermittent = fields.Float('WWH Days Intermittent', default=5)
-    working_percent = fields.Float('Working Percent',default=100)
+    weekly_working_hours = fields.Float('Weekly Working Hours', default=40, help="The amount of hours/working week that should be used in calculations. Ought to be the same as the amount of hours in the schedule.")
+    scheduled_working_hours = fields.Float('Scheduled Working Hours', compute='get_scheduled_working_hours', store=True, help="The amount of hours in the schedule for this contract.")
+    wwh_days_full = fields.Float('WWH Days Full Time', default=5, help="The number of worked days/week for a full time employee. Currently not used.")
+    wwh_days_intermittent = fields.Float('WWH Days Intermittent', default=5, help="The number of worked days/week for a part time employee. Currently used for both full and part time.")
+    working_percent = fields.Float('Working Percent',default=100, help="Currently not used.")
     
     @api.one
     @api.depends('working_hours', 'working_hours.attendance_ids',
@@ -71,7 +71,7 @@ class hr_employee(models.Model):
             date = fields.Date.today()
         res = 0
         for contract in self.sudo().contract_ids:
-            if contract.date_start <= date and contract.date_end >= date:
+            if contract.date_start <= date and (not contract.date_end or contract.date_end >= date):
                 res += contract.weekly_working_hours
         if not res and date != fields.Date.today():
             res = self.get_working_hours()
@@ -84,7 +84,7 @@ class hr_employee(models.Model):
             date = fields.Date.today()
         res = 0
         for contract in self.sudo().contract_ids:
-            if contract.date_start <= date and contract.date_end >= date:
+            if contract.date_start <= date and (not contract.date_end or contract.date_end >= date):
                 res += contract.wwh_days_intermittent
         if not res and date != fields.Date.today():
             res = self.get_working_days()
