@@ -40,6 +40,7 @@ class hr_attendance(models.Model):
             lo_tzone = employee.user_id.tz
         return pytz.timezone(lo_tzone).localize(lo_dt).astimezone(pytz.utc)
 
+
 class hr_employee(models.Model):
     _inherit = 'hr.employee'
     
@@ -143,7 +144,7 @@ class attendanceReport(http.Controller):
                     'date': last_attendance.name[:10],
                     'account_id': sec_last_attendance.project_id.analytic_account_id.id,
                     'name': '/',
-                    'unit_amount': (fields.Datetime.from_string(last_attendance.name) - fields.Datetime.from_string(sec_last_attendance.name)).total_seconds() / 3600.0 - employee.get_breaks_in_s(),
+                    'unit_amount': (fields.Datetime.from_string(last_attendance.name) - fields.Datetime.from_string(sec_last_attendance.name)).total_seconds() / 3600.0 - employee.get_breaks_in_s(fields.Datetime.from_string(last_attendance.name), fields.Datetime.from_string(sec_last_attendance.name)),
                     'user_id': employee.user_id.id,
                     'product_id': request.env['hr.analytic.timesheet'].with_context(user_id = employee.user_id.id, employee_id = employee.id)._getEmployeeProduct(),
                     'product_uom_id': request.env['hr.analytic.timesheet'].with_context(user_id = employee.user_id.id, employee_id = employee.id)._getEmployeeUnit(),

@@ -155,9 +155,9 @@ function check_employees(){
 /* Come and Go */
 function come_and_go(){
     console.log('come_and_go ' + new Date());
-openerp.jsonRpc("/hr/attendance/come_and_go", 'call', {
-    'employee_id': $("#hr_employee").val(),
-    'project_id': $("#hr_employee_project").val(),
+	openerp.jsonRpc("/hr/attendance/come_and_go", 'call', {
+		'employee_id': $("#hr_employee").val(),
+		'project_id': $("#hr_employee_project").val(),
     }).done(function(data){
         if (data != undefined) {
             clearContent();
