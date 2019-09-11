@@ -32,8 +32,8 @@ class hr_contract(models.Model):
     benefit_ids = fields.One2many(comodel_name="hr.contract.benefit",inverse_name='contract_id')
 
     @api.multi
-    def benefit_value(self,code):
-        return sum(self[0].benefit_ids.filtered(lambda b: b.name == code).mapped('value'))
+    def benefit_value(self, code):
+        return sum(self[0].benefit_ids.filtered(lambda b: b.name.name == code).mapped('value'))
 
 
 class hr_contract_benefit(models.Model):

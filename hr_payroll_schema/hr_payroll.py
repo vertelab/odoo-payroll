@@ -42,12 +42,13 @@ class hr_attendance(models.Model):
     _inherit = 'hr.attendance'
 
     @api.model
-    def _check_last_sign_out(self, this_attendance):
+    def _check_last_sign_out(self, attendance=None):
+        attendance = attendance or self
         attendance = self.env['hr.attendance'].search_count([
-            ('employee_id', '=', this_attendance.employee_id.id),
+            ('employee_id', '=', attendance.employee_id.id),
             ('action', '=', 'sign_out'),
-            ('name', '>', this_attendance.name),
-            ('name', '<', this_attendance.name[:10] + ' 23:59:59')])
+            ('name', '>', attendance.name),
+            ('name', '<', attendance.name[:10] + ' 23:59:59')])
         return attendance == 0
 
     @api.one
@@ -254,5 +255,12 @@ class hr_contract_type(models.Model):
     _inherit = 'hr.contract.type'
 
     work_time = fields.Selection(selection_add=[('schema','Schema')])
+
+class HrContract(models.Model):
+    _inherit = 'hr.contract'
+    
+    @api.multi
+    def valid_for_date(self, date):
+        return self.date_start <= date and (not self.date_end or self.date_end >= date)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
