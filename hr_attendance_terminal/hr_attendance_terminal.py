@@ -127,7 +127,8 @@ class attendanceReport(http.Controller):
     def attendance_comeandgo(self, employee_id=None, project_id=None, **kw):
         employee = request.env['hr.employee'].browse(int(employee_id))
         try:
-            employee.attendance_action_change()
+            # assumes that users of this function are present in office
+            employee.with_context(remote=False).attendance_action_change()
             attendances = request.env['hr.attendance'].search([('employee_id', '=', employee.id), ('action', '!=', 'action')], limit=2, order='name desc')
             last_attendance = sec_last_attendance = None
             if len(attendances) == 2:

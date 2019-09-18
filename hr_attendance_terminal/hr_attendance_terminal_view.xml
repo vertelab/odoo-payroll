@@ -61,6 +61,8 @@
                                 <button id="login" class="btn btn-success btn-lg hidden" onclick="come_and_go()">Log In</button>
                                 <button id="logout" class="btn btn-warning btn-lg hidden" onclick="come_and_go()">Log Out</button>
                             </div>
+                            <div id="extra_buttons" class="col-md-6 col-md-offset-6 col-sm-6 col-sm-offset-6 col-xs-6 col-xs-offset-6 text-center">
+                            </div>
                         </div>
                         <div id="Log_div" class="col-md-12 col-sm-12 col-xs-12">
                             <div class="col-md-12 col-sm-12 col-xs-12">

@@ -76,28 +76,36 @@ function employee_id(rfid){
     }
 }
 
+function attendance_state_update(data){
+    if(data['state'] == "present") {
+        $("#hr_employee").val(data['id']);
+        $("#login").addClass("hidden");
+        $("#logout").removeClass("hidden");
+    }
+    if(data['state'] == "absent") {
+        $("#hr_employee").val(data['id']);
+        employee_project(data['id']);
+        $("#login").removeClass("hidden");
+        $("#logout").addClass("hidden");
+    }
+}
+
+function attendance_state_reset(id){
+    $("#login").addClass("hidden");
+    $("#logout").addClass("hidden");
+}
+
 function employee_state(id){
     clearContent();
     if (id != "") {
         openerp.jsonRpc("/hr/attendance/state", 'call', {
             'employee': id,
         }).done(function(data){
-            if(data['state'] == "present") {
-                $("#hr_employee").val(data['id']);
-                $("#login").addClass("hidden");
-                $("#logout").removeClass("hidden");
-            }
-            if(data['state'] == "absent") {
-                $("#hr_employee").val(data['id']);
-                employee_project(data['id']);
-                $("#login").removeClass("hidden");
-                $("#logout").addClass("hidden");
-            }
+            attendance_state_update(data);
         });
     }
     else {
-        $("#login").addClass("hidden");
-        $("#logout").addClass("hidden");
+        attendance_state_reset(id);
     }
 }
 
