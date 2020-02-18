@@ -1,2 +1,2 @@
 # -*- coding: utf-8 -*-
-import hr_payroll_messagemenu
+from . import hr_payroll_messagemenu

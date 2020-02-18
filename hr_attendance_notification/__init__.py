@@ -1,2 +1,2 @@
 # -*- coding: utf-8 -*-
-import hr_attendance
+from . import hr_attendance

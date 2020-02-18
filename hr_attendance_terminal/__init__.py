@@ -1,3 +1,3 @@
 # -*- coding: utf-8 -*-
-import hr_attendance_terminal
-import hr_employee
+from . import hr_attendance_terminal
+from . import hr_employee

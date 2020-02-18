@@ -1,2 +1,2 @@
 # -*- coding: utf-8 -*-
-import hr_timesheet
+from . import hr_timesheet
