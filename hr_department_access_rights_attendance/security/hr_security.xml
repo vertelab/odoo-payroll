@@ -16,8 +16,10 @@
         <field name="domain_force">[(1, '=', 1)]</field>
     </record>
 
-</data>
-<data noupdate="1">
-    <function model="hr.attendance" name="init_records" />
+    <record id="hr_attendance.access_hr_attendance_system_user" model="ir.model.access">
+        <field name="perm_write" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
 </data>
 </openerp>
