@@ -19,8 +19,8 @@
 #
 ##############################################################################
 
-from openerp import models, fields, api, _
-import openerp.addons.decimal_precision as dp
+from odoo import models, fields, api, _
+import odoo.addons.decimal_precision as dp
 import logging
 _logger = logging.getLogger(__name__)
 
@@ -28,7 +28,7 @@ class hr_contract(models.Model):
     _inherit = 'hr.contract'
 
     employee_fund      = fields.Many2one(string="Employee Fund",comodel_name='account.analytic.account',help="Use this account together with marked salary rule" )
-    employee_fund_balance = fields.Float(string='Balance',digits_compute=dp.get_precision('Payroll'),related='employee_fund.balance')
+    employee_fund_balance = fields.Monetary(string='Balance',related='employee_fund.balance',currency_field='currency_id')
     employee_fund_name = fields.Char(string='Name',related='employee_fund.name')
 
 
@@ -40,12 +40,12 @@ class hr_salary_rule(models.Model):
 class hr_payslip(models.Model):
     _inherit = 'hr.payslip'
 
-    @api.multi
+#    @api.multi
     def get_employeefund_addition(self):
         return sum(self.env['account.analytic.line'].search([('account_id','=',self.contract_id.employee_fund.id),('date','>=',self.date_from),('date','<=',self.date_to),('amount','>',0.0)]).mapped('amount'))
 
 
-    @api.one
+#    @api.one
     def process_sheet(self):
         for line in self.details_by_salary_rule_category:
             if line.salary_rule_id.use_employee_fund and self.employee_id.contract_id.employee_fund:
@@ -62,17 +62,18 @@ class hr_payslip(models.Model):
         return super(hr_payslip, self).process_sheet()
 
 class hr_timesheet_sheet(models.Model):
-    _inherit = "hr_timesheet_sheet.sheet"
+    _inherit = "hr_timesheet.sheet"
+    currency_id = fields.Many2one('res.currency', related='company_id.currency_id')
 
-    @api.one
+#    @api.one
     def _employee_fund(self):
         self.employee_fund = self.employee_id.sudo().contract_id.employee_fund
     employee_fund = fields.Many2one(comodel_name='account.analytic.account', string='Employee Fund', compute='_employee_fund')
-    @api.one
+ #   @api.one
     def _employee_fund_balance(self):
         self.employee_fund_balance = self.employee_id.sudo().contract_id.employee_fund_balance
-    employee_fund_balance = fields.Float(string='Balance', compute='_employee_fund_balance')
-    @api.one
+    employee_fund_balance = fields.Monetary(string='Balance', compute='_employee_fund_balance',currency_field='currency_id')
+  #  @api.one
     def _employee_fund_name(self):
         self.employee_fund_name = self.employee_id.sudo().contract_id.employee_fund_name
     employee_fund_name = fields.Char(string='Name', compute='_employee_fund_name')
