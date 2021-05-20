@@ -25,7 +25,7 @@
         Extends hr_payroll_employeefund with an extra employeefund""",
 
     'description': """
-        Adds an employeefund-view to the Employee Contract. Expense viewform .
+        Adds an employeefund-view to the Employee Contract and the Expense viewform.
     """,
 
     'author': "Vertel AB",
@@ -34,7 +34,7 @@
     # Categories can be used to filter modules in modules listing
     # Check https://github.com/odoo/odoo/blob/14.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
-    'category': 'Uncategorized',
+    'category': 'hr',
     'version': '0.1',
 
     # any module necessary for this one to work correctly

@@ -18,7 +18,7 @@ class HrExpense(models.Model):
 
 
     
-    payment_mode = fields.Selection(selection_add = [("employee_fund","Employee Fund")],)
+    payment_mode = fields.Selection(selection_add = [("employee_fund","Kompetensutvecklingsfond")],)
 
     def _create_sheet_from_expenses(self):
         sheet = super(HrExpense,self)._create_sheet_from_expenses()
