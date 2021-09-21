@@ -65,5 +65,33 @@ class HrExpense(models.Model):
 #                    self.contract_id.employee_fund.balance = amount
         return super(HrExpense, self).write(vals)
 
-
+    def update_analytic_line(self):
+        expense_tree = self.env.ref('hr_payroll_employeefund_expenses.quick_view_account_analytic_line_tree')
+        ctx = {
+            'account_id': self.analytic_account_id.id,
+            'partner_id': self.employee_id.address_home_id.id
+        }
+        return {
+            'name': _('Cost and Revenue'),
+            'type': 'ir.actions.act_window',
+            'view_mode': 'tree,form',
+            'res_model': 'account.analytic.line',
+            'views': [
+                (self.env.ref('hr_payroll_employeefund_expenses.quick_view_account_analytic_line_tree').id, 'tree'),
+                (False, 'form')
+            ],
+            'view_id': expense_tree.id,
+            'target': 'new',
+            'context': dict(
+                account_id=self.analytic_account_id.id,
+                partner_id=self.employee_id.address_home_id.id,
+                default_account_id=self.analytic_account_id.id,
+                default_partner_id=self.employee_id.address_home_id.id,
+                default_name=self.name
+            ),
+            'domain': [
+                ('account_id', '=', self.analytic_account_id.id),
+                ('partner_id', '=', self.employee_id.address_home_id.id),
+            ],
+         }
  
