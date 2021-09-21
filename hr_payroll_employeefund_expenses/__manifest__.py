@@ -26,16 +26,18 @@
 
     'description': """
         Adds an employeefund-view to the Employee Contract and the Expense viewform.
+        
+        0.2 - Added a button to allow edit of cost/revenue from expense
     """,
 
     'author': "Vertel AB",
-    'website': "http://www.vertel.se",
+    'website': "https://www.vertel.se",
 
     # Categories can be used to filter modules in modules listing
     # Check https://github.com/odoo/odoo/blob/14.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
     'category': 'hr',
-    'version': '0.1',
+    'version': '0.2',
 
     # any module necessary for this one to work correctly
     'depends': ['hr_payroll_employeefund','hr_expense'],
