@@ -8,16 +8,15 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
+
 class HrExpense(models.Model):
 
     _inherit = "hr.expense"
 
-    employee_fund      = fields.Many2one(string="Employee Fund",comodel_name='account.analytic.account',help="Use this account together with marked salary rule" ,related='employee_id.contract_id.employee_fund')
+    employee_fund = fields.Many2one(string="Employee Fund",comodel_name='account.analytic.account',help="Use this account together with marked salary rule" ,related='employee_id.contract_id.employee_fund')
     employee_fund_balance = fields.Monetary(string='Balance',related='employee_fund.balance',currency_field='currency_id')
     employee_fund_name = fields.Char(string='Name',related='employee_fund.name')
 
-
-    
     payment_mode = fields.Selection(selection_add = [("employee_fund","Kompetensutvecklingsfond")],)
 
     def _create_sheet_from_expenses(self):
@@ -60,7 +59,7 @@ class HrExpense(models.Model):
         _logger.warning('robin %s'%todo)
         for expense in todo:            
             self.env['account.analytic.line'].create({'account_id':expense.employee_fund.id,
-                                                         'amount':expense.total_amount * -1,'name':'test'})
+                                                         'amount':expense.total_amount * -1, 'name':'test'})
             _logger.warning('robin: %s'%expense.total_amount)
 #                    self.contract_id.employee_fund.balance = amount
         return super(HrExpense, self).write(vals)
@@ -95,3 +94,29 @@ class HrExpense(models.Model):
             ],
          }
  
+
+class hr_contract(models.Model):
+    _inherit = 'hr.contract'
+
+    credit_account_id = fields.Many2one('account.account', string="Credit Account")
+    debit_account_id = fields.Many2one('account.account', string="Debit Account")
+
+    def create_account_move(self):
+        account_move_line = self.env['account.move.line'].with_context(check_move_validity=False)
+        account_move = self.env['account.move'].create({'journal_id': self.journal_id.id})
+        account_move_line.create({
+            'account_id': self.credit_account_id.id,
+            'name': self.employee_id.name,
+            'analytic_account_id': self.employee_fund.id,
+            'credit': self.employee_fund_balance,
+            'exclude_from_invoice_tab': True,
+            'move_id': account_move.id,
+        })
+        account_move_line.create({
+            'account_id': self.debit_account_id.id,
+            'name': self.employee_id.name,
+            'debit': self.employee_fund_balance,
+            'exclude_from_invoice_tab': True,
+            'move_id': account_move.id,
+        })
+        account_move.action_post()
