@@ -102,6 +102,8 @@ class hr_contract(models.Model):
     debit_account_id = fields.Many2one('account.account', string="Debit Account")
 
     def create_account_move(self):
+        if not self.credit_account_id or not self.debit_account_id or not self.journal_id:
+            raise UserError(_("Kindly check if credit, debit account and Journal is set"))
         account_move_line = self.env['account.move.line'].with_context(check_move_validity=False)
         account_move = self.env['account.move'].create({'journal_id': self.journal_id.id})
         account_move_line.create({
