@@ -8,16 +8,15 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
+
 class HrExpense(models.Model):
 
     _inherit = "hr.expense"
 
-    employee_fund      = fields.Many2one(string="Employee Fund",comodel_name='account.analytic.account',help="Use this account together with marked salary rule" ,related='employee_id.contract_id.employee_fund')
+    employee_fund = fields.Many2one(string="Employee Fund",comodel_name='account.analytic.account',help="Use this account together with marked salary rule" ,related='employee_id.contract_id.employee_fund')
     employee_fund_balance = fields.Monetary(string='Balance',related='employee_fund.balance',currency_field='currency_id')
     employee_fund_name = fields.Char(string='Name',related='employee_fund.name')
 
-
-    
     payment_mode = fields.Selection(selection_add = [("employee_fund","Kompetensutvecklingsfond")],)
 
     def _create_sheet_from_expenses(self):
@@ -60,10 +59,74 @@ class HrExpense(models.Model):
         _logger.warning('robin %s'%todo)
         for expense in todo:            
             self.env['account.analytic.line'].create({'account_id':expense.employee_fund.id,
-                                                         'amount':expense.total_amount * -1,'name':'test'})
+                                                         'amount':expense.total_amount * -1, 'name':'test'})
             _logger.warning('robin: %s'%expense.total_amount)
 #                    self.contract_id.employee_fund.balance = amount
         return super(HrExpense, self).write(vals)
 
-
+    def update_analytic_line(self):
+        expense_tree = self.env.ref('hr_payroll_employeefund_expenses.quick_view_account_analytic_line_tree')
+        ctx = {
+            'account_id': self.analytic_account_id.id,
+            'partner_id': self.employee_id.address_home_id.id
+        }
+        return {
+            'name': _('Cost and Revenue'),
+            'type': 'ir.actions.act_window',
+            'view_mode': 'tree,form',
+            'res_model': 'account.analytic.line',
+            'views': [
+                (self.env.ref('hr_payroll_employeefund_expenses.quick_view_account_analytic_line_tree').id, 'tree'),
+                (False, 'form')
+            ],
+            'view_id': expense_tree.id,
+            'target': 'new',
+            'context': dict(
+                account_id=self.analytic_account_id.id,
+                partner_id=self.employee_id.address_home_id.id,
+                default_account_id=self.analytic_account_id.id,
+                default_partner_id=self.employee_id.address_home_id.id,
+                default_name=self.name
+            ),
+            'domain': [
+                ('account_id', '=', self.analytic_account_id.id),
+                ('partner_id', '=', self.employee_id.address_home_id.id),
+            ],
+         }
  
+
+class hr_contract(models.Model):
+    _inherit = 'hr.contract'
+
+    credit_account_id = fields.Many2one('account.account', string="Credit Account", default=lambda self: self._get_default_credit_account())
+    debit_account_id = fields.Many2one('account.account', string="Debit Account", default=lambda self: self._get_default_debit_account())
+    fill_amount = fields.Float(string="Fill Amount", Store=False)
+
+    def _get_default_credit_account(self):
+        return self.env['account.account'].search([('code','=','2829')])
+        
+    def _get_default_debit_account(self):
+        return self.env['account.account'].search([('code','=','7699')])
+        
+    def create_account_move(self):
+        if not self.credit_account_id or not self.debit_account_id or not self.journal_id or not self.fill_amount or not self.employee_fund:
+            raise UserError(_("Kindly check if credit, debit account,Journal,Employee fund are set and the amount to fill employee fund "))
+        account_move_line = self.env['account.move.line'].with_context(check_move_validity=False)
+        account_move = self.env['account.move'].create({'journal_id': self.journal_id.id})
+        account_move_line.create({
+            'account_id': self.credit_account_id.id,
+            'name': self.employee_id.name,
+            'analytic_account_id': self.employee_fund.id,
+            'credit': self.fill_amount,
+            'exclude_from_invoice_tab': True,
+            'move_id': account_move.id,
+        })
+        account_move_line.create({
+            'account_id': self.debit_account_id.id,
+            'name': self.employee_id.name,
+            'debit': self.fill_amount,
+            'exclude_from_invoice_tab': True,
+            'move_id': account_move.id,
+        })
+        account_move.action_post()
+        self.fill_amount = 0

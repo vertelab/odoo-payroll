@@ -29,12 +29,16 @@
 <!--
           <strong>
 -->
+<!--
             <field name="employee_fund" class="oe_inline" />
             <field name="employee_fund_name" class="oe_inline" nolabel="1" />
+-->
 <!--
           </strong>
 -->
+<!--
           <field name="employee_fund_balance" class="oe_inline" nolabel="1" />
+-->
 <!--
         </field>
 -->

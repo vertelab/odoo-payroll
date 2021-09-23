@@ -1,40 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-  <data>
-    <!-- Adding fund fields to the hr.expense viewform -->
-    <record id="hr_expense_view_form_inherit" model="ir.ui.view">
-      <field name="name">hr_expense_view_form_inherit</field>
-      <field name="model">hr.expense</field>
-      <field name="inherit_id" ref="hr_expense.hr_expense_view_form" />
-      <field name="arch" type="xml">
-        <field name="company_id" position="after">
-          <field name="employee_fund_balance" attrs="{'invisible': [('payment_mode', '!=', 'employee_fund')], }" />
-        </field>
-      </field>
-    </record>
-    <record id="hr_contract_employeefund" model="ir.ui.view">
-      <field name="name">hr_contract_employeefund</field>
-      <field name="model">hr.contract</field>
-<!--
-      <field name="inherit_id" ref="hr_contract.hr_contract_view_form" />
--->
-      <field name="inherit_id" ref="hr_payroll_account.hr_contract_form_inherit" />
-      <field name="arch" type="xml">
-        <!--
-             <field name="hr_responsible_id" position="after">
-        -->
-        
-        <xpath expr="//group/group[last()]" position="after">
-          <group string="Kompetensutvecklingsfond">
-            <label for="employee_fund" />
-            <div>
-              <field name="employee_fund" />
-              &amp;nbsp;
-              <field name="employee_fund_balance" />
-            </div>
-          </group>
-        </xpath>
-      </field>
-    </record>
-  </data>
+    <data>
+        <!-- Adding fund fields to the hr.expense viewform -->
+        <record id="hr_expense_view_form_inherit" model="ir.ui.view">
+            <field name="name">hr_expense_view_form_inherit</field>
+            <field name="model">hr.expense</field>
+            <field name="inherit_id" ref="hr_expense.hr_expense_view_form" />
+            <field name="arch" type="xml">
+                <field name="company_id" position="after">
+                    <field name="employee_fund_balance" attrs="{'invisible': [('payment_mode', '!=', 'employee_fund')], }" />
+                </field>
+            </field>
+        </record>
+        <record id="hr_contract_employeefund" model="ir.ui.view">
+            <field name="name">hr_contract_employeefund</field>
+            <field name="model">hr.contract</field>
+            <field name="inherit_id" ref="hr_payroll_account.hr_contract_form_inherit" />
+            <field name="arch" type="xml">
+                <xpath expr="//group/group[last()]" position="after">
+                    <group string="Kompetensutvecklingsfond">
+                        <field name="credit_account_id"/>
+                        <field name="debit_account_id"/>
+                        <label for="employee_fund" />
+                        <div>
+                            <field name="employee_fund" />
+                            &amp;nbsp;
+                            <field name="employee_fund_balance" />
+                            <field string="Fill Amount" name="fill_amount" class="oe_link oe_edit_only"/>
+                            <button string="Fill Employee Fund" name="create_account_move" type="object" class="oe_link oe_edit_only"/>
+                        </div>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="quick_view_account_analytic_line_tree" model="ir.ui.view">
+            <field name="name">quick.account.analytic.line.tree</field>
+            <field name="model">account.analytic.line</field>
+            <field name="arch" type="xml">
+                <tree string="Analytic Entries" editable="bottom">
+                    <field name="date" optional="show"/>
+                    <field name="name"/>
+                    <field name="account_id"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="unit_amount" sum="Quantity" optional="hide"/>
+                    <field name="product_uom_id" optional="hide"/>
+                    <field name="product_uom_category_id" invisible="1"/>
+                    <field name="partner_id" optional="hide"/>
+                    <field name="company_id" groups="base.group_multi_company" optional="show"/>
+                    <field name="amount" sum="Total" optional="show"/>
+                    <field name="tag_ids" optional="hide" widget="many2many_tags"/>
+                </tree>
+            </field>
+        </record>
+    </data>
 </odoo>

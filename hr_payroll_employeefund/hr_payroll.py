@@ -24,12 +24,15 @@ import odoo.addons.decimal_precision as dp
 import logging
 _logger = logging.getLogger(__name__)
 
+
 class hr_contract(models.Model):
     _inherit = 'hr.contract'
 
-    employee_fund      = fields.Many2one(string="Employee Fund",comodel_name='account.analytic.account',help="Use this account together with marked salary rule" )
-    employee_fund_balance = fields.Monetary(string='Balance',related='employee_fund.balance',currency_field='currency_id')
-    employee_fund_name = fields.Char(string='Name',related='employee_fund.name')
+    employee_fund = fields.Many2one(string="Employee Fund", comodel_name='account.analytic.account',
+                                    help="Use this account together with marked salary rule")
+    employee_fund_balance = fields.Monetary(string='Balance', related='employee_fund.balance',
+                                            currency_field='currency_id')
+    employee_fund_name = fields.Char(string='Name', related='employee_fund.name')
 
 
 class hr_salary_rule(models.Model):
@@ -37,12 +40,15 @@ class hr_salary_rule(models.Model):
 
     use_employee_fund = fields.Boolean(string="Use for employee fund",default=False)
 
+
 class hr_payslip(models.Model):
     _inherit = 'hr.payslip'
 
 #    @api.multi
     def get_employeefund_addition(self):
-        return sum(self.env['account.analytic.line'].search([('account_id','=',self.contract_id.employee_fund.id),('date','>=',self.date_from),('date','<=',self.date_to),('amount','>',0.0)]).mapped('amount'))
+        return sum(self.env['account.analytic.line'].search([('account_id', '=', self.contract_id.employee_fund.id),
+                                                             ('date', '>=', self.date_from), ('date', '<=', self.date_to),
+                                                             ('amount', '>', 0.0)]).mapped('amount'))
 
 
 #    @api.one
