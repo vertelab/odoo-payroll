@@ -26,7 +26,8 @@
                             <field name="employee_fund" />
                             &amp;nbsp;
                             <field name="employee_fund_balance" />
-                            <button string="Create Account Move" name="create_account_move" type="object" class="oe_link oe_edit_only"/>
+                            <field string="Fill Amount" name="fill_amount" class="oe_link oe_edit_only"/>
+                            <button string="Fill Employee Fund" name="create_account_move" type="object" class="oe_link oe_edit_only"/>
                         </div>
                     </group>
                 </xpath>

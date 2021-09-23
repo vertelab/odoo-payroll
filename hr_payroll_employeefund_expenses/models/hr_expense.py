@@ -98,27 +98,35 @@ class HrExpense(models.Model):
 class hr_contract(models.Model):
     _inherit = 'hr.contract'
 
-    credit_account_id = fields.Many2one('account.account', string="Credit Account")
-    debit_account_id = fields.Many2one('account.account', string="Debit Account")
+    credit_account_id = fields.Many2one('account.account', string="Credit Account", default=lambda self: self._get_default_credit_account())
+    debit_account_id = fields.Many2one('account.account', string="Debit Account", default=lambda self: self._get_default_debit_account())
+    fill_amount = fields.Float(string="Fill Amount", Store=False)
 
+    def _get_default_credit_account(self):
+        return self.env['account.account'].search([('code','=','2829')])
+        
+    def _get_default_debit_account(self):
+        return self.env['account.account'].search([('code','=','7699')])
+        
     def create_account_move(self):
-        if not self.credit_account_id or not self.debit_account_id or not self.journal_id:
-            raise UserError(_("Kindly check if credit, debit account and Journal is set"))
+        if not self.credit_account_id or not self.debit_account_id or not self.journal_id or not self.fill_amount or not self.employee_fund:
+            raise UserError(_("Kindly check if credit, debit account,Journal,Employee fund are set and the amount to fill employee fund "))
         account_move_line = self.env['account.move.line'].with_context(check_move_validity=False)
         account_move = self.env['account.move'].create({'journal_id': self.journal_id.id})
         account_move_line.create({
             'account_id': self.credit_account_id.id,
             'name': self.employee_id.name,
             'analytic_account_id': self.employee_fund.id,
-            'credit': self.employee_fund_balance,
+            'credit': self.fill_amount,
             'exclude_from_invoice_tab': True,
             'move_id': account_move.id,
         })
         account_move_line.create({
             'account_id': self.debit_account_id.id,
             'name': self.employee_id.name,
-            'debit': self.employee_fund_balance,
+            'debit': self.fill_amount,
             'exclude_from_invoice_tab': True,
             'move_id': account_move.id,
         })
         account_move.action_post()
+        self.fill_amount = 0
