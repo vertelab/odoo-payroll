@@ -5,8 +5,65 @@ from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
 import odoo.addons.decimal_precision as dp
 import logging
+from odoo import models, fields, api, _
+from odoo.exceptions import Warning
 
 _logger = logging.getLogger(__name__)
+
+
+class ResConfigSettings(models.TransientModel):
+    _inherit = 'res.config.settings'
+
+    expense_journal_id = fields.Many2one('account.journal', string='Default Expense Journal', default_model = 'account.journal', config_parameter='hr_expense.expense_journal_id')
+
+
+class HrExpenseSheet(models.Model):
+    _inherit = "hr.expense.sheet"
+
+    employee_invoice_id = fields.Many2one('account.move', string="Employee invoice", readonly = True)
+
+    @api.model
+    def _default_journal_id(self):
+        """ The journal is determining the company of the accounting entries generated from expense. We need to force journal company and expense sheet company to be the same. """
+        _logger.warning("journal"*99)
+        journal = self.env['ir.config_parameter'].sudo().get_param('hr_expense.expense_journal_id', default=1)
+        _logger.warning(f"journal: {journal}")
+        return journal
+
+    journal_id = fields.Many2one('account.journal', string='Expense Journal', states={'done': [('readonly', True)], 'post': [('readonly', True)]}, check_company=True, domain="[('type', '=', 'purchase'), ('company_id', '=', company_id)]",
+        default=_default_journal_id, help="The journal used when the expense is done.")
+
+    def action_sheet_move_create(self):
+        res = super().action_sheet_move_create()
+        if self.expense_line_ids[0].payment_mode == 'employee_fund':
+            _logger.warning(f"VICTOR res: {res}")
+            account_move = self.env['account.move'].with_context(check_move_validity=False).create({
+            'ref': self.expense_line_ids[0].reference,
+            'move_type': 'in_invoice',
+            'partner_id': self.employee_id.address_home_id.id,
+            'invoice_date': fields.Datetime.now(),
+            'journal_id': self.journal_id.id
+            })
+            line = self.env['account.move.line'].with_context(check_move_validity=False).create({
+                'account_id': self.expense_line_ids[0].product_id.property_account_expense_id.id,
+                'name': self.expense_line_ids[0].product_id.name,
+                'tax_ids': [self.expense_line_ids[0].product_id.supplier_taxes_id.id],
+                'quantity': self.expense_line_ids[0].quantity,
+                'move_id': account_move.id,
+                'product_id': self.expense_line_ids[0].product_id.id,
+                'price_unit': self.total_amount,
+            })
+            _logger.warning(f"WHÄÄÄ"*99)
+            account_move._onchange_partner_id()
+            line._onchange_mark_recompute_taxes()
+            account_move._recompute_dynamic_lines()
+            account_move.action_post()
+            self.employee_invoice_id = account_move.id
+            _logger.warning(account_move.read())
+        return res
+
+
+
 
 
 class HrExpense(models.Model):
@@ -19,6 +76,38 @@ class HrExpense(models.Model):
 
     payment_mode = fields.Selection(selection_add = [("employee_fund","Kompetensutvecklingsfond")],)
 
+    @api.onchange('employee_id', 'payment_mode')
+    def _compute_analytic_account(self):
+        for line in self:
+            _logger.warning("Line!")
+            _logger.warning(f"payment_mode: {line.payment_mode}")
+            if line.payment_mode == 'employee_fund':
+                _logger.warning(f"True {line.employee_id.contract_id.employee_fund}")
+                line.analytic_account_id = line.employee_id.contract_id.employee_fund
+
+    def _get_account_move_line_values(self):
+        move_line_values_by_expense = super()._get_account_move_line_values()
+
+        _logger.warning(f"before: {move_line_values_by_expense}")
+        if self.payment_mode == 'employee_fund':
+            keys = move_line_values_by_expense.keys()
+            for key in keys:
+                price = 0
+                new_values = []
+                for line in move_line_values_by_expense[key]:
+                    if 'tax_ids' in line.keys():
+                        price = line['debit']
+                        line['tax_ids'] = []
+                        line['account_id'] = self.employee_id.contract_id.credit_account_id.id
+                    if line['credit'] != 0:
+                        line['credit'] = price
+                        line['account_id'] = self.employee_id.contract_id.debit_account_id.id
+                    if 'tax_repartition_line_id' not in line.keys():
+                        new_values.append(line)
+                move_line_values_by_expense[key] = new_values
+        _logger.warning(f"after: {move_line_values_by_expense}")
+        return move_line_values_by_expense
+
     def _create_sheet_from_expenses(self):
         sheet = super(HrExpense,self)._create_sheet_from_expenses()
         todo = self.filtered(lambda x: x.payment_mode=='employee_fund')
@@ -27,42 +116,6 @@ class HrExpense(models.Model):
             # ~ sheet.name = 'test'
             sheet.expense_line_ids = [(6, 0, todo.ids+sheet.expense_line_ids.ids)]
         return sheet
-
-    # ~ def _create_sheet_from_expenses(self):
-        # ~ if any(expense.state != 'draft' or expense.sheet_id for expense in self):
-            # ~ raise UserError(_("You cannot report twice the same line!"))
-        # ~ if len(self.mapped('employee_id')) != 1:
-            # ~ raise UserError(_("You cannot report expenses for different employees in the same report."))
-        # ~ if any(not expense.product_id for expense in self):
-            # ~ raise UserError(_("You can not create report without product."))
-
-        # ~ todo = self.filtered(lambda x: x.payment_mode=='own_account') or self.filtered(lambda x: x.payment_mode=='company_account')
-        # ~ sheet = self.env['hr.expense.sheet'].create({
-            # ~ 'company_id': self.company_id.id,
-            # ~ 'employee_id': self[0].employee_id.id,
-            # ~ 'name': todo[0].name if len(todo) == 1 else '',
-            # ~ 'expense_line_ids': [(6, 0, todo.ids)]
-        # ~ })
-        # ~ return sheet
-
-
-    # ----------------------------------------
-    # ORM Overrides
-    # ----------------------------------------
-
-    
-    # ~ _logger.warning('TEST TEST TEST TEST TEST TEST')
-
-    def write(self, vals):
-        _logger.warning('robin %s %s'%(self,vals))
-        todo = self.filtered(lambda x: x.payment_mode=='employee_fund')
-        _logger.warning('robin %s'%todo)
-        for expense in todo:            
-            self.env['account.analytic.line'].create({'account_id':expense.employee_fund.id,
-                                                         'amount':expense.total_amount * -1, 'name':'test'})
-            _logger.warning('robin: %s'%expense.total_amount)
-#                    self.contract_id.employee_fund.balance = amount
-        return super(HrExpense, self).write(vals)
 
     def update_analytic_line(self):
         expense_tree = self.env.ref('hr_payroll_employeefund_expenses.quick_view_account_analytic_line_tree')
@@ -93,7 +146,7 @@ class HrExpense(models.Model):
                 ('partner_id', '=', self.employee_id.address_home_id.id),
             ],
          }
- 
+
 
 class hr_contract(models.Model):
     _inherit = 'hr.contract'
@@ -104,10 +157,10 @@ class hr_contract(models.Model):
 
     def _get_default_credit_account(self):
         return self.env['account.account'].search([('code','=','2829')])
-        
+
     def _get_default_debit_account(self):
         return self.env['account.account'].search([('code','=','7699')])
-        
+
     def create_account_move(self):
         if not self.credit_account_id or not self.debit_account_id or not self.journal_id or not self.fill_amount or not self.employee_fund:
             raise UserError(_("Kindly check if credit, debit account,Journal,Employee fund are set and the amount to fill employee fund "))
@@ -115,8 +168,8 @@ class hr_contract(models.Model):
         account_move = self.env['account.move'].create({'journal_id': self.journal_id.id})
         account_move_line.create({
             'account_id': self.credit_account_id.id,
-            'name': self.employee_id.name,
             'analytic_account_id': self.employee_fund.id,
+            'name': self.employee_id.name,
             'credit': self.fill_amount,
             'exclude_from_invoice_tab': True,
             'move_id': account_move.id,
