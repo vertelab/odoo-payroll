@@ -41,17 +41,18 @@ class HrExpenseSheet(models.Model):
             'invoice_date': fields.Datetime.now(),
             'journal_id': self.journal_id.id
             })
-            line = self.env['account.move.line'].with_context(check_move_validity=False).create({
-                'account_id': self.expense_line_ids[0].product_id.property_account_expense_id.id,
-                'name': self.expense_line_ids[0].product_id.name,
-                'tax_ids': [self.expense_line_ids[0].product_id.supplier_taxes_id.id],
-                'quantity': self.expense_line_ids[0].quantity,
-                'move_id': account_move.id,
-                'product_id': self.expense_line_ids[0].product_id.id,
-                'price_unit': self.total_amount,
-            })
+            for expense_line in self.expense_line_ids:
+                line = self.env['account.move.line'].with_context(check_move_validity=False).create({
+                    'account_id': expense_line.product_id.property_account_expense_id.id,
+                    'name': expense_line.product_id.name,
+                    'tax_ids': [expense_line.product_id.supplier_taxes_id.id],
+                    'quantity': expense_line.quantity,
+                    'move_id': account_move.id,
+                    'product_id': expense_line.product_id.id,
+                    'price_unit': expense_line.unit_amount,
+                })
+                line._onchange_mark_recompute_taxes()
             account_move._onchange_partner_id()
-            line._onchange_mark_recompute_taxes()
             account_move._recompute_dynamic_lines()
             account_move.action_post()
             self.employee_invoice_id = account_move.id
@@ -79,22 +80,27 @@ class HrExpense(models.Model):
 
     def _get_account_move_line_values(self):
         move_line_values_by_expense = super()._get_account_move_line_values()
-        if self.payment_mode == 'employee_fund':
-            keys = move_line_values_by_expense.keys()
-            for key in keys:
-                price = 0
-                new_values = []
-                for line in move_line_values_by_expense[key]:
-                    if 'tax_ids' in line.keys():
-                        price = line['debit']
-                        line['tax_ids'] = []
-                        line['account_id'] = self.employee_id.contract_id.credit_account_id.id
-                    if line['credit'] != 0:
-                        line['credit'] = price
-                        line['account_id'] = self.employee_id.contract_id.debit_account_id.id
-                    if 'tax_repartition_line_id' not in line.keys():
-                        new_values.append(line)
-                move_line_values_by_expense[key] = new_values
+        _logger.warning(f"move_line_values: {move_line_values_by_expense}")
+        keys = move_line_values_by_expense.keys()
+        for key in keys:
+            expense = self.env['hr.expense'].browse(move_line_values_by_expense[key][0]['expense_id'])
+            if expense.payment_mode != 'employee_fund':
+                return move_line_values_by_expense
+        for key in keys:
+            expense = self.env['hr.expense'].browse(move_line_values_by_expense[key][0]['expense_id'])
+            price = 0
+            new_values = []
+            for line in move_line_values_by_expense[key]:
+                if 'tax_ids' in line.keys():
+                    price = line['debit']
+                    line['tax_ids'] = []
+                    line['account_id'] = expense.employee_id.contract_id.credit_account_id.id
+                if line['credit'] != 0:
+                    line['credit'] = price
+                    line['account_id'] = expense.employee_id.contract_id.debit_account_id.id
+                if 'tax_repartition_line_id' not in line.keys():
+                    new_values.append(line)
+            move_line_values_by_expense[key] = new_values
         return move_line_values_by_expense
 
     def _create_sheet_from_expenses(self):
