@@ -25,9 +25,7 @@ class HrExpenseSheet(models.Model):
     @api.model
     def _default_journal_id(self):
         """ The journal is determining the company of the accounting entries generated from expense. We need to force journal company and expense sheet company to be the same. """
-        _logger.warning("journal"*99)
         journal = self.env['ir.config_parameter'].sudo().get_param('hr_expense.expense_journal_id', default=1)
-        _logger.warning(f"journal: {journal}")
         return journal
 
     journal_id = fields.Many2one('account.journal', string='Expense Journal', states={'done': [('readonly', True)], 'post': [('readonly', True)]}, check_company=True, domain="[('type', '=', 'purchase'), ('company_id', '=', company_id)]",
@@ -36,7 +34,6 @@ class HrExpenseSheet(models.Model):
     def action_sheet_move_create(self):
         res = super().action_sheet_move_create()
         if self.expense_line_ids[0].payment_mode == 'employee_fund':
-            _logger.warning(f"VICTOR res: {res}")
             account_move = self.env['account.move'].with_context(check_move_validity=False).create({
             'ref': self.expense_line_ids[0].reference,
             'move_type': 'in_invoice',
@@ -53,13 +50,11 @@ class HrExpenseSheet(models.Model):
                 'product_id': self.expense_line_ids[0].product_id.id,
                 'price_unit': self.total_amount,
             })
-            _logger.warning(f"WHÄÄÄ"*99)
             account_move._onchange_partner_id()
             line._onchange_mark_recompute_taxes()
             account_move._recompute_dynamic_lines()
             account_move.action_post()
-            self.employee_invoice_id = account_move.id
-            _logger.warning(account_move.read())
+            self.employee_invoice_id = account_move.id)
         return res
 
 
@@ -79,16 +74,11 @@ class HrExpense(models.Model):
     @api.onchange('employee_id', 'payment_mode')
     def _compute_analytic_account(self):
         for line in self:
-            _logger.warning("Line!")
-            _logger.warning(f"payment_mode: {line.payment_mode}")
             if line.payment_mode == 'employee_fund':
-                _logger.warning(f"True {line.employee_id.contract_id.employee_fund}")
                 line.analytic_account_id = line.employee_id.contract_id.employee_fund
 
     def _get_account_move_line_values(self):
         move_line_values_by_expense = super()._get_account_move_line_values()
-
-        _logger.warning(f"before: {move_line_values_by_expense}")
         if self.payment_mode == 'employee_fund':
             keys = move_line_values_by_expense.keys()
             for key in keys:
@@ -105,7 +95,6 @@ class HrExpense(models.Model):
                     if 'tax_repartition_line_id' not in line.keys():
                         new_values.append(line)
                 move_line_values_by_expense[key] = new_values
-        _logger.warning(f"after: {move_line_values_by_expense}")
         return move_line_values_by_expense
 
     def _create_sheet_from_expenses(self):
