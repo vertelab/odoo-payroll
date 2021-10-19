@@ -54,7 +54,7 @@ class HrExpenseSheet(models.Model):
             line._onchange_mark_recompute_taxes()
             account_move._recompute_dynamic_lines()
             account_move.action_post()
-            self.employee_invoice_id = account_move.id)
+            self.employee_invoice_id = account_move.id
         return res
 
 
