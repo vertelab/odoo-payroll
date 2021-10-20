@@ -21,6 +21,9 @@ class HrExpenseSheet(models.Model):
     _inherit = "hr.expense.sheet"
 
     employee_invoice_id = fields.Many2one('account.move', string="Employee invoice", readonly = True)
+    employee_fund = fields.Many2one(string="Employee Fund", comodel_name='account.analytic.account', help="Use this account together with marked salary rule", related='employee_id.contract_id.employee_fund')
+    employee_fund_balance = fields.Monetary(string='Balance', related='employee_fund.balance', currency_field='currency_id')
+
 
     @api.model
     def _default_journal_id(self):
@@ -29,33 +32,34 @@ class HrExpenseSheet(models.Model):
         return journal
 
     journal_id = fields.Many2one('account.journal', string='Expense Journal', states={'done': [('readonly', True)], 'post': [('readonly', True)]}, check_company=True, domain="[('type', '=', 'purchase'), ('company_id', '=', company_id)]",
-        default=_default_journal_id, help="The journal used when the expense is done.")
+        default=_default_journal_id, help="The journal used when the expense is done.", groups="hr_expense.group_hr_expense_team_approver, hr_expense.group_hr_expense_user, hr_expense.group_hr_expense_manager")
 
     def action_sheet_move_create(self):
         res = super().action_sheet_move_create()
-        if self.expense_line_ids[0].payment_mode == 'employee_fund':
-            account_move = self.env['account.move'].with_context(check_move_validity=False).create({
-            'ref': self.expense_line_ids[0].reference,
-            'move_type': 'in_invoice',
-            'partner_id': self.employee_id.address_home_id.id,
-            'invoice_date': fields.Datetime.now(),
-            'journal_id': self.journal_id.id
+        # if self.expense_line_ids[0].payment_mode == 'employee_fund':
+        account_move = self.env['account.move'].with_context(check_move_validity=False).create({
+        'ref': self.expense_line_ids[0].reference,
+        'move_type': 'in_invoice',
+        'partner_id': self.employee_id.address_home_id.id,
+        'invoice_date': fields.Datetime.now(),
+        'journal_id': self.journal_id.id
+        })
+        for expense_line in self.expense_line_ids:
+            line = self.env['account.move.line'].with_context(check_move_validity=False).create({
+                'account_id': expense_line.product_id.property_account_expense_id.id,
+                'name': expense_line.product_id.name,
+                'tax_ids': [expense_line.product_id.supplier_taxes_id.id],
+                'quantity': expense_line.quantity,
+                'move_id': account_move.id,
+                'product_id': expense_line.product_id.id,
+                'price_unit': expense_line.unit_amount,
             })
-            for expense_line in self.expense_line_ids:
-                line = self.env['account.move.line'].with_context(check_move_validity=False).create({
-                    'account_id': expense_line.product_id.property_account_expense_id.id,
-                    'name': expense_line.product_id.name,
-                    'tax_ids': [expense_line.product_id.supplier_taxes_id.id],
-                    'quantity': expense_line.quantity,
-                    'move_id': account_move.id,
-                    'product_id': expense_line.product_id.id,
-                    'price_unit': expense_line.unit_amount,
-                })
-                line._onchange_mark_recompute_taxes()
-            account_move._onchange_partner_id()
-            account_move._recompute_dynamic_lines()
-            account_move.action_post()
-            self.employee_invoice_id = account_move.id
+            line._onchange_mark_recompute_taxes()
+        account_move._onchange_partner_id()
+        account_move._recompute_dynamic_lines()
+        account_move.action_post()
+        self.employee_invoice_id = account_move.id
+        _logger.warning(f"res: {res}")
         return res
 
 
@@ -66,11 +70,16 @@ class HrExpense(models.Model):
 
     _inherit = "hr.expense"
 
-    employee_fund = fields.Many2one(string="Employee Fund",comodel_name='account.analytic.account',help="Use this account together with marked salary rule" ,related='employee_id.contract_id.employee_fund')
-    employee_fund_balance = fields.Monetary(string='Balance',related='employee_fund.balance',currency_field='currency_id')
-    employee_fund_name = fields.Char(string='Name',related='employee_fund.name')
+    employee_fund = fields.Many2one(string="Employee Fund", comodel_name='account.analytic.account', help="Use this account together with marked salary rule", related='employee_id.contract_id.employee_fund')
+    employee_fund_balance = fields.Monetary(string='Balance', related='employee_fund.balance', currency_field='currency_id')
+    employee_fund_name = fields.Char(string='Name', related='employee_fund.name')
 
     payment_mode = fields.Selection(selection_add = [("employee_fund","Kompetensutvecklingsfond")],)
+
+    @api.onchange('name')
+    def _compute_analytic_account(self):
+        for line in self:
+            line.reference = line.name
 
     @api.onchange('employee_id', 'payment_mode')
     def _compute_analytic_account(self):
