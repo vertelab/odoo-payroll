@@ -8,6 +8,7 @@ import logging
 from odoo import models, fields, api, _
 from odoo.exceptions import Warning
 from odoo.tools import email_split, float_is_zero
+import datetime
 
 _logger = logging.getLogger(__name__)
 
@@ -98,12 +99,7 @@ class HrExpenseSheet(models.Model):
             self.employee_invoice_id = account_move.id
         return res
 
-
-
-
-
 class HrExpense(models.Model):
-
     _inherit = "hr.expense"
 
     employee_fund = fields.Many2one(string="Employee Fund", comodel_name='account.analytic.account', help="Use this account together with marked salary rule", related='employee_id.contract_id.employee_fund')
@@ -115,7 +111,7 @@ class HrExpense(models.Model):
     @api.onchange('name')
     def _compute_reference(self):
         for line in self:
-            line.reference = line.name
+            line.reference = f"{line.name}_{datetime.datetime.now()}"
 
     @api.onchange('employee_id', 'payment_mode')
     def _compute_analytic_account(self):
