@@ -77,7 +77,14 @@ class attendanceReport(http.Controller):
 
     @http.route(['/hr/attendance'], type='http', auth="user", website=True)
     def attendance(self, employees=None, **post):
-        return request.website.render("hr_attendance_terminal.hr_attendance_form", {'employees': request.env['hr.employee'].search([('active', '=', True), ('id', '!=', request.env.ref('hr.employee').id)]),})
+        employee_dict = {'employees': request.env['hr.employee'].search(
+           [
+              ('active', '=', True), 
+              ('id', '!=', request.env.ref('hr.employee').id),
+              ('exclude_on_punchclock', '=', False)
+           ]
+        ),}
+        return request.website.render("hr_attendance_terminal.hr_attendance_form", employee_dict)
 
     @http.route(['/hr/attendance/employees_number'], type='json', auth="user", website=True)
     def number_employees(self, **kw):

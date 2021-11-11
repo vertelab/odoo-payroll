@@ -74,6 +74,11 @@ msgid "Employee"
 msgstr "Anställd"
 
 #. module: hr_attendance_terminal
+#: field:hr.employee,exclude_on_punchclock:0
+msgid "Exclude on punchclock"
+msgstr "Visa inte i stämpelklockan"
+
+#. module: hr_attendance_terminal
 #. openerp-web
 #: code:addons/hr_attendance_terminal/static/src/js/attendance.js:187
 #, python-format

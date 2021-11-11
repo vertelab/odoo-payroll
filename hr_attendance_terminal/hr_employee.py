@@ -28,6 +28,7 @@ class hr_employee(models.Model):
     _inherit = 'hr.employee'
 
     rfid = fields.Char(string='RFID')
+    exclude_on_punchclock = fields.Boolean(string=None)
 
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -9,6 +9,11 @@
                 <field name="user_id" position="after">
                     <field name="rfid"/>
                 </field>
+                <xpath expr="//page[1]/group[1]/group[3]" position="after">
+                    <group>
+                        <field name="exclude_on_punchclock"/>
+                    </group>
+                </xpath>
             </field>
         </record>
         <record id="view_partner_tree2" model="ir.ui.view">
