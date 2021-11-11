@@ -67,7 +67,7 @@
         <record id="hr_contract_employeefund" model="ir.ui.view">
             <field name="name">hr_contract_employeefund</field>
             <field name="model">hr.contract</field>
-            <field name="inherit_id" ref="hr_payroll_account.hr_contract_form_inherit" />
+            <field name="inherit_id" ref="hr_payroll_account_community_fixed.hr_contract_form_inherit" />
             <field name="arch" type="xml">
                 <xpath expr="//group/group[last()]" position="after">
                     <group string="Kompetensutvecklingsfond">
