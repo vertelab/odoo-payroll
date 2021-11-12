@@ -57,7 +57,7 @@ class HrExpenseSheet(models.Model):
 
         if any(not sheet.journal_id for sheet in self):
             raise UserError(_("Expenses must have an expense journal specified to generate accounting entries."))
-        self.accounting_date = fields.datetime.now()
+
         for sheet in self.filtered(lambda s: not s.accounting_date):
             sheet.accounting_date = sheet.account_move_id.date
         to_post = self.filtered(lambda sheet: sheet.payment_mode == 'own_account' and sheet.expense_line_ids)
@@ -111,7 +111,10 @@ class HrExpense(models.Model):
     @api.onchange('name')
     def _compute_reference(self):
         for line in self:
-            line.reference = f"{line.name} - {datetime.datetime.now():%Y-%m-%d %H:%M}"
+      
+            _logger.warning(f"{line.name}_{datetime.datetime.now()}")
+
+            line.reference = f"line.name_{datetime.datetime.now()}"
 
     @api.onchange('employee_id', 'payment_mode')
     def _compute_analytic_account(self):
