@@ -134,7 +134,7 @@ class HrExpenseSheet(models.Model):
                     'type': 'ir.actions.act_window',
                 }
             else:
-                super().action_register_payment()
+                return super().action_register_payment()
 
 
 class HrExpense(models.Model):
