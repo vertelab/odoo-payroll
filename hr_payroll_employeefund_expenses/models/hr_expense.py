@@ -37,13 +37,6 @@ class HrExpenseSheet(models.Model):
 
     def action_sheet_move_create(self):
         # if self.expense_line_ids[0].payment_mode == 'employee_fund':
-
-
-
-
-
-
-
         samples = self.mapped('expense_line_ids.sample')
         if samples.count(True):
             if samples.count(False):
@@ -83,7 +76,7 @@ class HrExpenseSheet(models.Model):
                 'price_unit': expense_line.unit_amount,
             })
             line._onchange_mark_recompute_taxes()
-        account_move._onchange_partner_id()
+        #account_move._onchange_partner_id()
         account_move._recompute_dynamic_lines()
         account_move.action_post()
         res = {}
@@ -99,6 +92,57 @@ class HrExpenseSheet(models.Model):
         return res
 
 
+    @api.depends(
+    'currency_id',
+    'account_move_id.line_ids.amount_residual',
+    'account_move_id.line_ids.amount_residual_currency',
+    'account_move_id.line_ids.account_internal_type',
+    'employee_invoice_id.line_ids.amount_residual',
+    'employee_invoice_id.line_ids.amount_residual_currency',
+    'employee_invoice_id.line_ids.account_internal_type',)
+    def _compute_amount_residual(self):
+        for record in self:
+            if record.payment_mode == "employee_fund":
+                _logger.warning("my _compute_amount_residual")
+                for sheet in self:
+                    if sheet.currency_id == sheet.company_id.currency_id:
+                        residual_field = 'amount_residual'
+                    else:
+                        residual_field = 'amount_residual_currency'
+                    _logger.warning(f"residual before:{sheet.amount_residual}")
+                    payment_term_lines = sheet.employee_invoice_id.line_ids.filtered(lambda line: line.account_internal_type in ('receivable', 'payable'))
+                    sheet.amount_residual = -sum(payment_term_lines.mapped(residual_field))
+                    _logger.warning(f"residual after:{sheet.amount_residual}")
+                    if record.state != "cancel" and record.employee_invoice_id:
+                        if sheet.amount_residual  > 0:
+                            record.state = "post"
+                        else:
+                            record.state = "done"
+            else:
+                    super()._compute_amount_residual()
+        
+
+
+    def action_register_payment(self):
+        ''' Open the account.payment.register wizard to pay the selected journal entries.
+        :return: An action opening the account.payment.register wizard.
+        '''
+        for record in self:
+            if record.payment_mode == "employee_fund":
+                _logger.warning("my _compute_amount_residual")
+                return {
+                    'name': _('Register Payment'),
+                    'res_model': 'account.payment.register',
+                    'view_mode': 'form',
+                    'context': {
+                        'active_model': 'account.move',
+                        'active_ids': self.employee_invoice_id.ids,
+                    },
+                    'target': 'new',
+                    'type': 'ir.actions.act_window',
+                }
+            else:
+                super().action_register_payment()
 
 
 
