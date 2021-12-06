@@ -81,7 +81,6 @@ class HrExpenseSheet(models.Model):
         account_move.action_post()
         res = {}
         if self.expense_line_ids[0].payment_mode != 'employee_fund':
-            _logger.warning(f"happens")
             self.account_move_id = account_move.id
             res[self.id] = account_move
         else:
@@ -103,16 +102,13 @@ class HrExpenseSheet(models.Model):
     def _compute_amount_residual(self):
         for record in self:
             if record.payment_mode == "employee_fund":
-                _logger.warning("my _compute_amount_residual")
                 for sheet in self:
                     if sheet.currency_id == sheet.company_id.currency_id:
                         residual_field = 'amount_residual'
                     else:
                         residual_field = 'amount_residual_currency'
-                    _logger.warning(f"residual before:{sheet.amount_residual}")
                     payment_term_lines = sheet.employee_invoice_id.line_ids.filtered(lambda line: line.account_internal_type in ('receivable', 'payable'))
                     sheet.amount_residual = -sum(payment_term_lines.mapped(residual_field))
-                    _logger.warning(f"residual after:{sheet.amount_residual}")
                     if record.state != "cancel" and record.employee_invoice_id:
                         if sheet.amount_residual  > 0:
                             record.state = "post"
@@ -129,7 +125,6 @@ class HrExpenseSheet(models.Model):
         '''
         for record in self:
             if record.payment_mode == "employee_fund":
-                _logger.warning("my _compute_amount_residual")
                 return {
                     'name': _('Register Payment'),
                     'res_model': 'account.payment.register',
@@ -169,7 +164,6 @@ class HrExpense(models.Model):
 
     def _get_account_move_line_values(self):
         move_line_values_by_expense = super()._get_account_move_line_values()
-        _logger.warning(f"move_line_values: {move_line_values_by_expense}")
         keys = move_line_values_by_expense.keys()
         for key in keys:
             expense = self.env['hr.expense'].browse(move_line_values_by_expense[key][0]['expense_id'])
