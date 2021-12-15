@@ -10,7 +10,7 @@
             <field name="domain_force">[('employee_id.address_home_id','=',user.partner_id.id)]</field>
             <field name="groups" eval="[(4, ref('group_contract_holder'))]"/>
             <field name="perm_read" eval="True"/>
-            <field name="perm_create" eval="True"/>
+            <field name="perm_create" eval="False"/>
             <field name="perm_unlink" eval="False"/>
             <field name="perm_write" eval="False"/>
             <field name="global" eval="False"/>       <!-- To set a rule as global -->

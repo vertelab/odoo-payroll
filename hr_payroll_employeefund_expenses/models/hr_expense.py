@@ -41,7 +41,6 @@ class HrExpenseSheet(models.Model):
         default=_default_journal_id, help="The journal used when the expense is done.")
 
     def approve_expense_sheets(self):
-        _logger.warning("approval lol")
         if self.expense_line_ids[0].date:
             date = self.expense_line_ids[0].date
         else:
@@ -178,7 +177,7 @@ class HrExpense(models.Model):
     
     def action_submit_expenses(self):
         _logger.warning(f"action_submit_expenses {self.attachment_reciept_should_be_warned}")    
-        if self.attachment_reciept_should_be_warned and self.payment_mode == "employee_fund" and self.attachment_number == 0:
+        if self.attachment_reciept_should_be_warned and self.attachment_number == 0:
                 self.write({"attachment_reciept_should_be_warned": False})
                 self.env.cr.commit()
                 raise UserError(_("Warning! \nYou tried to send a report without a reciept, you probably want to add one but you can still submit after this warning since you only get this warning once."))
