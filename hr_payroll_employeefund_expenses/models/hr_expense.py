@@ -25,6 +25,11 @@ class HrExpenseSheet(models.Model):
     employee_invoice_id = fields.Many2one('account.move', string="Employee invoice", readonly = True)
     employee_fund = fields.Many2one(string="Employee Fund", comodel_name='account.analytic.account', help="Use this account together with marked salary rule", related='employee_id.contract_id.employee_fund')
     employee_fund_balance = fields.Monetary(string='Balance', related='employee_fund.balance', currency_field='currency_id')
+    
+    @api.onchange('name')
+    def _compute_reference(self):
+        for line in self:
+            line.reference = f"{line.name} - {datetime.datetime.now():%Y-%m-%d %H:%M}"
 
     @api.model
     def _default_journal_id(self):
@@ -35,6 +40,15 @@ class HrExpenseSheet(models.Model):
     journal_id = fields.Many2one('account.journal', string='Expense Journal', states={'done': [('readonly', True)], 'post': [('readonly', True)]}, check_company=True, domain="[('type', '=', 'purchase'), ('company_id', '=', company_id)]",
         default=_default_journal_id, help="The journal used when the expense is done.")
 
+    def approve_expense_sheets(self):
+        _logger.warning("approval lol")
+        if self.expense_line_ids[0].date:
+            date = self.expense_line_ids[0].date
+        else:
+            date = fields.Datetime.now()    
+        self.accounting_date = date
+        super().approve_expense_sheets()
+        
     def action_sheet_move_create(self):
         # if self.expense_line_ids[0].payment_mode == 'employee_fund':
         samples = self.mapped('expense_line_ids.sample')
@@ -49,7 +63,7 @@ class HrExpenseSheet(models.Model):
 
         if any(not sheet.journal_id for sheet in self):
             raise UserError(_("Expenses must have an expense journal specified to generate accounting entries."))
-        self.accounting_date = fields.datetime.now()
+            
         for sheet in self.filtered(lambda s: not s.accounting_date):
             sheet.accounting_date = sheet.account_move_id.date
         to_post = self.filtered(lambda sheet: sheet.payment_mode == 'own_account' and sheet.expense_line_ids)
@@ -57,12 +71,16 @@ class HrExpenseSheet(models.Model):
         (self - to_post).write({'state': 'done'})
         self.activity_update()
 
-
+        if self.expense_line_ids[0].date:
+            date = self.expense_line_ids[0].date
+        else:
+            date = fields.Datetime.now()    
         account_move = self.env['account.move'].with_context(check_move_validity=False).create({
         'ref': self.expense_line_ids[0].reference,
         'move_type': 'in_invoice',
         'partner_id': self.employee_id.address_home_id.id,
-        'invoice_date': fields.Datetime.now(),
+        'date': date,
+        'invoice_date': date,
         'journal_id': self.journal_id.id
         })
         for expense_line in self.expense_line_ids:
@@ -135,6 +153,18 @@ class HrExpenseSheet(models.Model):
                 }
             else:
                 return super().action_register_payment()
+        
+    @api.onchange('expense_line_ids')
+    def _compute_same_date_used(self):
+        first_date = False
+        for sheet in self:
+            for line in sheet.expense_line_ids:
+                if line.date and not first_date:
+                    first_date = line.date
+                if line.date != first_date:
+                    raise UserError(_("All expense products do not have the same expense date. If you want to register expenses from different dates, please create separate expense reports"))
+
+
 
 
 class HrExpense(models.Model):
@@ -143,9 +173,17 @@ class HrExpense(models.Model):
     employee_fund = fields.Many2one(string="Employee Fund", comodel_name='account.analytic.account', help="Use this account together with marked salary rule", related='employee_id.contract_id.employee_fund')
     employee_fund_balance = fields.Monetary(string='Balance', related='employee_fund.balance', currency_field='currency_id')
     employee_fund_name = fields.Char(string='Name', related='employee_fund.name')
-
     payment_mode = fields.Selection(selection_add = [("employee_fund","Kompetensutvecklingsfond")],)
-
+    attachment_reciept_should_be_warned = fields.Boolean(string='If should be given a warning, is given once', default = True)
+    
+    def action_submit_expenses(self):
+        _logger.warning(f"action_submit_expenses {self.attachment_reciept_should_be_warned}")    
+        if self.attachment_reciept_should_be_warned and self.payment_mode == "employee_fund" and self.attachment_number == 0:
+                self.write({"attachment_reciept_should_be_warned": False})
+                self.env.cr.commit()
+                raise UserError(_("Warning! \nYou tried to send a report without a reciept, you probably want to add one but you can still submit after this warning since you only get this warning once."))
+        return super().action_submit_expenses()
+        
     @api.onchange('name')
     def _compute_reference(self):
         for line in self:
@@ -227,6 +265,7 @@ class hr_contract(models.Model):
     credit_account_id = fields.Many2one('account.account', string="Credit Account", default=lambda self: self._get_default_credit_account())
     debit_account_id = fields.Many2one('account.account', string="Debit Account", default=lambda self: self._get_default_debit_account())
     fill_amount = fields.Float(string="Fill Amount", Store=False)
+    employee_fund_journal_id = fields.Many2one('account.journal', string="Employeefund Journal")
 
     def _get_default_credit_account(self):
         return self.env['account.account'].search([('code','=','2829')])
@@ -235,10 +274,10 @@ class hr_contract(models.Model):
         return self.env['account.account'].search([('code','=','7699')])
 
     def create_account_move(self):
-        if not self.credit_account_id or not self.debit_account_id or not self.journal_id or not self.fill_amount or not self.employee_fund:
-            raise UserError(_("Kindly check if credit, debit account,Journal,Employee fund are set and the amount to fill employee fund "))
+        if not self.credit_account_id or not self.debit_account_id or not self.employee_fund_journal_id or not self.fill_amount or not self.employee_fund:
+            raise UserError(_("Kindly check if credit, debit account, Employeefund Journal, Employee fund are set and the amount to fill employee fund "))
         account_move_line = self.env['account.move.line'].with_context(check_move_validity=False)
-        account_move = self.env['account.move'].create({'journal_id': self.journal_id.id})
+        account_move = self.env['account.move'].create({'journal_id': self.employee_fund_journal_id.id})
         account_move_line.create({
             'account_id': self.credit_account_id.id,
             'analytic_account_id': self.employee_fund.id,

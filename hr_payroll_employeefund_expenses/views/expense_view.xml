@@ -39,6 +39,14 @@
             <field name="model">hr.expense.sheet</field>
             <field name="inherit_id" ref="hr_expense.view_hr_expense_sheet_form" />
             <field name="arch" type="xml">
+                <field name="expense_line_ids" position="attributes">
+<!--
+                      <attribute name="invisible">0</attribute>
+-->
+                      <attribute name="attrs">
+                        {'readonly': [('state', '!=', 'draft')]}
+                      </attribute>
+                </field>
                 <field name="account_move_id" position="after">
                     <field name="employee_invoice_id" attrs="{'invisible': [('payment_mode', '!=', 'employee_fund')], }" />
                 </field>
@@ -73,6 +81,7 @@
                     <group string="Kompetensutvecklingsfond">
                         <field name="credit_account_id"/>
                         <field name="debit_account_id"/>
+                        <field name="employee_fund_journal_id"/>
                         <label for="employee_fund" />
                         <div>
                             <field name="employee_fund" />

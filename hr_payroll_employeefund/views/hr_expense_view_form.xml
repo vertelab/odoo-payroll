@@ -1,0 +1,17 @@
+<odoo>
+    <data>
+        <record id="hr_expense_view_form_inherit" model="ir.ui.view">
+            <field name="name">hr_expense_view_form_inherit</field>
+            <field name="model">hr.expense</field>
+            <field name="inherit_id" ref="hr_expense.hr_expense_view_form" />
+            <field name="arch" type="xml">
+                    <xpath expr="//field[@name='analytic_account_id']" position="replace">
+                            <field name="analytic_account_id" domain="['|', ('company_id', '=', company_id), ('company_id', '=', False)]" groups="account.group_account_manager" attrs="{'readonly': [('is_editable', '=', False)]}"/>
+                    </xpath>
+                    <xpath expr="//field[@name='reference']" position="replace">
+                            <field name="reference" attrs="{'readonly': [('is_ref_editable', '=', False)]}" groups="account.group_account_manager"/>
+                    </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
