@@ -35,6 +35,7 @@ Financed by Dermanord-Svensk Hudvård AB
 'data': ['payslip_view.xml',
             'security/security.xml',
             'views/hr_expense_view_form.xml',
+            'security/ir.model.access.csv',
             ],
 'installable': True,
 }

@@ -71,7 +71,7 @@ class HrExpenseSheet(models.Model):
         self.activity_update()
 
         if self.expense_line_ids[0].date:
-            date = self.expense_line_ids[0].date
+            date = self.accounting_date
         else:
             date = fields.Datetime.now()    
         account_move = self.env['account.move'].with_context(check_move_validity=False).create({
