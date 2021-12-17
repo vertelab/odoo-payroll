@@ -18,6 +18,17 @@ class ResConfigSettings(models.TransientModel):
 
     expense_journal_id = fields.Many2one('account.journal', string='Default Expense Journal', default_model = 'account.journal', config_parameter='hr_expense.expense_journal_id')
 
+#Adding the group portal_read_own_contract to the groups in the contract_id field
+class hr_employee(models.Model):
+    _inherit = 'hr.employee.public'
+    contract_id = fields.Many2one('hr.contract', string='Current Contract',
+        groups="hr.group_hr_user,hr_payroll_employeefund.group_contract_holder",domain="[('company_id', '=', company_id)]", help='Current contract of the employee')
+
+class HrEmployee(models.Model):
+    _inherit = "hr.employee"
+    #Adding the group portal_read_own_contract to the groups in the contract_id field
+    contract_id = fields.Many2one('hr.contract', string='Current Contract',
+        groups="hr.group_hr_user,hr_payroll_employeefund.group_contract_holder",domain="[('company_id', '=', company_id)]", help='Current contract of the employee')
 
 class HrExpenseSheet(models.Model):
     _inherit = "hr.expense.sheet"
