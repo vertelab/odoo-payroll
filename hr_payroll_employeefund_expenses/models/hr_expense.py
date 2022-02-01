@@ -26,10 +26,11 @@ class HrExpenseSheet(models.Model):
     employee_fund = fields.Many2one(string="Employee Fund", comodel_name='account.analytic.account', help="Use this account together with marked salary rule", related='employee_id.contract_id.employee_fund')
     employee_fund_balance = fields.Monetary(string='Balance', related='employee_fund.balance', currency_field='currency_id')
     
-    @api.onchange('name')
-    def _compute_reference(self):
-        for line in self:
-            line.reference = f"{line.name} - {datetime.datetime.now():%Y-%m-%d %H:%M}"
+    #@api.onchange('name')
+    #def _compute_reference(self):
+    #    for line in self:
+    #         _logger.warning(line)
+             #line.reference = f"{line.name} - {datetime.datetime.now():%Y-%m-%d %H:%M}"
 
     @api.model
     def _default_journal_id(self):
@@ -62,7 +63,7 @@ class HrExpenseSheet(models.Model):
 
         if any(not sheet.journal_id for sheet in self):
             raise UserError(_("Expenses must have an expense journal specified to generate accounting entries."))
-            
+
         for sheet in self.filtered(lambda s: not s.accounting_date):
             sheet.accounting_date = sheet.account_move_id.date
         to_post = self.filtered(lambda sheet: sheet.payment_mode == 'own_account' and sheet.expense_line_ids)
@@ -80,7 +81,7 @@ class HrExpenseSheet(models.Model):
         'partner_id': self.employee_id.address_home_id.id,
         'date': date,
         'invoice_date': date,
-        'journal_id': self.journal_id.id
+        'journal_id': self.journal_id.id,
         })
         for expense_line in self.expense_line_ids:
             line = self.env['account.move.line'].with_context(check_move_validity=False).create({
@@ -103,7 +104,7 @@ class HrExpenseSheet(models.Model):
         else:
             expense_line_ids = self.mapped('expense_line_ids')\
                 .filtered(lambda r: not float_is_zero(r.total_amount, precision_rounding=(r.currency_id or self.env.company.currency_id).rounding))
-            res = expense_line_ids.action_move_create()
+            res = expense_line_ids.action_move_create_journal(self.employee_id.contract_id.employee_fund_journal_id.id,self.expense_line_ids[0].reference)
             self.employee_invoice_id = account_move.id
         return res
         
@@ -175,14 +176,65 @@ class HrExpense(models.Model):
     payment_mode = fields.Selection(selection_add = [("employee_fund","Kompetensutvecklingsfond")],)
     attachment_reciept_should_be_warned = fields.Boolean(string='If should be given a warning, is given once', default = True)
     
-    def action_submit_expenses(self):
-        _logger.warning(f"action_submit_expenses {self.attachment_reciept_should_be_warned}")    
-        if self.attachment_reciept_should_be_warned and self.attachment_number == 0:
-                self.write({"attachment_reciept_should_be_warned": False})
-                self.env.cr.commit()
-                raise UserError(_("Warning! \nYou tried to send a report without a reciept, you probably want to add one but you can still submit after this warning since you only get this warning once."))
-        return super().action_submit_expenses()
-        
+    def action_move_create_journal(self, journal, reference):
+        '''
+        main function that is called when trying to create the accounting entries related to an expense
+        '''
+        move_group_by_sheet = self._get_account_move_by_sheet()
+
+        move_line_values_by_expense = self._get_account_move_line_values()
+
+        for expense in self:
+            company_currency = expense.company_id.currency_id
+            different_currency = expense.currency_id != company_currency
+
+            # get the account move of the related sheet
+            move = move_group_by_sheet[expense.sheet_id.id]
+
+            #It a timing issue where the move needs to be created but not posted yet, since after it has been posted we're no longer allowed to change the journal
+            move.journal_id = journal # This function is overriden so that can set a journal here so that when it is an employee fund expense then we can set the
+            #journal to the same as the contracts employee_fund journal on account_move id on the expense.sheet. If confused ask me (Marcus).
+            move.ref = reference #Also to set the ref
+
+            # get move line values
+            move_line_values = move_line_values_by_expense.get(expense.id)
+            move_line_dst = move_line_values[-1]
+            total_amount = move_line_dst['debit'] or -move_line_dst['credit']
+            total_amount_currency = move_line_dst['amount_currency']
+
+            # create one more move line, a counterline for the total on payable account
+            if expense.payment_mode == 'company_account':
+                if not expense.sheet_id.bank_journal_id.default_account_id:
+                    raise UserError(_("No account found for the %s journal, please configure one.") % (expense.sheet_id.bank_journal_id.name))
+                journal = expense.sheet_id.bank_journal_id
+                # create payment
+                payment_methods = journal.outbound_payment_method_ids if total_amount < 0 else journal.inbound_payment_method_ids
+                journal_currency = journal.currency_id or journal.company_id.currency_id
+                payment = self.env['account.payment'].create({
+                    'payment_method_id': payment_methods and payment_methods[0].id or False,
+                    'payment_type': 'outbound' if total_amount < 0 else 'inbound',
+                    'partner_id': expense.employee_id.sudo().address_home_id.commercial_partner_id.id,
+                    'partner_type': 'supplier',
+                    'journal_id': journal.id,
+                    'date': expense.date,
+                    'currency_id': expense.currency_id.id if different_currency else journal_currency.id,
+                    'amount': abs(total_amount_currency) if different_currency else abs(total_amount),
+                    'ref': expense.name,
+                })
+
+            # link move lines to move, and move to expense sheet
+            move.write({'line_ids': [(0, 0, line) for line in move_line_values]})
+            expense.sheet_id.write({'account_move_id': move.id})
+
+            if expense.payment_mode == 'company_account':
+                expense.sheet_id.paid_expense_sheets()
+
+        # post the moves
+        for move in move_group_by_sheet.values():
+            move._post()
+
+        return move_group_by_sheet
+
     @api.onchange('name')
     def _compute_reference(self):
         for line in self:

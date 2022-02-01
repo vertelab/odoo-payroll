@@ -31,7 +31,11 @@
                 <field name="company_id" position="after">
                     <field name="employee_fund_balance" attrs="{'invisible': [('payment_mode', '!=', 'employee_fund')], }" />
                 </field>
+                <button name="action_submit_expenses" type="object" class="o_expense_submit" attrs="{'invisible': ['|', ('attachment_number', '&gt;=', 1), ('sheet_id', '!=', False)]}" position="replace">
+                   <button name="action_submit_expenses" confirm="Are you sure you mant to submit without adding a receipt"  string="Create Report" type="object" class="o_expense_submit" attrs="{'invisible': ['|', ('attachment_number', '&gt;=', 1), ('sheet_id', '!=', False)]}"/> 
+               </button>
             </field>
+            
         </record>
 
         <record id="hr_expense_sheet_view_form_inherit" model="ir.ui.view">
