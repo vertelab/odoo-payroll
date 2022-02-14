@@ -47,7 +47,7 @@ msgstr "Är du säker på att du vill skicka in utan att lägga till ett kvitto?
 #: model:ir.model.fields,field_description:hr_payroll_employeefund_expenses.field_hr_expense__employee_fund_balance
 #: model:ir.model.fields,field_description:hr_payroll_employeefund_expenses.field_hr_expense_sheet__employee_fund_balance
 msgid "Balance"
-msgstr "Saldo"
+msgstr "Kompetensutvecklingsfondens saldo"
 
 #. module: hr_payroll_employeefund_expenses
 #: model:ir.model,name:hr_payroll_employeefund_expenses.model_res_config_settings
@@ -68,12 +68,12 @@ msgstr "Skapa rapport"
 #. module: hr_payroll_employeefund_expenses
 #: model:ir.model.fields,field_description:hr_payroll_employeefund_expenses.field_hr_contract__credit_account_id
 msgid "Credit Account"
-msgstr "Kredit-konto"
+msgstr "Kredit konto"
 
 #. module: hr_payroll_employeefund_expenses
 #: model:ir.model.fields,field_description:hr_payroll_employeefund_expenses.field_hr_contract__debit_account_id
 msgid "Debit Account"
-msgstr "Debet-konto"
+msgstr "Debet konto"
 
 #. module: hr_payroll_employeefund_expenses
 #: model:ir.model.fields,field_description:hr_payroll_employeefund_expenses.field_res_config_settings__expense_journal_id
@@ -108,7 +108,7 @@ msgstr "Anställds faktura"
 #. module: hr_payroll_employeefund_expenses
 #: model:ir.model.fields,field_description:hr_payroll_employeefund_expenses.field_hr_contract__employee_fund_journal_id
 msgid "Employeefund Journal"
-msgstr "Kompetensutvecklingsfondens journal"
+msgstr "Journal för kompetensutvecklingsfond"
 
 #. module: hr_payroll_employeefund_expenses
 #: model:ir.model,name:hr_payroll_employeefund_expenses.model_hr_expense
@@ -188,7 +188,7 @@ msgstr "Senast redigerad den"
 msgid "Name"
 msgstr "Namn"
 
-#. module: hr_payroll_employeefund_expenses
+#. module: hr_payroll_employeefund_xpenses
 #: code:addons/hr_payroll_employeefund_expenses/models/hr_expense.py:0
 #, python-format
 msgid "No account found for the %s journal, please configure one."
