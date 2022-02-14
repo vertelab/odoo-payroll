@@ -41,7 +41,7 @@ msgstr "Objektposter"
 #. module: hr_payroll_employeefund_expenses
 #: model_terms:ir.ui.view,arch_db:hr_payroll_employeefund_expenses.hr_expense_view_form_inherit
 msgid "Are you sure you mant to submit without adding a receipt"
-msgstr "Är du säker på att du vill skicka in utan att lägga till ett kvitto?"
+msgstr "Är du säker på att du vill skapa rapporten utan att lägga till ett kvitto?"
 
 #. module: hr_payroll_employeefund_expenses
 #: model:ir.model.fields,field_description:hr_payroll_employeefund_expenses.field_hr_expense__employee_fund_balance
