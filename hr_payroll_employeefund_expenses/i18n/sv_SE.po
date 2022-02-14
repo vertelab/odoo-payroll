@@ -1,0 +1,233 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* hr_payroll_employeefund_expenses
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 14.0-20210312\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-02-14 09:36+0000\n"
+"PO-Revision-Date: 2022-02-14 10:36+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: sv\n"
+"X-Generator: Poedit 2.3\n"
+
+#. module: hr_payroll_employeefund_expenses
+#: model_terms:ir.ui.view,arch_db:hr_payroll_employeefund_expenses.hr_contract_employeefund
+msgid "&amp;nbsp;"
+msgstr ""
+
+#. module: hr_payroll_employeefund_expenses
+#: code:addons/hr_payroll_employeefund_expenses/models/hr_expense.py:0
+#, python-format
+msgid ""
+"All expense products do not have the same expense date. If you want to "
+"register expenses from different dates, please create separate expense "
+"reports"
+msgstr ""
+
+#. module: hr_payroll_employeefund_expenses
+#: model_terms:ir.ui.view,arch_db:hr_payroll_employeefund_expenses.quick_view_account_analytic_line_tree
+msgid "Analytic Entries"
+msgstr "Objektposter"
+
+#. module: hr_payroll_employeefund_expenses
+#: model_terms:ir.ui.view,arch_db:hr_payroll_employeefund_expenses.hr_expense_view_form_inherit
+msgid "Are you sure you mant to submit without adding a receipt"
+msgstr ""
+
+#. module: hr_payroll_employeefund_expenses
+#: model:ir.model.fields,field_description:hr_payroll_employeefund_expenses.field_hr_expense__employee_fund_balance
+#: model:ir.model.fields,field_description:hr_payroll_employeefund_expenses.field_hr_expense_sheet__employee_fund_balance
+msgid "Balance"
+msgstr "Saldo"
+
+#. module: hr_payroll_employeefund_expenses
+#: model:ir.model,name:hr_payroll_employeefund_expenses.model_res_config_settings
+msgid "Config Settings"
+msgstr "Konfigurationsinställningar"
+
+#. module: hr_payroll_employeefund_expenses
+#: code:addons/hr_payroll_employeefund_expenses/models/hr_expense.py:0
+#, python-format
+msgid "Cost and Revenue"
+msgstr ""
+
+#. module: hr_payroll_employeefund_expenses
+#: model_terms:ir.ui.view,arch_db:hr_payroll_employeefund_expenses.hr_expense_view_form_inherit
+msgid "Create Report"
+msgstr ""
+
+#. module: hr_payroll_employeefund_expenses
+#: model:ir.model.fields,field_description:hr_payroll_employeefund_expenses.field_hr_contract__credit_account_id
+msgid "Credit Account"
+msgstr ""
+
+#. module: hr_payroll_employeefund_expenses
+#: model:ir.model.fields,field_description:hr_payroll_employeefund_expenses.field_hr_contract__debit_account_id
+msgid "Debit Account"
+msgstr ""
+
+#. module: hr_payroll_employeefund_expenses
+#: model:ir.model.fields,field_description:hr_payroll_employeefund_expenses.field_res_config_settings__expense_journal_id
+#: model_terms:ir.ui.view,arch_db:hr_payroll_employeefund_expenses.hr_expense_menu_settings_inherit
+msgid "Default Expense Journal"
+msgstr ""
+
+#. module: hr_payroll_employeefund_expenses
+#: model:ir.model.fields,field_description:hr_payroll_employeefund_expenses.field_hr_contract__display_name
+#: model:ir.model.fields,field_description:hr_payroll_employeefund_expenses.field_hr_expense__display_name
+#: model:ir.model.fields,field_description:hr_payroll_employeefund_expenses.field_hr_expense_sheet__display_name
+#: model:ir.model.fields,field_description:hr_payroll_employeefund_expenses.field_res_config_settings__display_name
+msgid "Display Name"
+msgstr "Visningsnamn"
+
+#. module: hr_payroll_employeefund_expenses
+#: model:ir.model,name:hr_payroll_employeefund_expenses.model_hr_contract
+msgid "Employee Contract"
+msgstr ""
+
+#. module: hr_payroll_employeefund_expenses
+#: model:ir.model.fields,field_description:hr_payroll_employeefund_expenses.field_hr_expense__employee_fund
+#: model:ir.model.fields,field_description:hr_payroll_employeefund_expenses.field_hr_expense_sheet__employee_fund
+msgid "Employee Fund"
+msgstr "Kompetensutvecklingsfond"
+
+#. module: hr_payroll_employeefund_expenses
+#: model:ir.model.fields,field_description:hr_payroll_employeefund_expenses.field_hr_expense_sheet__employee_invoice_id
+msgid "Employee invoice"
+msgstr ""
+
+#. module: hr_payroll_employeefund_expenses
+#: model:ir.model.fields,field_description:hr_payroll_employeefund_expenses.field_hr_contract__employee_fund_journal_id
+msgid "Employeefund Journal"
+msgstr ""
+
+#. module: hr_payroll_employeefund_expenses
+#: model:ir.model,name:hr_payroll_employeefund_expenses.model_hr_expense
+msgid "Expense"
+msgstr "Utlägg"
+
+#. module: hr_payroll_employeefund_expenses
+#: model:ir.model.fields,field_description:hr_payroll_employeefund_expenses.field_hr_expense_sheet__journal_id
+msgid "Expense Journal"
+msgstr "Utläggsjournal"
+
+#. module: hr_payroll_employeefund_expenses
+#: model:ir.model,name:hr_payroll_employeefund_expenses.model_hr_expense_sheet
+msgid "Expense Report"
+msgstr "Utläggsrapport"
+
+#. module: hr_payroll_employeefund_expenses
+#: code:addons/hr_payroll_employeefund_expenses/models/hr_expense.py:0
+#, python-format
+msgid ""
+"Expenses must have an expense journal specified to generate accounting "
+"entries."
+msgstr ""
+
+#. module: hr_payroll_employeefund_expenses
+#: model:ir.model.fields,field_description:hr_payroll_employeefund_expenses.field_hr_contract__fill_amount
+#: model_terms:ir.ui.view,arch_db:hr_payroll_employeefund_expenses.hr_contract_employeefund
+msgid "Fill Amount"
+msgstr ""
+
+#. module: hr_payroll_employeefund_expenses
+#: model_terms:ir.ui.view,arch_db:hr_payroll_employeefund_expenses.hr_contract_employeefund
+msgid "Fill Employee Fund"
+msgstr ""
+
+#. module: hr_payroll_employeefund_expenses
+#: model:ir.model.fields,field_description:hr_payroll_employeefund_expenses.field_hr_contract__id
+#: model:ir.model.fields,field_description:hr_payroll_employeefund_expenses.field_hr_expense__id
+#: model:ir.model.fields,field_description:hr_payroll_employeefund_expenses.field_hr_expense_sheet__id
+#: model:ir.model.fields,field_description:hr_payroll_employeefund_expenses.field_res_config_settings__id
+msgid "ID"
+msgstr ""
+
+#. module: hr_payroll_employeefund_expenses
+#: model:ir.model.fields,field_description:hr_payroll_employeefund_expenses.field_hr_expense__attachment_reciept_should_be_warned
+msgid "If should be given a warning, is given once"
+msgstr ""
+
+#. module: hr_payroll_employeefund_expenses
+#: code:addons/hr_payroll_employeefund_expenses/models/hr_expense.py:0
+#, python-format
+msgid ""
+"Kindly check if credit, debit account, Employeefund Journal, Employee fund "
+"are set and the amount to fill employee fund "
+msgstr ""
+
+#. module: hr_payroll_employeefund_expenses
+#: model:ir.model.fields.selection,name:hr_payroll_employeefund_expenses.selection__hr_expense__payment_mode__employee_fund
+#: model_terms:ir.ui.view,arch_db:hr_payroll_employeefund_expenses.hr_contract_employeefund
+msgid "Kompetensutvecklingsfond"
+msgstr ""
+
+#. module: hr_payroll_employeefund_expenses
+#: model:ir.model.fields,field_description:hr_payroll_employeefund_expenses.field_hr_contract____last_update
+#: model:ir.model.fields,field_description:hr_payroll_employeefund_expenses.field_hr_expense____last_update
+#: model:ir.model.fields,field_description:hr_payroll_employeefund_expenses.field_hr_expense_sheet____last_update
+#: model:ir.model.fields,field_description:hr_payroll_employeefund_expenses.field_res_config_settings____last_update
+msgid "Last Modified on"
+msgstr "Senast redigerad"
+
+#. module: hr_payroll_employeefund_expenses
+#: model:ir.model.fields,field_description:hr_payroll_employeefund_expenses.field_hr_expense__employee_fund_name
+msgid "Name"
+msgstr "Namn"
+
+#. module: hr_payroll_employeefund_expenses
+#: code:addons/hr_payroll_employeefund_expenses/models/hr_expense.py:0
+#, python-format
+msgid "No account found for the %s journal, please configure one."
+msgstr ""
+
+#. module: hr_payroll_employeefund_expenses
+#: model:ir.model.fields,field_description:hr_payroll_employeefund_expenses.field_hr_expense__payment_mode
+msgid "Paid By"
+msgstr ""
+
+#. module: hr_payroll_employeefund_expenses
+#: model_terms:ir.ui.view,arch_db:hr_payroll_employeefund_expenses.quick_view_account_analytic_line_tree
+msgid "Quantity"
+msgstr "Antal"
+
+#. module: hr_payroll_employeefund_expenses
+#: code:addons/hr_payroll_employeefund_expenses/models/hr_expense.py:0
+#, python-format
+msgid "Register Payment"
+msgstr ""
+
+#. module: hr_payroll_employeefund_expenses
+#: model:ir.model.fields,help:hr_payroll_employeefund_expenses.field_hr_expense_sheet__journal_id
+msgid "The journal used when the expense is done."
+msgstr "Journalen som används vid utlägg."
+
+#. module: hr_payroll_employeefund_expenses
+#: model_terms:ir.ui.view,arch_db:hr_payroll_employeefund_expenses.quick_view_account_analytic_line_tree
+msgid "Total"
+msgstr "Totalt"
+
+#. module: hr_payroll_employeefund_expenses
+#: model:ir.model.fields,help:hr_payroll_employeefund_expenses.field_hr_expense__employee_fund
+#: model:ir.model.fields,help:hr_payroll_employeefund_expenses.field_hr_expense_sheet__employee_fund
+msgid "Use this account together with marked salary rule"
+msgstr "Använd detta kontot tillsammans med markerad löneregel"
+
+#. module: hr_payroll_employeefund_expenses
+#: code:addons/hr_payroll_employeefund_expenses/models/hr_expense.py:0
+#, python-format
+msgid "You can only generate accounting entry for approved expense(s)."
+msgstr ""
+
+#. module: hr_payroll_employeefund_expenses
+#: code:addons/hr_payroll_employeefund_expenses/models/hr_expense.py:0
+#, python-format
+msgid "You can't mix sample expenses and regular ones"
+msgstr ""
