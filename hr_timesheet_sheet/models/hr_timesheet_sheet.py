@@ -182,11 +182,11 @@ class Sheet(models.Model):
             period_end = sheet.date_end.strftime("%V, %Y")
 
             if sheet.date_end <= sheet.date_start + relativedelta(weekday=SU):
-                #sheet.name = _("Week %s") % (period_end,)
-                sheet.name  = "hej"
+                sheet.name = _("Week %s") % (period_end)
+                # ~ sheet.name  = "hej"
             else:
-                #sheet.name = _("Weeks %s - %s") % (period_start, period_end)
-                sheet.name  = "hej"
+                sheet.name = _("Weeks %s - %s") % (period_start, period_end)
+                # ~ sheet.name  = "hej"
 
     @api.depends("timesheet_ids.unit_amount")
     def _compute_total_time(self):
