@@ -4,6 +4,7 @@
 
 
 
+<!--
         <record id="hr_expense_menu_settings_inherit" model="ir.ui.view">
             <field name="name">hr_expense_menu_settings_inherit</field>
             <field name="model">res.config.settings</field>
@@ -19,6 +20,7 @@
                 </xpath>
             </field>
         </record>
+-->
 
 
 

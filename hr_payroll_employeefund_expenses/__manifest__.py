@@ -45,6 +45,7 @@
     # always loaded
     'data': [
         # 'security/ir.model.access.csv',
-        'views/expense_view.xml',
+        'views/expense_view.xml', 
+        'views/res_config_settings.xml',
     ],
 }

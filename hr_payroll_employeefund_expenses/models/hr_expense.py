@@ -107,7 +107,12 @@ class HrExpenseSheet(models.Model):
             line._onchange_mark_recompute_taxes()
         #account_move._onchange_partner_id()
         account_move._recompute_dynamic_lines()
-        account_move.action_post()
+        ##############################################################################KOLLA HÄR##############################################################################KOLLA HÄR
+        icp = self.env['ir.config_parameter'].sudo()
+        state = icp.get_param('hr_payroll_employeefund_expenses.employee_fund_invoice_state_is_draft', default=False)
+        if not state:
+            account_move.action_post()
+        ############################################################################################################################################################KOLLA HÄR
         res = {}
         if self.expense_line_ids[0].payment_mode != 'employee_fund':
             self.account_move_id = account_move.id
@@ -239,11 +244,15 @@ class HrExpense(models.Model):
 
             if expense.payment_mode == 'company_account':
                 expense.sheet_id.paid_expense_sheets()
-
+                
         # post the moves
-        for move in move_group_by_sheet.values():
-            move._post()
-
+        icp = self.env['ir.config_parameter'].sudo()
+        state = icp.get_param('hr_payroll_employeefund_expenses.employee_fund_invoice_state_is_draft', default=False)
+        if not state:
+            for move in move_group_by_sheet.values():
+                ##################################################################################
+                    move._post()
+                ##################################################################################
         return move_group_by_sheet
 
     @api.onchange('name')
@@ -355,5 +364,9 @@ class hr_contract(models.Model):
             'exclude_from_invoice_tab': True,
             'move_id': account_move.id,
         })
+        ###########################################
+        # ~ icp = self.env['ir.config_parameter'].sudo()
+        # ~ state = icp.get_param('hr_payroll_employeefund_expenses.employee_fund_invoice_state_is_draft', default=False)
+        # ~ if not state:
         account_move.action_post()
         self.fill_amount = 0
