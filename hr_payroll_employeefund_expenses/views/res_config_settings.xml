@@ -43,6 +43,20 @@
                         </div>
                     </div>   
                 </div>
+                
+                
+                <div class="col-xs-12 col-md-6 o_setting_box">
+                    <div class="o_setting_left_pane">
+                        <field name="fill_employee_fund_invoice_state_is_draft"/>
+                    </div>
+                    <div class="o_setting_right_pane" id="expense_extract_settings">
+                        <label string="Fill Employee Fund Invoices" for="fill_employee_fund_invoice_state_is_draft"/>
+                        <div class="text-muted">
+                                Keeps fill employee fund invoices in status: draft
+                        </div>
+                    </div>   
+                </div>
+                
                 </xpath>
             </field>
         </record>

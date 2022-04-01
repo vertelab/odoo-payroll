@@ -365,8 +365,8 @@ class hr_contract(models.Model):
             'move_id': account_move.id,
         })
         ###########################################
-        # ~ icp = self.env['ir.config_parameter'].sudo()
-        # ~ state = icp.get_param('hr_payroll_employeefund_expenses.employee_fund_invoice_state_is_draft', default=False)
-        # ~ if not state:
-        account_move.action_post()
+        icp = self.env['ir.config_parameter'].sudo()
+        state = icp.get_param('hr_payroll_employeefund_expenses.fill_employee_fund_invoice_state_is_draft', default=False)
+        if not state:
+            account_move.action_post()
         self.fill_amount = 0
