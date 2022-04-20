@@ -54,7 +54,9 @@
                       </attribute>
                 </field>
                 <field name="account_move_id" position="after">
+<!--
                     <field name="employee_invoice_id" attrs="{'invisible': [('payment_mode', '!=', 'employee_fund')], }" />
+-->
                 </field>
                 <field name="journal_id" position="replace">
                   <field name="journal_id" options="{'no_open': True, 'no_create': True}" context="{'default_company_id': company_id}"/>
