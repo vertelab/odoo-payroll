@@ -99,6 +99,7 @@ class HrExpenseSheet(models.Model):
             line._onchange_mark_recompute_taxes()
         #account_move._onchange_partner_id()
         account_move._recompute_dynamic_lines()
+      
         res = {}
         if self.expense_line_ids[0].payment_mode != 'employee_fund':
             self.account_move_id = account_move.id
@@ -110,6 +111,10 @@ class HrExpenseSheet(models.Model):
             for expense in expense_line_ids:
                 move_line_values = move_line_values_by_expense.get(expense.id)
                 account_move.write({'line_ids': [(0, 0, line) for line in move_line_values]})
+            
+            if self.employee_id and self.employee_id.contract_id and self.employee_id.contract_id.employee_fund_journal_id:
+                account_move.journal_id = self.employee_id.contract_id.employee_fund_journal_id
+                
             self.account_move_id = account_move.id
             res[self.id] = account_move
 
