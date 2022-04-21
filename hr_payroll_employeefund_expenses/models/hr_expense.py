@@ -88,11 +88,17 @@ class HrExpenseSheet(models.Model):
         'invoice_date': date,
         'journal_id': self.journal_id.id,
         })
+        
+
         for expense_line in self.expense_line_ids:
+            taxes_ids = expense_line.tax_ids.mapped("id") or [expense_line.product_id.supplier_taxes_id.id]
+            if not taxes_ids[0]: ## [expense_line.product_id.supplier_taxes_id.id] Sometimes gives us [False] which we fixes here
+                taxes_ids = False
+    
             line = self.env['account.move.line'].with_context(check_move_validity=False).create({
                 'account_id': expense_line.account_id.id or expense_line.product_id.property_account_expense_id.id,
                 'name':  expense_line.product_id.name,
-                'tax_ids': expense_line.tax_ids.mapped("id") or [expense_line.product_id.supplier_taxes_id.id],
+                'tax_ids': taxes_ids,
                 'quantity': expense_line.quantity,
                 'move_id': account_move.id,
                 'product_id': expense_line.product_id.id,
