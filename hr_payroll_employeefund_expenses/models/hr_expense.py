@@ -77,20 +77,22 @@ class HrExpenseSheet(models.Model):
         if self.expense_line_ids[0].date:
             date = self.accounting_date
         else:
-            date = fields.Datetime.now()    
+            date = fields.Datetime.now()     
+        period_id = self.env['account.period'].date2period(date)
         account_move = self.env['account.move'].with_context(check_move_validity=False).create({
         'ref': self.expense_line_ids[0].reference,
         'move_type': 'in_invoice',
         'partner_id': self.employee_id.address_home_id.id,
         'date': date,
+        'period_id': period_id.id,
         'invoice_date': date,
         'journal_id': self.journal_id.id,
         })
         for expense_line in self.expense_line_ids:
             line = self.env['account.move.line'].with_context(check_move_validity=False).create({
-                'account_id': expense_line.product_id.property_account_expense_id.id,
-                'name': expense_line.product_id.name,
-                'tax_ids': [expense_line.product_id.supplier_taxes_id.id],
+                'account_id': expense_line.account_id.id or expense_line.product_id.property_account_expense_id.id,
+                'name':  expense_line.product_id.name,
+                'tax_ids': expense_line.tax_ids.mapped("id") or [expense_line.product_id.supplier_taxes_id.id],
                 'quantity': expense_line.quantity,
                 'move_id': account_move.id,
                 'product_id': expense_line.product_id.id,
@@ -107,6 +109,7 @@ class HrExpenseSheet(models.Model):
         else:
             expense_line_ids = self.mapped('expense_line_ids')\
                 .filtered(lambda r: not float_is_zero(r.total_amount, precision_rounding=(r.currency_id or self.env.company.currency_id).rounding))
+                   
             move_line_values_by_expense = expense_line_ids._get_account_move_line_values()
             for expense in expense_line_ids:
                 move_line_values = move_line_values_by_expense.get(expense.id)
@@ -130,10 +133,6 @@ class HrExpenseSheet(models.Model):
     'account_move_id.line_ids.amount_residual_currency',
     'account_move_id.line_ids.account_internal_type',)
     def _compute_amount_residual(self):
-        _logger.warning("_compute_amount_residual")
-        _logger.warning("_compute_amount_residual")
-        _logger.warning("_compute_amount_residual")
-        _logger.warning("_compute_amount_residual")
         for record in self:
             if record.payment_mode == "employee_fund":
                 for sheet in self:
@@ -173,6 +172,25 @@ class HrExpense(models.Model):
     employee_fund_name = fields.Char(string='Name', related='employee_fund.name')
     payment_mode = fields.Selection(selection_add = [("employee_fund","Kompetensutvecklingsfond")],)
     attachment_reciept_should_be_warned = fields.Boolean(string='If should be given a warning, is given once', default = True)
+    
+    
+    def action_submit_expenses(self):
+        ##Making sure that the komptens utvekling journal is default
+        if self.payment_mode == "employee_fund":
+            sheet = self._create_sheet_from_expenses()
+            if sheet.employee_id and sheet.employee_id.contract_id and sheet.employee_id.contract_id.employee_fund_journal_id:
+                sheet.journal_id = sheet.employee_id.contract_id.employee_fund_journal_id
+            sheet.action_submit_sheet()
+            return {
+                'name': _('New Expense Report'),
+                'type': 'ir.actions.act_window',
+                'view_mode': 'form',
+                'res_model': 'hr.expense.sheet',
+                'target': 'current',
+                'res_id': sheet.id,
+            }
+        else:
+            return super(HrExpense, self).action_submit_expenses()
     
     @api.onchange('name')
     def _compute_reference(self):
@@ -289,3 +307,6 @@ class hr_contract(models.Model):
         if not state:
             account_move.action_post()
         self.fill_amount = 0
+        
+        
+     
