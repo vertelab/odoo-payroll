@@ -1,0 +1,19 @@
+<odoo>
+        <record id="group_contract_holder" model="res.groups">
+            <field name="category_id" ref="base.module_category_human_resources_contracts"/>
+            <field name="name">Contract Holder</field>
+    </record>
+    
+        <record id="portal_read_own_contract" model="ir.rule">
+            <field name="name">res_partner: read access on my partner</field>
+            <field name="model_id" ref="hr_contract.model_hr_contract"/>
+            <field name="domain_force">[('employee_id.address_home_id','=',user.partner_id.id)]</field>
+            <field name="groups" eval="[(4, ref('group_contract_holder'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+            <field name="perm_write" eval="False"/>
+            <field name="global" eval="False"/>       <!-- To set a rule as global -->
+        </record>
+
+</odoo>

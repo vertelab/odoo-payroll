@@ -5,7 +5,7 @@
     <record id="hr_salary_rule_analytic_form_inherit" model="ir.ui.view">
       <field name="name">hr.salary.rule.analytic.form.inherit</field>
       <field name="model">hr.salary.rule</field>
-      <field name="inherit_id" ref="hr_payroll_account_community_fixed.hr_salary_rule_form_inherit" />
+      <field name="inherit_id" ref="hr_payroll_account_community.hr_salary_rule_form_inherit" />
       <field name="arch" type="xml">
         <field name="account_credit" position="after">
           <field name="use_employee_fund" />
@@ -43,22 +43,6 @@
         </field>
 -->
     </page>
-      </field>
-    </record>
-    <record id="hr_timesheet_sheet_form" model="ir.ui.view">
-      <field name="name">hr.timesheet.sheet.form.employee_fund</field>
-      <field name="model">hr_timesheet.sheet</field>
-      <field name="inherit_id" ref="hr_timesheet_sheet.hr_timesheet_sheet_form" />
-      <field name="arch" type="xml">
-        <field name="company_id" position="after">
-          <strong>
-            <field name="employee_fund" class="oe_edit_only" />
-            <field name="employee_fund_name" class="oe_inline oe_read_only" nolabel="1" />
-          </strong>
-          <field name="employee_fund_balance" class="oe_inline" nolabel="1">
-            <t t-esc="record.company_currency.name.value" />
-          </field>
-        </field>
       </field>
     </record>
   </data>
