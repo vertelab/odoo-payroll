@@ -15,12 +15,18 @@
       </field>
     </record>
 
-    
+
     <record model="ir.ui.view" id="payroll_driving_record.form_view">
       <field name="name">payroll_driving_record form</field>
       <field name="model">driving.record</field>
       <field name="arch" type="xml">
         <form string="driving record from">
+          <header>
+            <field name="state" widget="statusbar"/>
+            <button name="action_create_wizard" id="action_create_wizard" string="Create expense report" class="btn-primary" type="object" attrs="{'invisible': ['|', ('state','=','accepted'), ('state','=','draft')]}"/>
+            <button name="action_set_to_draft" id="action_set_to_draft" string="Set to draft" class="btn-primary" type="object" attrs="{'invisible': [('state','=','draft')]}"/>
+            <button name="action_send" id="action_send" string="Send to boss" class="btn-primary" type="object" attrs="{'invisible': ['|', ('state','=','sent'), ('state','=','accepted')]}"/>
+          </header>
           <sheet>
             <div class="oe_title">
               <h1>Driving Record</h1>
@@ -33,6 +39,7 @@
               <group>
                 <field name="date_start"/>
                 <field name="date_stop"/>
+                <field name="expense_id"/>
               </group>
             </group>
             <group>
@@ -128,6 +135,24 @@
               action="payroll_driving_record.action_window"/>
     <menuitem name="Server to list" id="payroll_driving_record" parent="payroll_driving_record.menu_2"
               action="payroll_driving_record.action_server"/> -->
+
+
+
+
+    <record id="driving_record_Wizard_form" model="ir.ui.view">
+       <field name="name">driving.record.wizard</field>
+       <field name="model">create.expense.wizard</field>
+       <field name="type">form</field>
+       <field name="arch" type="xml">
+           <form>
+              <field name="product_id"/>
+              <footer>
+                   <button name="action_done" string="Confirm" type="object" class="oe_highlight"/>
+                   <button string="Cancel" class="btn btn-default" special="cancel"/>
+               </footer>
+           </form>
+       </field>
+    </record>
 
   </data>
 </odoo>
