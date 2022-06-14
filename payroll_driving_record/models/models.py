@@ -15,7 +15,7 @@ class DrivingRecord(models.Model):
     employee_id = fields.Many2one('hr.employee', string='Employee', required=1) # TODO:  defualt=FUNCTION!)
     date_start = fields.Date('Start date', required=1)
     date_stop = fields.Date('Stop date', required=1) # TODO: Should not be able to be before date_start
-    analytic_account_id = fields.Many2one('account.analytic.account', string='Account', required=1)
+    analytic_account_id = fields.Many2one('account.analytic.account', string='Registration number', required=1)
     line_ids = fields.One2many('driving.record.line', 'driving_record_id', string='Driving record line')
     expense_id = fields.Many2one('hr.expense', string='Expense report', readonly=True)
     state = fields.Selection([
