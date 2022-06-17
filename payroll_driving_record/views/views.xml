@@ -23,9 +23,8 @@
         <form string="driving record from">
           <header>
             <field name="state" widget="statusbar"/>
-            <button name="action_create_wizard" id="action_create_wizard" string="Create expense report" class="btn-primary" type="object" attrs="{'invisible': ['|', ('state','=','accepted'), ('state','=','draft')]}"/>
+            <button name="action_create_wizard" id="action_create_wizard" string="Create expense report" class="btn-primary" type="object" attrs="{'invisible': [('state','=','sent')]}"/>
             <button name="action_set_to_draft" id="action_set_to_draft" string="Set to draft" class="btn-primary" type="object" attrs="{'invisible': [('state','=','draft')]}"/>
-            <button name="action_send" id="action_send" string="Send to boss" class="btn-primary" type="object" attrs="{'invisible': ['|', ('state','=','sent'), ('state','=','accepted')]}"/>
           </header>
           <sheet>
             <div class="oe_title">
@@ -42,17 +41,21 @@
                 <field name="expense_id"/>
               </group>
             </group>
-            <group>
-              <field name="line_ids">
-                <tree string="Driving Record" multi_edit="1" sample="1">
-                  <field name="date"/>
-                  <field name="type"/>
-                  <field name="odoometer_start"/>
-                  <field name="odoometer_stop"/>
-                  <field name="length" readonly="True"/>
-                </tree>
-              </field>
-            </group>
+            <notebook>
+              <page string="Trips">
+                <group>
+                  <field name="line_ids">
+                    <tree string="Driving Record" multi_edit="1" sample="1" editable="bottom">
+                      <field name="date"/>
+                      <field name="type"/>
+                      <field name="odoometer_start"/>
+                      <field name="odoometer_stop"/>
+                      <field name="length" readonly="True"/>
+                    </tree>
+                  </field>
+                </group>
+              </page>
+            </notebook>
           </sheet>
         </form>
       </field>
@@ -99,7 +102,7 @@
 
     <!-- actions opening views on models -->
     <record model="ir.actions.act_window" id="payroll_driving_record.driving_record_action_window">
-      <field name="name">payroll_driving_record driving record window</field>
+      <field name="name">Driving record</field>
       <field name="res_model">driving.record</field>
       <field name="view_mode">tree,form</field>
     </record>
@@ -127,7 +130,7 @@
     <!-- <menuitem name="payroll_driving_record_driving_record_line" id="payroll_driving_record.driving_record.line.menu_root"/> -->
 
 
-    <menuitem name="Driving Record" id="payroll_driving_record.menu_root" action="payroll_driving_record.driving_record_action_window"/>
+    <menuitem name="Driving record" id="payroll_driving_record.menu_root" parent="hr_expense.menu_hr_expense_my_expenses" action="payroll_driving_record.driving_record_action_window"/>
 
     <!-- actions -->
 

@@ -12,22 +12,28 @@ class DrivingRecord(models.Model):
     _description = 'Driving Record'
 
 
-    employee_id = fields.Many2one('hr.employee', string='Employee', required=1) # TODO:  defualt=FUNCTION!)
-    date_start = fields.Date('Start date', required=1)
-    date_stop = fields.Date('Stop date', required=1) # TODO: Should not be able to be before date_start
-    analytic_account_id = fields.Many2one('account.analytic.account', string='Registration number', required=1)
+    @api.model
+    def _default_employee(self):
+        return self.env.user.employee_id.id
+
+    @api.model
+    def _default_date_start(self):
+        return datetime.date.today().replace(day=1)
+
+    @api.model
+    def _default_date_stop(self):
+        return datetime.date.today().replace(month=(datetime.date.today().month % 12) + 1, day=1) - datetime.timedelta(days=1)
+
+    employee_id = fields.Many2one('hr.employee', string='Employee', default=_default_employee, required=1)
+    date_start = fields.Date('Start date', default=_default_date_start, required=1)
+    date_stop = fields.Date('Stop date', default=_default_date_stop, required=1)
+    analytic_account_id = fields.Many2one('account.analytic.account', string='Registration number')
     line_ids = fields.One2many('driving.record.line', 'driving_record_id', string='Driving record line')
     expense_id = fields.Many2one('hr.expense', string='Expense report', readonly=True)
     state = fields.Selection([
         ('draft', 'Draft'),
         ('sent', 'Sent'),
-        ('accepted', 'Accepted')
     ], string='State', default='draft')
-
-    # @api.onchange('state')
-    # def state_change(self):
-    #     if self.state_names = draft:
-    #         self.expense_id.unlink()
 
 
 
@@ -52,16 +58,17 @@ class DrivingRecord(models.Model):
             self.expense_id.unlink()
         else:
             raise UserError('Expense has already been paid, therefore this driving report cannot be set back to draft')
-
-    def action_send(self):
-        self.state = 'sent'
-
 class DrivingRecordLine(models.Model):
     _name = 'driving.record.line'
     _description = 'Driving Record Line'
 
     driving_record_id = fields.Many2one('driving.record', string='Driving record id', required=1)
-    date = fields.Date('Date', required=1)
+
+    @api.model
+    def _default_date(self):
+        return datetime.date.today()
+
+    date = fields.Date('Date', required=1, default=_default_date)
     odoometer_start = fields.Integer('Odoometer start', required=1)
     odoometer_stop = fields.Integer('Odoometer stop', required=1)
     length = fields.Integer('Length (km)', store=True, compute='compute_length')
@@ -104,7 +111,7 @@ class CreateExpenseWizard(models.TransientModel):
 
     def action_done(self):
         driving_record = self.env['driving.record'].browse(self.env.context['driving_record_id'])
-        driving_record.state = 'accepted'
+        driving_record.state = 'sent'
         quantity = 0
         for line in driving_record.line_ids:
             quantity += line.length
