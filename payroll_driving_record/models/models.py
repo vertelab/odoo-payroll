@@ -77,6 +77,8 @@ class DrivingRecordLine(models.Model):
         ('private', 'Private'),
         ('business', 'Business')
     ], string='Type', required=1)
+    partner_id = fields.Many2one(comodel_name='res.partner', string='Destination partner')
+    
 
 
     @api.onchange('odoometer_start', 'odoometer_stop')
@@ -85,10 +87,6 @@ class DrivingRecordLine(models.Model):
         for record in self:
             record.length = record.odoometer_stop - record.odoometer_start
 
-    #api.depends('odoometer_start', 'odoometer_stop')
-    #def depent_length(self):
-
-    # TODO: THIS CONSTRAINT DOES NOT WORK!
     @api.constrains('date')
     def stop_before_start_date(self):
         for record in self:

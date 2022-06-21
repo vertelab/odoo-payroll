@@ -51,6 +51,8 @@
                       <field name="odoometer_start"/>
                       <field name="odoometer_stop"/>
                       <field name="length" readonly="True"/>
+                      <field name="partner_id"/>
+                      <field name="note"/>
                     </tree>
                   </field>
                 </group>
@@ -86,6 +88,7 @@
               <group>
               <field name="date"/>
               <field name="type"/>
+              <field name="partner_id"/>
               <field name="note"/>
               </group>
               <group>
