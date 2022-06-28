@@ -25,11 +25,11 @@
     # Version ledger: 14.0 = Odoo version. 1 = Major. Non regressionable code. 2 = Minor. New features that are regressionable. 3 = Bug fixes
     'summary': 'Extends hr.contract with an analytic account for a fund.',
     'category': 'Productivity',
-'description': """Extends the Employee Contract with an analytic account to be used as a fund. 
+    'description': """Extends the Employee Contract with an analytic account to be used as a fund. 
 This can be used as a flexible time bank (hours) or monetary values (cost/revenue).
 
 Financed by Dermanord-Svensk Hudvård AB
-""",
+    """,
     #'sequence': '1',
     'author': 'Vertel AB',
     'website': 'https://vertel.se/apps/odoo-payroll/hr_payroll_employeefund',
@@ -40,9 +40,9 @@ Financed by Dermanord-Svensk Hudvård AB
     'repository': 'https://github.com/vertelab/odoo-payroll',
     'depends': ['hr_payroll_account_community','hr_timesheet_sheet'],
     'data': ['payslip_view.xml',
-            'security/security.xml',
-            'views/hr_expense_view_form.xml',
-            'security/ir.model.access.csv',
-            ],
+        'security/security.xml',
+        'views/hr_expense_view_form.xml',
+        'security/ir.model.access.csv',
+        ],
 'installable': True,
 }
