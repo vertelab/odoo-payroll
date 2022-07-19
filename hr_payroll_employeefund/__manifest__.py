@@ -38,7 +38,7 @@ Financed by Dermanord-Svensk Hudvård AB
     'contributor': '',
     'maintainer': 'Vertel AB',
     'repository': 'https://github.com/vertelab/odoo-payroll',
-    'depends': ['hr_payroll_account_community','hr_timesheet_sheet'],
+    'depends': ['payroll','hr_timesheet_sheet'],
     'data': ['payslip_view.xml',
         'security/security.xml',
         'views/hr_expense_view_form.xml',
