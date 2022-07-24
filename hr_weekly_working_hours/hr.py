@@ -43,12 +43,13 @@ class hr_contract(models.Model):
     wwh_days_intermittent = fields.Float(string='WWH Days Intermittent', default=5, help="The number of worked days/week for a part time employee. Currently used for both full and part time.")
     working_percent = fields.Float(string='Working Percent',default=100, help="Currently not used.")
 
-    @api.depends('working_hours', 'working_hours.attendance_ids',
-        'working_hours.attendance_ids.hour_from',
-        'working_hours.attendance_ids.hour_to')
+    @api.depends('resource_calendar_id', 'resource_calendar_id.attendance_ids',
+        'resource_calendar_id.attendance_ids.hour_from',
+        'resource_calendar_id.attendance_ids.hour_to')
     def get_scheduled_working_hours(self):
         for contract in self:
-            contract.scheduled_working_hours = contract.working_hours and contract.working_hours.get_weekly_working_hours() or 0
+            contract.scheduled_working_hours = contract.resource_calendar_id and contract.resource_calendar_id.get_weekly_working_hours() or 0
+            
 
 class resource_calendar(models.Model):
     _inherit = "resource.calendar"

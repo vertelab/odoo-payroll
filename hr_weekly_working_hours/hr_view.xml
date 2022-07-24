@@ -6,7 +6,8 @@
       <field name="model">hr.contract</field>
       <field name="inherit_id" ref="hr_contract.hr_contract_view_form" />
       <field name="arch" type="xml">
-        <xpath expr="//page[@name='information']/separator" position="before">
+          <field name="resource_calendar_id" position="after">
+          
           <group>
             <field name="scheduled_working_hours"/>
             <field name="weekly_working_hours"/>
@@ -14,7 +15,8 @@
             <field name="wwh_days_intermittent"/>
             <field name="working_percent"/>
           </group>
-        </xpath>
+          </field>
+
       </field>
     </record>
   </data>
