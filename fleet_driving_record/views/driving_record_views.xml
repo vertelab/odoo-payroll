@@ -1,0 +1,28 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+    <record model="ir.ui.view" id="list_view">
+      <field name="name">payroll_driving_record fleet</field>
+      <field name="model">driving.record</field>
+      <field name="inherit_id" ref="payroll_driving_record.list_view" />
+      <field name="arch" type="xml">
+        <field name="employee_id" position='after'>
+          <field name="vehicle_id" />
+        </field>
+      </field>
+    </record>
+    <record model="ir.ui.view" id="form_view">
+      <field name="name">payroll_driving_record fleet</field>
+      <field name="model">driving.record</field>
+      <field name="inherit_id" ref="payroll_driving_record.form_view" />
+      <field name="arch" type="xml">
+        <tree string="Driving Record" multi_edit="1" sample="1">
+          <field name="employee_id" position='after'>
+            <field name="vehicle_id" />
+          </field>
+        </tree>
+      </field>
+    </record>
+
+  </data>
+</odoo>

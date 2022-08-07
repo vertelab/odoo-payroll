@@ -2,7 +2,7 @@
   <data>
     <!-- explicit list view definition -->
 
-    <record model="ir.ui.view" id="payroll_driving_record.list_view">
+    <record model="ir.ui.view" id="list_view">
       <field name="name">payroll_driving_record list</field>
       <field name="model">driving.record</field>
       <field name="arch" type="xml">
@@ -16,14 +16,14 @@
     </record>
 
 
-    <record model="ir.ui.view" id="payroll_driving_record.form_view">
+    <record model="ir.ui.view" id="form_view">
       <field name="name">payroll_driving_record form</field>
       <field name="model">driving.record</field>
       <field name="arch" type="xml">
         <form string="driving record from">
           <header>
             <field name="state" widget="statusbar"/>
-            <button name="action_create_wizard" id="action_create_wizard" string="Create expense report" class="btn-primary" type="object" attrs="{'invisible': [('state','=','sent')]}"/>
+            <button name="action_create_expense" id="action_create_expense" string="Create expense" class="btn-primary" type="object" attrs="{'invisible': [('state','=','sent')]}"/>
             <button name="action_set_to_draft" id="action_set_to_draft" string="Set to draft" class="btn-primary" type="object" attrs="{'invisible': [('state','=','draft')]}"/>
           </header>
           <sheet>
@@ -34,6 +34,7 @@
               <group>
                 <field name="employee_id"/>
                 <field name="analytic_account_id"/>
+                <field name="product_id"/>
               </group>
               <group>
                 <field name="date_start"/>
@@ -44,12 +45,12 @@
             <notebook>
               <page string="Trips">
                 <group>
-                  <field name="line_ids">
+                  <field name="line_ids" nolabel="1">
                     <tree string="Driving Record" multi_edit="1" sample="1" editable="bottom">
                       <field name="date"/>
                       <field name="type"/>
-                      <field name="odoometer_start"/>
-                      <field name="odoometer_stop"/>
+                      <field name="odometer_start"/>
+                      <field name="odometer_stop"/>
                       <field name="length" readonly="True"/>
                       <field name="partner_id"/>
                       <field name="note"/>
@@ -63,7 +64,7 @@
       </field>
     </record>
 
-    <record model="ir.ui.view" id="payroll_driving_record.line_list_view">
+    <record model="ir.ui.view" id="line_list_view">
       <field name="name">payroll_driving_record line list</field>
       <field name="model">driving.record.line</field>
       <field name="arch" type="xml">
@@ -75,7 +76,7 @@
       </field>
     </record>
 
-    <record model="ir.ui.view" id="payroll_driving_record.line_form_view">
+    <record model="ir.ui.view" id="line_form_view">
       <field name="name">payroll_driving_record line form</field>
       <field name="model">driving.record.line</field>
       <field name="arch" type="xml">
@@ -92,8 +93,8 @@
               <field name="note"/>
               </group>
               <group>
-              <field name="odoometer_start"/>
-              <field name="odoometer_stop"/>
+              <field name="odometer_start"/>
+              <field name="odometer_stop"/>
               <field name="length" readonly="True"/>
               </group>
             </group>

@@ -20,41 +20,32 @@
 ##############################################################################
 
 {
-    'name': 'Payroll: Payroll Driving Reckord',
+    'name': 'Fleet: Driving Reckord',
     'version': '14.0.0.0.0',
     # Version ledger: 14.0 = Odoo version. 1 = Major. Non regressionable code. 2 = Minor. New features that are regressionable. 3 = Bug fixes
-    'summary': """
-        Short (1 phrase/line) summary of the module's purpose, used as
-        subtitle on modules listing or apps.openerp.com""",
+    'summary': 'Fleet driving record',
     'category': 'Productivity',
     'description': """
-        Long description of module's purpose
+        Glue module for fleet and driving record
     """,
     #'sequence': '1',
     'author': 'Vertel AB',
-    'website': 'https://vertel.se/apps/odoo-payroll/payroll_driving_record',
+    'website': 'https://vertel.se/apps/odoo-payroll/fleet_driving_record',
     'images': ['/static/description/banner.png'], # 560x280 px.
     'license': 'AGPL-3',
     'contributor': '',
     'maintainer': 'Vertel AB',
-    'repository': 'https://github.com/vertelab/odoo-payroll',
 
     # Categories can be used to filter modules in modules listing
     # Check https://github.com/odoo/odoo/blob/14.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
-    'category': 'Uncategorized',
-    'version': '0.1',
+    'category': 'fleet',
 
     # any module necessary for this one to work correctly
-    'depends': ['account', 'hr_expense'],
+    'depends': ['payroll_driving_record', 'fleet'],
 
     # always loaded
     'data': [
-        'security/ir.model.access.csv',
         'views/driving_record_views.xml',
-    ],
-    # only loaded in demonstration mode
-    'demo': [
-        'demo/demo.xml',
     ],
 }
