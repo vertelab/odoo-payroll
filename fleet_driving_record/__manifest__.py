@@ -47,5 +47,9 @@
     # always loaded
     'data': [
         'views/driving_record_views.xml',
+        'views/fleet_vehicle_views.xml',
     ],
+    'installable': True,
+    'auto_install': True,
+    'application': False,
 }

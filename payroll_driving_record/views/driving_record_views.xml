@@ -64,6 +64,7 @@
       </field>
     </record>
 
+<!--
     <record model="ir.ui.view" id="line_list_view">
       <field name="name">payroll_driving_record line list</field>
       <field name="model">driving.record.line</field>
@@ -102,6 +103,7 @@
         </form>
       </field>
     </record>
+-->
 
 
     <!-- actions opening views on models -->
@@ -146,20 +148,6 @@
 
 
 
-    <record id="driving_record_Wizard_form" model="ir.ui.view">
-       <field name="name">driving.record.wizard</field>
-       <field name="model">create.expense.wizard</field>
-       <field name="type">form</field>
-       <field name="arch" type="xml">
-           <form>
-              <field name="product_id"/>
-              <footer>
-                   <button name="action_done" string="Confirm" type="object" class="oe_highlight"/>
-                   <button string="Cancel" class="btn btn-default" special="cancel"/>
-               </footer>
-           </form>
-       </field>
-    </record>
 
   </data>
 </odoo>
