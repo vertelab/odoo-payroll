@@ -115,3 +115,9 @@ class DrivingRecordLine(models.Model):
         for record in self:
             if(not record.odometer_start <= record.odometer_stop):
                 raise ValidationError("Stop odometer value can not be lower than the start odometer value.")
+
+    @api.model
+    def add_driving_line(self,date,odometer_start,odometer_stop,note,type,employee_id):
+        _logger.warning(f' {date=} {odoometer_start=} {odoometer_stop=} {note=} {type=} {employee_id=}');
+        return True
+    

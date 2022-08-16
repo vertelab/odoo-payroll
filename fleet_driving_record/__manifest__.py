@@ -42,7 +42,7 @@
     'category': 'fleet',
 
     # any module necessary for this one to work correctly
-    'depends': ['payroll_driving_record', 'fleet'],
+    'depends': ['payroll_driving_record', 'fleet_analytic'],
 
     # always loaded
     'data': [
