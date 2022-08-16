@@ -95,7 +95,7 @@ class DrivingRecordLine(models.Model):
         ('business', 'Business')
     ], string='Type', required=1)
     partner_id = fields.Many2one(comodel_name='res.partner', string='Destination partner')
-    vehicle_id = fields.Many2one(comodel_name='fleet.vehicle', string='Vehicle', related='driving_record_id.vehicle_id',store=True)
+    vehicle_id = fields.Many2one(comodel_name='account.analytic.account', string='Vehicle', related='driving_record_id.analytic_account_id',store=True)
     employee_id = fields.Many2one(comodel_name='hr.employee', string='Employee', related='driving_record_id.employee_id', store=True)
     state = fields.Selection([
         ('draft', 'Draft'),
