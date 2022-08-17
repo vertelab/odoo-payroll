@@ -122,16 +122,26 @@ class DrivingRecordLine(models.Model):
 
     @api.model
     def add_driving_line(self,date,odometer_start,odometer_stop,note,type,employee_id):
-        _logger.warning(f' {date=} {odoometer_start=} {odoometer_stop=} {note=} {type=} {employee_id=}')
-        record = self.env['driving.record'].search([('date_start','>=',date),('date_stop','>=',date),('employee_id','=',employee_id)],limit=1)
+        # _logger.warning(f' {date=} {odometer_start=} {odometer_stop=} {note=} {type=} {employee_id=}')
+        record = self.env['driving.record'].search([('date_start','<=',date),('date_stop','>=',date),('employee_id','=',employee_id)],limit=1)
+
         if not record:
             record = self.env['driving.record'].create(self.env['driving.record.line'].add_driving_line_record(date,employee_id))
+        vals = {
+            'driving_record_id': record.id,
+            'date': date,
+            'type': type,
+            'odometer_start': odometer_start,
+            'odometer_stop': odometer_stop,
+            'note': note,
+        }
+        if record: self.env['driving.record.line'].create(vals)
         return record != None
         
     def add_driving_line_record(self,date,employee_id):
+        date = datetime.datetime.strptime(date, '%Y-%m-%d')
         return {
                 'employee_id': employee_id,
                 'date_start': date.replace(day=1),
                 'date_stop': date.replace(month=(date.month % 12) + 1, day=1) - datetime.timedelta(days=1),
             }
-    
