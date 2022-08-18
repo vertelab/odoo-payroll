@@ -38,6 +38,7 @@ dependencies:
   form_builder_validators: ^8.1.1
   shared_preferences: ^2.0.15
   odoo_rpc: ^0.5.1
+  data_table_2: ^2.3.6
 
 dev_dependencies:
   flutter_test:
