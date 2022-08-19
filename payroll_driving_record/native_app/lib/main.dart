@@ -56,7 +56,7 @@ class _MyUiState extends State<MyUi> {
   String createmsg = '';
   int _selectedIndex = 0;
   List lines = [
-    {'date': '', 'type': '', 'odometer_start': '', 'odometer_stop': '', 'length': ''},
+    {'date': '2022-01-01', 'type': '', 'odometer_start': '', 'odometer_stop': '', 'length': ''},
   ];
 
   void _onItemTapped(int index) {
@@ -410,7 +410,7 @@ class _MyUiState extends State<MyUi> {
             for (var line in lines.reversed)
               DataRow2(cells: <DataCell>[
                 DataCell(Icon(Icons.drive_eta)),
-                DataCell(Text(line['date'])),
+                DataCell(Text(line['date'].toString().substring(2))),
                 DataCell(Text(toBeginningOfSentenceCase(line['type']) as String)),
                 DataCell(Text(line['odometer_start'].toString())),
                 DataCell(Text(line['odometer_stop'].toString())),
@@ -480,8 +480,8 @@ class _MyUiState extends State<MyUi> {
       } else if (e.message.contains('psycopg2.OperationalError')) {
         return 'Database Error';
       }
-    } on Exception catch (e) {
-      return 'Connection Error';
+    } on Exception catch (err) {
+      return err.toString();
     }
   }
 }
@@ -541,7 +541,7 @@ Future odoo_getDrivingRecords(OdooClient client, employee_id) async {
       return 'ValueError';
     }
   } on Exception catch (e) {
-    return e;
+    return;
   }
 }
 

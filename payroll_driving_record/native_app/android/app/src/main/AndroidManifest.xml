@@ -1,5 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.driving_record">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+
    <application
         android:label="driving_record"
         android:name="${applicationName}"
