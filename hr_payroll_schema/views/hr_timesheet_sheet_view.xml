@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!--employee attendance tree view-->
+        <record id="view_attendance_who" model="ir.ui.view">
+            <field name="name">hr.attendance.schema.tree</field>
+            <field name="model">hr.attendance</field>
+            <field name="inherit_id" ref="hr_attendance.view_attendance_who" />
+            <field name="arch" type="xml">
+                <field name="action" position="after">
+                    <field name="working_hours_on_day" sum="Total Hours (h)" />
+                    <field name="get_working_hours" sum="Worked in schedule (h)" />
+                    <!--
+                         <field name="over_hours" sum="Overtime Hours (h)"/>
+                    -->
+                </field>
+            </field>
+        </record>
+        <!--employee attendance form view-->
+        <record id="view_hr_attendance_form" model="ir.ui.view">
+            <field name="name">hr.attendance.schema.form</field>
+            <field name="model">hr.attendance</field>
+            <field name="inherit_id" ref="hr_attendance.view_attendance_form" />
+            <field name="arch" type="xml">
+                <field name="action_desc" position="after">
+                    <field name="working_hours_on_day" string="Total Hours (h)" />
+                    <field name="get_working_hours" sum="Worked in schedule (h)" />
+                    <!--
+                         <field name="over_hours"/>
+                    -->
+                </field>
+                <!--
+                     <sheet position="after">
+                     <div class="oe_chatter">
+                     <field name="message_follower_ids" widget="mail_followers"/>
+                     <field name="message_ids" widget="mail_thread"/>
+                     </div>
+                     </sheet>
+                -->
+            </field>
+        </record>
+        <record id="hr_timesheet_sheet_form" model="ir.ui.view">
+            <field name="name">hr.timesheet.sheet.form.schema</field>
+            <field name="model">hr_timesheet_sheet.sheet</field>
+            <field name="inherit_id" ref="hr_timesheet_sheet.hr_timesheet_sheet_form"/>
+            <field name="arch" type="xml">
+                <field name="total_difference" position="after">
+                    <field name="work_time" invisible="1"/>
+                    <field name="total_attendance_schema" attrs="{'invisible': [('work_time', '!=', 'schema')]}"/>
+                    <field name="total_difference_schema" attrs="{'invisible': [('work_time', '!=', 'schema')]}"/>
+                    <field name="timesheet_amount" attrs="{'invisible': [('work_time', '!=', 'schema')]}"/>
+                    <field name="timesheet_amount_invoiceable" attrs="{'invisible': [('work_time', '!=', 'schema')]}"/>
+                </field>
+            </field>
+        </record>
+        <record id="view_hr_payslip_form" model="ir.ui.view">
+            <field name="name">hr.payslip.form.schema</field>
+            <field name="model">hr.payslip</field>
+            <field name="inherit_id" ref="hr_payroll.view_hr_payslip_form" />
+            <field name="arch" type="xml">
+                <page string="Worked Days &amp; Inputs" position="after">
+                    <page string="Time funds">
+                        <group>
+                            <field name="work_time"/>
+                            <field name="schema_number_of_days" attrs="{'invisible': [('work_time', '!=', 'schema')]}"/>
+                            <field name="percent_number_of_days" attrs="{'invisible': [('work_time', '!=', 'schema')]}"/>
+                            <field name="get_working_hours" attrs="{'invisible': [('work_time', '!=', 'schema')]}"/>
+                        </group>
+                    </page>
+                </page>
+            </field>
+        </record>
+
+    </data>
+</openerp>
