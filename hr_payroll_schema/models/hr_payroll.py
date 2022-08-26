@@ -98,14 +98,15 @@ class hr_attendance(models.Model):
     # timesheet_amount_invoiceable = fields.Float(compute="_timesheet_amount", string="Reported time (invoiceable)")
 
 
-# class hr_timesheet_sheet(models.Model):
-#     _inherit = "hr_timesheet_sheet.sheet"
-#
-#     @api.depends('attendances_ids', 'attendances_ids.sheet_id')
-#     def _total_attendance_schema(self):
-#         self.total_attendance_schema = sum(self.attendances_ids.mapped('get_working_hours'))
-#         self.total_difference_schema = self.total_attendance_schema - sum(
-#             self.attendances_ids.mapped('working_hours_on_day'))
+class hr_timesheet_sheet(models.Model):
+    # _inherit = "hr_timesheet_sheet.sheet"
+    _inherit = "hr_timesheet.sheet"
+
+    @api.depends('attendances_ids', 'attendances_ids.sheet_id')
+    def _total_attendance_schema(self):
+        self.total_attendance_schema = sum(self.attendances_ids.mapped('get_working_hours'))
+        self.total_difference_schema = self.total_attendance_schema - sum(
+            self.attendances_ids.mapped('working_hours_on_day'))
 #
 #     total_attendance_schema = fields.Float(compute='_total_attendance_schema', string="Attendance (Schema)", store=True)
 #     total_difference_schema = fields.Float(compute='_total_attendance_schema', string="Difference (Schema)", store=True)

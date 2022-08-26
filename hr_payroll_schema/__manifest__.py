@@ -20,7 +20,7 @@
 ##############################################################################
 {
     'name': 'Payroll Schema',
-    'version': '0.1',
+    'version': '14.0.0.1',
     'summary': 'Extends hr.attendance with normalized days using resource schema',
     'category': 'hr',
     'description': """Extends hr.attendance with normalized days using resource schema""",

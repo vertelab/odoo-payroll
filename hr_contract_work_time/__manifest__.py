@@ -20,11 +20,10 @@
 ##############################################################################
 {
     'name': 'Payroll Contract Type WorkTime',
-    'version': '0.1',
+    'version': '14.0.0.1',
     'summary': 'Extends hr.contract.type with a selection of WorkTime',
     'category': 'hr',
-    'description': """Extends hr.contract.type with a selection of WorkTime
-    """,
+    'description': """Extends hr.contract.type with a selection of WorkTime""",
     'author': 'Vertel AB',
     'license': 'AGPL-3',
     'website': 'http://www.vertel.se',
