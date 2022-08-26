@@ -1,0 +1,16 @@
+<odoo>
+    <data noupdate="0">
+        <record id="hr_milage_expense_account_journal" model="account.journal">
+            <field name="name">Milage Expense</field>
+            <field name="code">MEXP</field>
+            <field name="type">purchase</field>
+            <!-- avoid being selected as default journal -->
+            <field name="sequence">99</field>
+            <field name="alias_name">purchase_expense_milage</field>
+            <field name="payable_account" model="account.account" search="[('code', '=', '7331')]" />
+            <field name="receivable_account" model="account.account" search="[('code', '=', '5890')]" />
+
+        </record>
+    </data>
+    
+</odoo>

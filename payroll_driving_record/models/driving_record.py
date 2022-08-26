@@ -9,6 +9,7 @@ import datetime
 
 class DrivingRecord(models.Model):
     _name = 'driving.record'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'Driving Record'
 
     @api.model
@@ -39,6 +40,7 @@ class DrivingRecord(models.Model):
         ('draft', 'Draft'),
         ('sent', 'Sent'),
     ], string='State', default='draft')
+    journal_id = fields.Many2one('account.journal', string='Journal', domain="[('type', '=', 'purchase')]")
 
     @api.constrains('date_stop')
     def stop_before_start_date(self):
@@ -49,14 +51,15 @@ class DrivingRecord(models.Model):
         self.state = 'sent'
         expense = self.env['hr.expense'].create({
             'name': _(f'{self.employee_id.name} - Driving Compensation - {fields.Date.today()}'),
-            'product_id': self.product_id.id,
             'product_uom_id': self.product_id.uom_id.id,
             'unit_amount': self.product_id.lst_price,
-            'quantity': sum(self.line_ids.mapped('length')),
+            'quantity': sum(self.line_ids.filtered(lambda e : e.type == "business").mapped('length'))  / 10,
             'employee_id': self.employee_id.id,
             'company_id': self.employee_id.company_id.id,
             'analytic_account_id': self.analytic_account_id.id,
+            'journal_id': self.journal_id.id
         })
+        expense.product_id = self.product_id.id
         self.expense_id = expense
         expense.message_post(body=_(f'Based on <A href="/web#id={self.id}&model=driving.record">Driving record</A> '))
         return {

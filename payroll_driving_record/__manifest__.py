@@ -46,12 +46,13 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['account', 'hr_expense'],
+    'depends': ['account', 'hr_expense', 'base', 'account_journal_select_payable_receivable_account', 'hr_expense_journal_selection'],
 
     # always loaded
     'data': [
         'security/ir.model.access.csv',
         'views/driving_record_views.xml',
+        'data/drive_expense_journal.xml'
     ],
     # only loaded in demonstration mode
     'demo': [
