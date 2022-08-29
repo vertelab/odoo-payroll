@@ -27,9 +27,12 @@
     'author': 'Vertel AB',
     'license': 'AGPL-3',
     'website': 'http://www.vertel.se',
+    #hr_contract_type: https://github.com/OCA/hr
     'depends': ['payroll', 'hr_timesheet_sheet', 'hr_attendance', 'hr_contract_work_time', 'hr_contract_type'],
     'data': [
         # 'views/hr_timesheet_sheet_view.xml'
     ],
     'installable': True,
 }
+
+
