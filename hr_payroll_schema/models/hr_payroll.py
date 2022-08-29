@@ -47,7 +47,7 @@ class hr_attendance(models.Model):
     def _working_hours_on_day(self):  # working hours on the contract
         if self.employee_id.sudo().contract_id and self._check_last_sign_out(self):
             self.working_hours_on_day = self.pool.get('resource.calendar')\
-                .working_hours_on_day(self.env.cr, SUPERUSER_ID, self.employee_id.sudo().contract_id.working_hours,
+                .working_hours_on_day(self.env.cr, SUPERUSER_ID, self.employee_id.sudo().contract_id.weekly_working_hours,
                                       fields.Datetime.from_string(self.name))
         else:
             self.working_hours_on_day = 0.0
@@ -61,7 +61,7 @@ class hr_attendance(models.Model):
                  ('name', '<', self.name[:10] + ' 23:59:59')], order='name')
             for (start, end) in zip(att, att[1:])[::2]:
                 self.get_working_hours += self.pool.get('resource.calendar').get_working_hours(
-                    self.env.cr, SUPERUSER_ID, self.employee_id.sudo().contract_id.working_hours.id,
+                    self.env.cr, SUPERUSER_ID, self.employee_id.sudo().contract_id.weekly_working_hours.id,
                     fields.Datetime.from_string(start.name),
                     fields.Datetime.from_string(end.name))
         else:
@@ -139,7 +139,7 @@ class hr_payslip(models.Model):
             # ~ working_hours_on_day = self.pool.get('resource.calendar').working_hours_on_day(self.env.cr,
             # self.env.uid, slip.employee_id.contract_id.working_hours.id, fields.Date.from_string(slip.date_from) +
             # timedelta(days=day), self.env.context)
-            working_hours_on_day = slip.employee_id.sudo().contract_id.working_hours.get_working_hours_of_date(
+            working_hours_on_day = slip.employee_id.sudo().contract_id.weekly_working_hours.get_working_hours_of_date(
                 start_dt=fields.Datetime.from_string(slip.date_from) + timedelta(days=day))[0]
             if working_hours_on_day:
                 nbr += 1.0
@@ -153,8 +153,8 @@ class hr_payslip(models.Model):
                 # ~ working_hours_on_day = self.pool.get('resource.calendar').working_hours_on_day(self.env.cr,
                 # self.env.uid, slip.employee_id.contract_id.working_hours.id, fields.Date.from_string(
                 # slip.date_from) + timedelta(days=day), self.env.context)
-                if self.employee_id.sudo().contract_id and self.employee_id.sudo().contract_id.working_hours:
-                    working_hours_on_day = self.employee_id.sudo().contract_id.working_hours.get_working_hours_of_date(
+                if self.employee_id.sudo().contract_id and self.employee_id.sudo().contract_id.weekly_working_hours:
+                    working_hours_on_day = self.employee_id.sudo().contract_id.weekly_working_hours.get_working_hours_of_date(
                         start_dt=fields.Datetime.from_string(self.date_from) + timedelta(days=day))[0]
                     _logger.warning('working_h_on day %s' % working_hours_on_day)
                     if working_hours_on_day:
@@ -204,13 +204,21 @@ class hr_payslip(models.Model):
                                                                         ('date_from', '<=', day),
                                                                         ('date_to', '>=', day)])
             if holiday_ids:
-                res = self.pool.get('hr.holidays').browse(cr, uid, holiday_ids, context=context)[
-                    0].holiday_status_id.name
+                #res = self.pool.get('hr.holidays').browse(cr, uid, holiday_ids, context=context)[
+                #    0].holiday_status_id.name
+                res = self.env['hr.holidays'].browse(holiday_ids)
             return res
 
         res = []
-        for contract in self.pool.get('hr.contract').browse(cr, SUPERUSER_ID, contract_ids, context=context):
-            if not contract.working_hours:
+        #for contract in self.pool.get('hr.contract').browse(cr, SUPERUSER_ID, contract_ids, context=context):
+
+        # browse_contracts = self.env['hr.contract'].browse(contract_ids)
+        # _logger.warning(f"{browse_contracts=}")
+        # _logger.warning(f"{contract_ids=}")
+        for contract in contract_ids:
+            contract = contract[0]
+            _logger.warning(f"{contract=}")
+            if not contract.weekly_working_hours:
                 # fill only if the contract as a working schedule linked
                 continue
             attendances = {
@@ -227,7 +235,7 @@ class hr_payslip(models.Model):
             nb_of_days = (day_to - day_from).days + 1
             for day in range(0, nb_of_days):
                 working_hours_on_day = self.pool.get('resource.calendar').working_hours_on_day(cr, SUPERUSER_ID,
-                                                                                               contract.working_hours,
+                                                                                               contract.weekly_working_hours,
                                                                                                day_from + timedelta(
                                                                                                    days=day), context)
                 if working_hours_on_day:
