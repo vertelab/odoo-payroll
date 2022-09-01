@@ -12,10 +12,29 @@
           <field name="date_stop"/>
           <field name="analytic_account_id"/>
           <field name="journal_id"/>
+          <field name="private_length" optional="show" readonly="1"/>
+          <field name="business_length" optional="show" readonly="1"/>
+          <field name="state" optional="show" readonly="1" decoration-info="state in ['draft']" decoration-success="state in ['sent']" widget="badge"/>
         </tree>
       </field>
     </record>
 
+    <record model="ir.ui.view" id="driving_record_view_search" >
+        <field name="name">driving.record.view.search</field>
+        <field name="model">driving.record</field>
+        <field name="arch" type="xml">
+            <search string="Driving Records">
+                <field string="Driving Records" name="name" filter_domain="['|', '|', '|', ('employee_id', 'ilike', self), ('date_start', 'ilike', self), ('date_stop', 'ilike', self), ('analytic_account_id', 'ilike', self)]"/>
+                <field name="employee_id"/>
+                <field name="date_start"/>
+                <field name="date_stop"/>
+                <field name="analytic_account_id"/>
+                <filter string="My Driving Records" name="my_driving_records" domain="[('employee_id.user_id', '=', uid)]"/>
+            </search>
+        </field>
+    </record>
+
+    <!--<record model="ir.actions.act_window" id="driving_record_view_search">-->
 
     <record model="ir.ui.view" id="form_view">
       <field name="name">payroll_driving_record form</field>
@@ -36,6 +55,8 @@
                 <field name="employee_id"/>
                 <field name="analytic_account_id"/>
                 <field name="product_id"/>
+                <field name="private_length"/>
+                <field name="business_length"/>
               </group>
               <group>
                 <field name="date_start"/>
@@ -118,6 +139,7 @@
       <field name="name">Driving record</field>
       <field name="res_model">driving.record</field>
       <field name="view_mode">tree,form</field>
+      <field name="context">{'search_default_my_driving_records': 1}</field>
     </record>
 
 

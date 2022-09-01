@@ -24,6 +24,24 @@ class DrivingRecord(models.Model):
     def _default_date_stop(self):
         return datetime.date.today().replace(month=(datetime.date.today().month % 12) + 1, day=1) - datetime.timedelta(days=1)
 
+    @api.onchange('line_ids')
+    @api.depends('line_ids')
+    def _compute_private_length(self) :
+        for record in self:
+            record.private_length = 0
+            for lines in record.line_ids:
+                if lines.type == 'private':
+                    record.private_length = record.private_length + lines.length
+
+    @api.onchange('line_ids')
+    @api.depends('line_ids')
+    def _compute_business_length(self) :
+        for record in self:
+            record.business_length = 0
+            for lines in record.line_ids:
+                if lines.type == 'business':
+                    record.business_length = record.business_length + lines.length
+
     @api.depends('date_start','date_stop')
     def _compute_name(self):
         for record in self:
@@ -41,6 +59,9 @@ class DrivingRecord(models.Model):
         ('sent', 'Sent'),
     ], string='State', default='draft')
     journal_id = fields.Many2one('account.journal', string='Journal', domain="[('type', '=', 'purchase')]")
+    private_length = fields.Integer(compute=_compute_private_length)
+    business_length = fields.Integer(compute=_compute_business_length)
+
 
     @api.constrains('date_stop')
     def stop_before_start_date(self):
@@ -77,6 +98,7 @@ class DrivingRecord(models.Model):
             self.expense_id.unlink()
         else:
             raise UserError('Expense has already been paid, therefore this driving report cannot be set back to draft')
+
 
 class DrivingRecordLine(models.Model):
     _name = 'driving.record.line'
@@ -140,7 +162,7 @@ class DrivingRecordLine(models.Model):
         }
         if record: self.env['driving.record.line'].create(vals)
         return record != None
-        
+
     def add_driving_line_record(self,date,employee_id):
         date = datetime.datetime.strptime(date, '%Y-%m-%d')
         return {
