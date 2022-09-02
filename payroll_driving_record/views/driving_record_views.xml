@@ -14,7 +14,10 @@
           <field name="journal_id"/>
           <field name="private_length" optional="show" readonly="1"/>
           <field name="business_length" optional="show" readonly="1"/>
-          <field name="state" optional="show" readonly="1" decoration-info="state in ['draft']" decoration-success="state in ['sent']" widget="badge"/>
+          <field name="expense_state" optional="show" readonly="1"
+            decoration-info="expense_state == 'draft'"
+            decoration-success="expense_state in ['reported', 'approved', 'done']"
+            decoration-danger="expense_state in 'refused'" widget="badge"/>
         </tree>
       </field>
     </record>
@@ -24,15 +27,24 @@
         <field name="model">driving.record</field>
         <field name="arch" type="xml">
             <search string="Driving Records">
-                <field string="Driving Records" name="name" filter_domain="['|', '|', '|', ('employee_id', 'ilike', self), ('date_start', 'ilike', self), ('date_stop', 'ilike', self), ('analytic_account_id', 'ilike', self)]"/>
+                <field string="Driving Records" name="name"
+                  filter_domain="['|', '|', '|',
+                    ('employee_id', 'ilike', self),
+                    ('date_start', 'ilike', self),
+                    ('date_stop', 'ilike', self),
+                    ('analytic_account_id', 'ilike', self)]"/>
                 <field name="employee_id"/>
                 <field name="date_start"/>
                 <field name="date_stop"/>
                 <field name="analytic_account_id"/>
-                <filter string="My Driving Records" name="my_driving_records" domain="[('employee_id.user_id', '=', uid)]"/>
+                <field name="expense_state"/>
+                <filter string="My Driving Records" name="my_driving_records"
+                  domain="[('employee_id.user_id', '=', uid)]"/>
                 <group expand="0" string="Group By">
-                    <filter string="Employee" name="employee_group" domain="[]" context="{'group_by': 'employee_id'}"/>
-                    <filter string="Start Date" name="date_start_group" domain="[]" context="{'group_by': 'date_start:month'}" help="Start date for the Driving Record"/>
+                    <filter string="Employee" name="employee_group" domain="[]"
+                       context="{'group_by': 'employee_id'}"/>
+                    <filter string="Start Date" name="date_start_group" domain="[]"
+                       context="{'group_by': 'date_start:month'}" help="Start date for the Driving Record"/>
                 </group>
             </search>
         </field>
@@ -67,6 +79,7 @@
                 <field name="date_stop"/>
                 <field name="journal_id"/>
                 <field name="expense_id"/>
+                <field name="expense_state"/>
               </group>
             </group>
             <notebook>

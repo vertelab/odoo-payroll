@@ -54,6 +54,7 @@ class DrivingRecord(models.Model):
     analytic_account_id = fields.Many2one(comodel_name='account.analytic.account', string='Registration number')
     line_ids = fields.One2many(comodel_name='driving.record.line', inverse_name='driving_record_id', string='Driving record line')
     expense_id = fields.Many2one(comodel_name='hr.expense', string='Expense report', readonly=True)
+    expense_state = fields.Selection(related='expense_id.state', store=True)
     state = fields.Selection([
         ('draft', 'Draft'),
         ('sent', 'Sent'),
