@@ -79,7 +79,10 @@
                 <field name="date_stop"/>
                 <field name="journal_id"/>
                 <field name="expense_id"/>
-                <field name="expense_state"/>
+                <field name="expense_state" optional="show" readonly="1"
+                  decoration-info="expense_state == 'draft'"
+                  decoration-success="expense_state in ['reported', 'approved', 'done']"
+                  decoration-danger="expense_state in 'refused'" widget="badge"/>
               </group>
             </group>
             <notebook>
