@@ -1,0 +1,451 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* payroll_driving_record
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 14.0-20220407\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-09-02 07:26+0000\n"
+"PO-Revision-Date: 2022-09-02 10:40+0200\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: sv_SE\n"
+"X-Generator: Poedit 2.3\n"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__message_needaction
+msgid "Action Needed"
+msgstr "Åtgärd krävs"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__activity_ids
+msgid "Activities"
+msgstr "Aktiviteter"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "Dekoration för aktivitetsundantag"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__activity_state
+msgid "Activity State"
+msgstr "Aktivitetsstatus"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "Aktivitetstypsikon"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__message_attachment_count
+msgid "Attachment Count"
+msgstr "Antal Bilagor"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields.selection,name:payroll_driving_record.selection__driving_record_line__type__business
+msgid "Business"
+msgstr "Tjänst"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__business_length
+msgid "Business Length"
+msgstr "Tjänst Körsträcka"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__product_id
+msgid "Compensation"
+msgstr "Kostnadsersättning"
+
+#. module: payroll_driving_record
+#: model_terms:ir.ui.view,arch_db:payroll_driving_record.form_view
+msgid "Create expense"
+msgstr "Skapa utlägg"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__create_uid
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record_line__create_uid
+msgid "Created by"
+msgstr "Skapad av"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__create_date
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record_line__create_date
+msgid "Created on"
+msgstr "Skapad den"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record_line__date
+msgid "Date"
+msgstr "Datum"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record_line__partner_id
+msgid "Destination partner"
+msgstr "Resmålet"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__display_name
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record_line__display_name
+msgid "Display Name"
+msgstr "Visningsnamn"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields.selection,name:payroll_driving_record.selection__driving_record__state__draft
+msgid "Draft"
+msgstr "Utkast"
+
+#. module: payroll_driving_record
+#: model:ir.model,name:payroll_driving_record.model_driving_record
+#: model_terms:ir.ui.view,arch_db:payroll_driving_record.form_view
+#: model_terms:ir.ui.view,arch_db:payroll_driving_record.list_view
+msgid "Driving Record"
+msgstr "Körjournal"
+
+#. module: payroll_driving_record
+#: model:ir.model,name:payroll_driving_record.model_driving_record_line
+msgid "Driving Record Line"
+msgstr "Körjournalrad"
+
+#. module: payroll_driving_record
+#: model_terms:ir.ui.view,arch_db:payroll_driving_record.driving_record_view_search
+msgid "Driving Records"
+msgstr "Körjournaler"
+
+#. module: payroll_driving_record
+#: model:ir.actions.act_window,name:payroll_driving_record.driving_record_action_window
+#: model:ir.ui.menu,name:payroll_driving_record.menu_root
+msgid "Driving record"
+msgstr "Körjournal"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record_line__driving_record_id
+msgid "Driving record id"
+msgstr "Körjournal id"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__line_ids
+msgid "Driving record line"
+msgstr "Körjournalrad"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__employee_id
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record_line__employee_id
+#: model_terms:ir.ui.view,arch_db:payroll_driving_record.driving_record_view_search
+msgid "Employee"
+msgstr "Anställd"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__expense_id
+msgid "Expense report"
+msgstr "Utläggsrapport"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__message_follower_ids
+msgid "Followers"
+msgstr "Följare"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__message_channel_ids
+msgid "Followers (Channels)"
+msgstr "Följare (Kanaler)"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Följare (kontakter)"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,help:payroll_driving_record.field_driving_record__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "Font awesomeikon t.ex fa-tasks"
+
+#. module: payroll_driving_record
+#: model_terms:ir.ui.view,arch_db:payroll_driving_record.driving_record_view_search
+msgid "Group By"
+msgstr "Gruppera efter"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__id
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record_line__id
+msgid "ID"
+msgstr ""
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__activity_exception_icon
+msgid "Icon"
+msgstr "Ikon"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,help:payroll_driving_record.field_driving_record__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "Ikon för att indikera en undantagsaktivitet."
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,help:payroll_driving_record.field_driving_record__message_needaction
+#: model:ir.model.fields,help:payroll_driving_record.field_driving_record__message_unread
+msgid "If checked, new messages require your attention."
+msgstr "Om den är markerad så finns det meddelanden som kräver din uppmärksamhet."
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,help:payroll_driving_record.field_driving_record__message_has_error
+#: model:ir.model.fields,help:payroll_driving_record.field_driving_record__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Om den är markerad så finns det meddelanden som kräver din uppmärksamhet."
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__message_is_follower
+msgid "Is Follower"
+msgstr "Är följare"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__journal_id
+msgid "Journal"
+msgstr ""
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record____last_update
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record_line____last_update
+msgid "Last Modified on"
+msgstr "Senast redigerad"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__write_uid
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record_line__write_uid
+msgid "Last Updated by"
+msgstr "Senast uppdaterad av"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__write_date
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record_line__write_date
+msgid "Last Updated on"
+msgstr "Senast uppdaterad"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record_line__length
+msgid "Length (km)"
+msgstr "Körlängd (km)"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__message_main_attachment_id
+msgid "Main Attachment"
+msgstr "Huvudbilaga"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__message_has_error
+msgid "Message Delivery error"
+msgstr "Fel vid meddelandeleverans"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__message_ids
+msgid "Messages"
+msgstr "Meddelanden"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr ""
+
+#. module: payroll_driving_record
+#: model_terms:ir.ui.view,arch_db:payroll_driving_record.driving_record_view_search
+msgid "My Driving Records"
+msgstr "Mina Körjournaler"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__name
+msgid "Name"
+msgstr "Namn"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "Nästa slutdatum för aktivitet"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__activity_summary
+msgid "Next Activity Summary"
+msgstr "Nästa aktivitetssummering"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__activity_type_id
+msgid "Next Activity Type"
+msgstr "Nästa aktivitetstyp"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record_line__note
+msgid "Note"
+msgstr "Notering"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Antal åtgärder"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__message_has_error_counter
+msgid "Number of errors"
+msgstr "Antal fel"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,help:payroll_driving_record.field_driving_record__message_needaction_counter
+msgid "Number of messages which requires an action"
+msgstr "Antal meddelanden som kräver en åtgärd"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,help:payroll_driving_record.field_driving_record__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Antal meddelanden med leveransfel"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,help:payroll_driving_record.field_driving_record__message_unread_counter
+msgid "Number of unread messages"
+msgstr "Antal olästa meddelanden"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields.selection,name:payroll_driving_record.selection__driving_record_line__type__private
+msgid "Private"
+msgstr "Privat"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__private_length
+msgid "Private Length"
+msgstr "Privat Körsträcka"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,help:payroll_driving_record.field_driving_record_line__note
+msgid "Purpose of trip"
+msgstr "Resans syfte"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__analytic_account_id
+msgid "Registration number"
+msgstr "Registreringsnummer"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__activity_user_id
+msgid "Responsible User"
+msgstr "Ansvarig användare"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "SMS leveransfel"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields.selection,name:payroll_driving_record.selection__driving_record__state__sent
+msgid "Sent"
+msgstr "Skickat"
+
+#. module: payroll_driving_record
+#: model_terms:ir.ui.view,arch_db:payroll_driving_record.form_view
+msgid "Set to draft"
+msgstr "Skickat till utkast"
+
+#. module: payroll_driving_record
+#: model_terms:ir.ui.view,arch_db:payroll_driving_record.driving_record_view_search
+msgid "Start Date"
+msgstr "Startdatum"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__date_start
+msgid "Start date"
+msgstr "Startdatum"
+
+#. module: payroll_driving_record
+#: model_terms:ir.ui.view,arch_db:payroll_driving_record.driving_record_view_search
+msgid "Start date for the Driving Record"
+msgstr "Startdatum för Körjournal"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__state
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record_line__state
+msgid "State"
+msgstr ""
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__expense_state
+msgid "Status"
+msgstr ""
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,help:payroll_driving_record.field_driving_record__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+"Status baserad på aktiviteter\n"
+"Försenade: Förfallodagen har passerat\n"
+"Idag: Aktivitetsdatum är idag\n"
+"Kommande: Framtida aktiviteter."
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,help:payroll_driving_record.field_driving_record__expense_state
+msgid "Status of the expense."
+msgstr "Status av Utlägg."
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__date_stop
+msgid "Stop date"
+msgstr "Slutdatum"
+
+#. module: payroll_driving_record
+#: model_terms:ir.ui.view,arch_db:payroll_driving_record.form_view
+msgid "Trips"
+msgstr "Resor"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record_line__type
+msgid "Type"
+msgstr "Typ"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,help:payroll_driving_record.field_driving_record__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "Typ av undantagsaktivitet i posten."
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__message_unread
+msgid "Unread Messages"
+msgstr "Olästa meddelanden"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__message_unread_counter
+msgid "Unread Messages Counter"
+msgstr "Räknare olästa meddelanden"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record_line__vehicle_id
+msgid "Vehicle"
+msgstr "Bil"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__website_message_ids
+msgid "Website Messages"
+msgstr "Webbplatsmeddelanden"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,help:payroll_driving_record.field_driving_record__website_message_ids
+msgid "Website communication history"
+msgstr "Webbplatsens kommunikationshistorik"
+
+#. module: payroll_driving_record
+#: model_terms:ir.ui.view,arch_db:payroll_driving_record.form_view
+msgid "driving record from"
+msgstr "Körjournal från."
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record_line__odometer_start
+msgid "odometer start"
+msgstr "odometer start"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record_line__odometer_stop
+msgid "odometer stop"
+msgstr "odometer stop"
