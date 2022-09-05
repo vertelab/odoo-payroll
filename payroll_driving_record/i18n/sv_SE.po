@@ -438,14 +438,24 @@ msgstr "Webbplatsens kommunikationshistorik"
 #. module: payroll_driving_record
 #: model_terms:ir.ui.view,arch_db:payroll_driving_record.form_view
 msgid "driving record from"
-msgstr "Körjournal från."
+msgstr "Körjournal från"
 
 #. module: payroll_driving_record
 #: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record_line__odometer_start
 msgid "odometer start"
-msgstr "odometer start"
+msgstr "Vägmätare start"
 
 #. module: payroll_driving_record
 #: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record_line__odometer_stop
 msgid "odometer stop"
-msgstr "odometer stop"
+msgstr "Vägmätare stopp"
+
+#. module: payroll_driving_record
+#: model_terms:ir.ui.view,arch_db:payroll_driving_record.list_view
+msgid "Total Buisiness Length"
+msgstr "Total Tjänst Körsträcka"
+
+#. module: payroll_driving_record
+#: model_terms:ir.ui.view,arch_db:payroll_driving_record.list_view
+msgid "Total Private Length"
+msgstr "Total Privat Körsträcka"
