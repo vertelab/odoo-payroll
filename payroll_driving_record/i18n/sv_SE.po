@@ -443,9 +443,9 @@ msgstr "Körjournal från."
 #. module: payroll_driving_record
 #: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record_line__odometer_start
 msgid "odometer start"
-msgstr "odometer start"
+msgstr "Vägmätare start"
 
 #. module: payroll_driving_record
 #: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record_line__odometer_stop
 msgid "odometer stop"
-msgstr "odometer stop"
+msgstr "Vägmätare stopp"
