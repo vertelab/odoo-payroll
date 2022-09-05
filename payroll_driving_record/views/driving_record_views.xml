@@ -12,8 +12,8 @@
           <field name="date_stop"/>
           <field name="analytic_account_id"/>
           <field name="journal_id"/>
-          <field name="private_length" optional="show" readonly="1"/>
-          <field name="business_length" optional="show" readonly="1"/>
+          <field name="private_length" sum="Total Private Length" optional="show" readonly="1"/>
+          <field name="business_length" sum="Total Buisiness Length"  optional="show" readonly="1"/>
           <field name="expense_state" optional="show" readonly="1"
             decoration-info="expense_state == 'draft'"
             decoration-success="expense_state in ['reported', 'approved', 'done']"
