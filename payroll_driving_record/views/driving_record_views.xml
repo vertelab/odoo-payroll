@@ -195,8 +195,27 @@
               action="payroll_driving_record.action_server"/> -->
 
 
-
-
+    <record id="driving_record_line_form" model="ir.ui.view">
+      <field name="name">driving.record.line.form</field>
+      <field name="model">driving.record.line</field>
+      <field name="arch" type="xml">
+        <form string="Driving Record Line" class="o_form_">
+          <sheet string="Driving Record Line" modifiers="{}">
+            <group col="4" modifiers="{}">
+              <field name="date" modifiers="{'required':true}" id="date" />
+              <field name="odometer_start" on_change="1"
+                modifiers="{'required':true}" id="odometer_start" />
+              <field name="type" modifiers="{'required':true}" id="type" />
+              <field name="odometer_stop" on_change="1"
+                modifiers="{'required':true}" id="odometer_stop" />
+              <field name="note" modifiers="{}" id="note" />
+              <field name="length" modifiers="{'readonly':true}" id="length" />
+              <separator modifiers="{}" />
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
 
   </data>
 </odoo>

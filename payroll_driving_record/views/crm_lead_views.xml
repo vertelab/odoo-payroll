@@ -27,7 +27,6 @@
                     <field name="odometer_start"/>
                     <field name="odometer_stop"/>
                     <field name="length" sum="Total Length" readonly="True"/>
-                    <field name="partner_id" readonly="True"/>
                     <field name="note"/>
                 </tree>
             </field>
@@ -38,8 +37,8 @@
             <field name="res_model">driving.record.line</field>
             <field name="view_mode">tree,form</field>
             <field name="view_id" ref="view_driving_record_lines_tree"/>
+            <field name="context">{}</field>
         </record>
-
 
     </data>
 </odoo>

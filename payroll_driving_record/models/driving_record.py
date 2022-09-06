@@ -64,10 +64,19 @@ class DrivingRecord(models.Model):
     business_length = fields.Integer(compute=_compute_business_length)
 
 
-    @api.constrains('date_stop')
+    @api.constrains('date_start','date_stop')
     def stop_before_start_date(self):
         if(not self.date_start <= self.date_stop):
             raise ValidationError("Stop date can not be before the start date.")
+
+    @api.constrains('date_start','date_stop')
+    def overlapping_dates(self):
+        for records in self.env['driving.record'].search([('employee_id.id','=',self.employee_id.id), ('id','!=',self.id)]):
+            _logger.warning(f"{records.id=}" + "  " f"{self.id}")
+            _logger.warning(f"{records.date_start=}" + " to " + f"{records.date_stop=}" + "  vs  " + f"{self.date_start=}" + " to " + f"{self.date_stop=}")
+            if not((records.date_start < self.date_start and records.date_stop < self.date_start) or
+                   (records.date_start > self.date_stop and records.date_stop > self.date_stop)):
+                raise ValidationError("The selected time period overlaps with an existing time period, which is not allowed.")
 
     def action_create_expense(self):
         self.state = 'sent'
@@ -105,7 +114,7 @@ class DrivingRecordLine(models.Model):
     _name = 'driving.record.line'
     _description = 'Driving Record Line'
 
-    driving_record_id = fields.Many2one('driving.record', string='Driving record id', required=1)
+    driving_record_id = fields.Many2one('driving.record', string='Driving record id', required=1, ondelete='cascade')
 
     @api.model
     def _default_date(self):
@@ -147,8 +156,7 @@ class DrivingRecordLine(models.Model):
                 raise ValidationError("Stop odometer value can not be lower than the start odometer value.")
 
     @api.model
-    def add_driving_line(self,date,odometer_start,odometer_stop,note,type,employee_id):
-        # _logger.warning(f' {date=} {odometer_start=} {odometer_stop=} {note=} {type=} {employee_id=}')
+    def add_driving_line(self,date,odometer_start,odometer_stop,note,type,employee_id,return_line=False):
         record = self.env['driving.record'].search([('date_start','<=',date),('date_stop','>=',date),('employee_id','=',employee_id)],limit=1)
 
         if not record:
@@ -161,7 +169,9 @@ class DrivingRecordLine(models.Model):
             'odometer_stop': odometer_stop,
             'note': note,
         }
-        if record: self.env['driving.record.line'].create(vals)
+        line = self.env['driving.record.line'].create(vals)
+        if return_line:
+            return line
         return record != None
 
     def add_driving_line_record(self,date,employee_id):
@@ -171,3 +181,23 @@ class DrivingRecordLine(models.Model):
                 'date_start': date.replace(day=1),
                 'date_stop': date.replace(month=(date.month % 12) + 1, day=1) - datetime.timedelta(days=1),
             }
+
+    @api.model
+    def create(self,values):
+        if not 'driving_record_id' in values:
+            _logger.warning("In the If")
+            line = self.add_driving_line(
+                values.get('date', fields.Date.today()),
+                values.get('odometer_start'),
+                values.get('odometer_stop'),
+                values.get('note'),
+                values.get('type', 'private'),
+                values.get('employee_id', self.env.user.employee_id.id),
+                True)
+            _logger.warning(f"{self._context.get('partner_id')=}")
+            _logger.warning(f"{self.env.context.get('partner_id')=}")
+            line.partner_id = self._context.get('partner_id', None)
+        else:
+            _logger.warning(f"{values=}")
+            line = super(DrivingRecordLine, self).create(values)
+        return line
