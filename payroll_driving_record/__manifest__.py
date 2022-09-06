@@ -53,6 +53,7 @@
         'security/ir_rule.xml',
         'security/ir.model.access.csv',
         'views/driving_record_views.xml',
+        'views/crm_lead_views.xml',
         'data/drive_expense_journal.xml'
     ],
     # only loaded in demonstration mode
