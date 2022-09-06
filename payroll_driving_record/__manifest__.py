@@ -46,7 +46,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['account', 'hr_expense', 'base', 'account_journal_select_payable_receivable_account', 'hr_expense_journal_selection'],
+    'depends': ['account', 'hr_expense', 'account_journal_select_payable_receivable_account', 'hr_expense_journal_selection'],
 
     # always loaded
     'data': [
