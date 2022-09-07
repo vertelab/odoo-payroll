@@ -132,10 +132,7 @@ class DrivingRecordLine(models.Model):
     partner_id = fields.Many2one(comodel_name='res.partner', string='Destination partner')
     vehicle_id = fields.Many2one(comodel_name='account.analytic.account', string='Vehicle', related='driving_record_id.analytic_account_id',store=True)
     employee_id = fields.Many2one(comodel_name='hr.employee', string='Employee', related='driving_record_id.employee_id', store=True)
-    state = fields.Selection([
-        ('draft', 'Draft'),
-        ('sent', 'Sent'),
-    ], string='State',related='driving_record_id.state', store=True)
+    state = fields.Selection(string='State',related='driving_record_id.state', store=True)
 
     @api.onchange('odometer_start', 'odometer_stop')
     @api.depends('odometer_start', 'odometer_stop')
