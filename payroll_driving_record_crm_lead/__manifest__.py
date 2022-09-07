@@ -20,19 +20,18 @@
 ##############################################################################
 
 {
-    'name': 'Payroll: Payroll Driving Record',
+    'name': 'Payroll: Driving Record: Crm Lead',
     'version': '14.0.0.0.0',
     # Version ledger: 14.0 = Odoo version. 1 = Major. Non regressionable code. 2 = Minor. New features that are regressionable. 3 = Bug fixes
     'summary': """
-        Short (1 phrase/line) summary of the module's purpose, used as
-        subtitle on modules listing or apps.openerp.com""",
+        A glue module which gives smartbutton functionality to crm lead for driving record lines""",
     'category': 'Productivity',
     'description': """
-        Long description of module's purpose
+        A glue module which gives smartbutton functionality to crm lead for driving record lines.
     """,
     #'sequence': '1',
     'author': 'Vertel AB',
-    'website': 'https://vertel.se/apps/odoo-payroll/payroll_driving_record',
+    'website': 'https://vertel.se/apps/odoo-payroll/payroll_driving_record_crm_lead',
     'images': ['/static/description/banner.png'], # 560x280 px.
     'license': 'AGPL-3',
     'contributor': '',
@@ -46,17 +45,11 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['account', 'hr_expense', 'account_journal_select_payable_receivable_account', 'hr_expense_journal_selection'],
+    'depends': ['payroll_driving_record', 'crm'],
 
     # always loaded
     'data': [
-        'security/ir_rule.xml',
-        'security/ir.model.access.csv',
-        'views/driving_record_views.xml',
-        'data/drive_expense_journal.xml'
+        'views/crm_lead_views.xml'
     ],
-    # only loaded in demonstration mode
-    'demo': [
-        'demo/demo.xml',
-    ],
+    'auto_install': True,
 }

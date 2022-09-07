@@ -1,0 +1,63 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* payroll_driving_record_crm_lead
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 14.0-20220407\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-09-07 07:31+0000\n"
+"PO-Revision-Date: 2022-09-07 09:32+0200\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: sv\n"
+"X-Generator: Poedit 2.3\n"
+
+#. module: payroll_driving_record_crm_lead
+#: model_terms:ir.ui.view,arch_db:payroll_driving_record_crm_lead.crm_lead_view_form_driving_record_button
+msgid "<span class=\"o_stat_text\">Trips</span>"
+msgstr "<span class=\"o_stat_text\">Resor</span>"
+
+#. module: payroll_driving_record_crm_lead
+#: model:ir.model.fields,field_description:payroll_driving_record_crm_lead.field_crm_lead__display_name
+msgid "Display Name"
+msgstr "Visningsnamn"
+
+#. module: payroll_driving_record_crm_lead
+#: model_terms:ir.ui.view,arch_db:payroll_driving_record_crm_lead.view_driving_record_lines_tree
+msgid "Driving Record"
+msgstr ""
+
+#. module: payroll_driving_record_crm_lead
+#: model:ir.model.fields,field_description:payroll_driving_record_crm_lead.field_crm_lead__driving_record_lines_count
+msgid "Driving Records"
+msgstr ""
+
+#. module: payroll_driving_record_crm_lead
+#: model:ir.model.fields,field_description:payroll_driving_record_crm_lead.field_crm_lead__id
+msgid "ID"
+msgstr ""
+
+#. module: payroll_driving_record_crm_lead
+#: model:ir.model.fields,field_description:payroll_driving_record_crm_lead.field_crm_lead____last_update
+msgid "Last Modified on"
+msgstr "Senast redigerad"
+
+#. module: payroll_driving_record_crm_lead
+#: model:ir.model,name:payroll_driving_record_crm_lead.model_crm_lead
+msgid "Lead/Opportunity"
+msgstr "Lead/möjlighet"
+
+#. module: payroll_driving_record_crm_lead
+#: model_terms:ir.ui.view,arch_db:payroll_driving_record_crm_lead.view_driving_record_lines_tree
+msgid "Total Length"
+msgstr "Total Körlängd"
+
+#. module: payroll_driving_record_crm_lead
+#: model:ir.actions.act_window,name:payroll_driving_record_crm_lead.action_driving_record_lines
+msgid "Trips"
+msgstr "Resor"
