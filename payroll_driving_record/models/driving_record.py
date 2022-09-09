@@ -7,6 +7,7 @@ import logging
 _logger = logging.getLogger(__name__)
 import datetime
 
+
 class DrivingRecord(models.Model):
     _name = 'driving.record'
     _inherit = ['mail.thread', 'mail.activity.mixin']
@@ -45,7 +46,8 @@ class DrivingRecord(models.Model):
     @api.depends('date_start','date_stop')
     def _compute_name(self):
         for record in self:
-            record.name = _(f'{record.employee_id.name} {record.date_start} - {record.date_stop}')
+            record.name = f'{record.employee_id.name} {record.date_start} - {record.date_stop}'
+
     name = fields.Char(compute=_compute_name)
     product_id = fields.Many2one(comodel_name='product.product', string='Compensation', domain="[('can_be_expensed', '=', True)]")
     employee_id = fields.Many2one(comodel_name='hr.employee', string='Employee', default=_default_employee, required=1)
@@ -67,21 +69,25 @@ class DrivingRecord(models.Model):
     @api.constrains('date_start','date_stop')
     def stop_before_start_date(self):
         if(not self.date_start <= self.date_stop):
-            raise ValidationError("Stop date can not be before the start date.")
+            raise ValidationError(_("Stop date can not be before the start date."))
 
     @api.constrains('date_start','date_stop')
     def overlapping_dates(self):
-        for records in self.env['driving.record'].search([('employee_id.id','=',self.employee_id.id), ('id','!=',self.id)]):
-            _logger.warning(f"{records.id=}" + "  " f"{self.id}")
-            _logger.warning(f"{records.date_start=}" + " to " + f"{records.date_stop=}" + "  vs  " + f"{self.date_start=}" + " to " + f"{self.date_stop=}")
-            if not((records.date_start < self.date_start and records.date_stop < self.date_start) or
-                   (records.date_start > self.date_stop and records.date_stop > self.date_stop)):
-                raise ValidationError("The selected time period overlaps with an existing time period, which is not allowed.")
+        for record in self.env['driving.record'].search([('employee_id.id','=',self.employee_id.id), ('id','!=',self.id)]):
+            if not((record.date_start < self.date_start and record.date_stop < self.date_start) or
+                   (record.date_start > self.date_stop and record.date_stop > self.date_stop)):
+                raise ValidationError(_("The selected time period overlaps with an existing time period for this employee, which is not allowed."))
+
+    @api.depends('analytic_account_id')
+    def check_overlaping_odometer(self):
+        for lines in self.line_ids:
+            lines.overlaping_odometer()
+            lines.gap_odometer()
 
     def action_create_expense(self):
         self.state = 'sent'
         expense = self.env['hr.expense'].create({
-            'name': _(f'{self.employee_id.name} - Driving Compensation - {fields.Date.today()}'),
+            'name': (f'{self.employee_id.name}' + ' - ' + _('Driving Compensation') + ' - ' + f'{fields.Date.today()}'),
             'product_uom_id': self.product_id.uom_id.id,
             'unit_amount': self.product_id.lst_price,
             'quantity': sum(self.line_ids.filtered(lambda e : e.type == "business").mapped('length'))  / 10,
@@ -92,7 +98,7 @@ class DrivingRecord(models.Model):
         })
         expense.product_id = self.product_id.id
         self.expense_id = expense
-        expense.message_post(body=_(f'Based on <A href="/web#id={self.id}&model=driving.record">Driving record</A> '))
+        expense.message_post(body=(f'Based on <A href="/web#id={self.id}&model=driving.record">' + _('Driving record') + '</A> '))
         return {
             'type': 'ir.actions.act_window',
             'view_type': 'form',
@@ -107,7 +113,7 @@ class DrivingRecord(models.Model):
             self.state = 'draft'
             self.expense_id.unlink()
         else:
-            raise UserError('Expense has already been paid, therefore this driving report cannot be set back to draft')
+            raise UserError(_('Expense has already been paid, therefore this driving report cannot be set back to draft'))
 
 
 class DrivingRecordLine(models.Model):
@@ -121,10 +127,10 @@ class DrivingRecordLine(models.Model):
         return datetime.date.today()
 
     date = fields.Date(string='Date', required=1, default=_default_date)
-    odometer_start = fields.Integer(string='odometer start', required=1)
-    odometer_stop = fields.Integer(string='odometer stop', required=1)
     length = fields.Integer(string='Length (km)', store=True, compute='compute_length')
-    note = fields.Char(string='Note', help="Purpose of trip")
+    odometer_start = fields.Integer(string='odometer start', required=1, store=True)
+    odometer_stop = fields.Integer(string='odometer stop', required=1)
+    note = fields.Char(string='Note', help=_("Purpose of trip"))
     type = fields.Selection([
         ('private', 'Private'),
         ('business', 'Business')
@@ -144,13 +150,45 @@ class DrivingRecordLine(models.Model):
     def stop_before_start_date(self):
         for record in self:
             if(record.date < record.driving_record_id.date_start or record.date > record.driving_record_id.date_stop):
-                raise ValidationError("Date must be within the driving range dates.")
+                raise ValidationError(_("Date must be within the driving range dates."))
 
-    @api.constrains('odometer_stop')
+    # Performs several odometer constraints in the correct order:
+    @api.constrains('odometer_stop', 'odometer_stop')
+    def odomoter_constraints(self):
+        # Checks that start and stop dates are not in the wrong order
+        self.stop_before_start_odometer()
+        # Checks that the odometer readings never overlap with eachother, per vehicle.
+        self.overlapping_odometer()
+        # Checks that there are no gaps between odometer records, per vehicle.
+        self.gaps_odometer()
+
     def stop_before_start_odometer(self):
         for record in self:
             if(not record.odometer_start <= record.odometer_stop):
-                raise ValidationError("Stop odometer value can not be lower than the start odometer value.")
+                raise ValidationError(_("Stop odometer value can not be lower than the start odometer value."))
+
+    def overlapping_odometer(self):
+        for line in self.env['driving.record.line'].search([('vehicle_id.id','=',self.vehicle_id.id), ('id','!=',self.id)]):
+            if not((line.odometer_start <= self.odometer_start and line.odometer_stop <= self.odometer_start) or
+                   (line.odometer_start >= self.odometer_stop and line.odometer_stop >= self.odometer_stop)):
+                raise ValidationError(_("There is overlap of the odometer records for the following Driving Record lines: ") + '\n' +
+                f"{self.date}" + _(" start: ") + f"{self.odometer_start}" + _(" stop: ") + f"{self.odometer_stop}" + '\n' +
+                f"{line.date}" + _(" start: ") + f"{line.odometer_start}" + _(" stop: ") + f"{line.odometer_stop}")
+
+    def gaps_odometer(self):
+        odometer_lowest = self.odometer_start
+        odometer_higest = self.odometer_stop
+        sum_distance = self.odometer_stop - self.odometer_start
+        for line in self.env['driving.record.line'].search([('vehicle_id.id','=',self.vehicle_id.id), ('id','!=',self.id)]):
+            sum_distance = sum_distance + line.odometer_stop - line.odometer_start
+            if line.odometer_start < odometer_lowest:
+                odometer_lowest = line.odometer_start
+            if line.odometer_stop > odometer_higest:
+                odometer_higest = line.odometer_stop
+        if odometer_higest - odometer_lowest != sum_distance:
+                raise ValidationError(_("Expected total distance driven for: ") + f"{self.vehicle_id.display_name}" +
+                _(" was: ") + f"{odometer_higest - odometer_lowest}" + _(" but was instead found to be: ") + f"{sum_distance}" + '\n' +
+                _("Is there a gap between Odometer records?"))
 
     @api.model
     def add_driving_line(self,date,odometer_start,odometer_stop,note,type,employee_id,return_line=False):
