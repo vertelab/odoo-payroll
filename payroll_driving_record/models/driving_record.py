@@ -78,6 +78,12 @@ class DrivingRecord(models.Model):
                    (record.date_start > self.date_stop and record.date_stop > self.date_stop)):
                 raise ValidationError(_("The selected time period overlaps with an existing time period for this employee, which is not allowed."))
 
+    @api.constrains('analytic_account_id')
+    def check_odometer_on_vehicle_change(self):
+        for record in self.env['driving.record'].search([('analytic_account_id.id','=',self.analytic_account_id.id)]):
+            for line in record.line_ids:
+                line.odomoter_constraints()
+
     @api.depends('analytic_account_id')
     def check_overlaping_odometer(self):
         for lines in self.line_ids:
@@ -128,8 +134,8 @@ class DrivingRecordLine(models.Model):
 
     date = fields.Date(string='Date', required=1, default=_default_date)
     length = fields.Integer(string='Length (km)', store=True, compute='compute_length')
-    odometer_start = fields.Integer(string='odometer start', required=1, store=True)
-    odometer_stop = fields.Integer(string='odometer stop', required=1)
+    odometer_start = fields.Integer(string='Odometer start', required=1, store=True)
+    odometer_stop = fields.Integer(string='Odometer stop', required=1)
     note = fields.Char(string='Note', help=_("Purpose of trip"))
     type = fields.Selection([
         ('private', 'Private'),
@@ -153,7 +159,7 @@ class DrivingRecordLine(models.Model):
                 raise ValidationError(_("Date must be within the driving range dates."))
 
     # Performs several odometer constraints in the correct order:
-    @api.constrains('odometer_stop', 'odometer_stop')
+    @api.constrains('odometer_start', 'odometer_stop')
     def odomoter_constraints(self):
         # Checks that start and stop dates are not in the wrong order
         self.stop_before_start_odometer()
@@ -171,9 +177,9 @@ class DrivingRecordLine(models.Model):
         for line in self.env['driving.record.line'].search([('vehicle_id.id','=',self.vehicle_id.id), ('id','!=',self.id)]):
             if not((line.odometer_start <= self.odometer_start and line.odometer_stop <= self.odometer_start) or
                    (line.odometer_start >= self.odometer_stop and line.odometer_stop >= self.odometer_stop)):
-                raise ValidationError(_("There is overlap of the odometer records for the following Driving Record lines: ") + '\n' +
-                f"{self.date}" + _(" start: ") + f"{self.odometer_start}" + _(" stop: ") + f"{self.odometer_stop}" + '\n' +
-                f"{line.date}" + _(" start: ") + f"{line.odometer_start}" + _(" stop: ") + f"{line.odometer_stop}")
+                raise ValidationError(_("There is overlap of the odometer records for the following Driving Record lines:") + '\n' +
+                f"{line.date} " + _("start:") + f" {line.odometer_start} " + _("stop:") + f" {line.odometer_stop} " + '\n' +
+                f"{self.date} " + _("start:") + f" {self.odometer_start} " + _("stop:") + f" {self.odometer_stop} ")
 
     def gaps_odometer(self):
         odometer_lowest = self.odometer_start
@@ -186,8 +192,8 @@ class DrivingRecordLine(models.Model):
             if line.odometer_stop > odometer_higest:
                 odometer_higest = line.odometer_stop
         if odometer_higest - odometer_lowest != sum_distance:
-                raise ValidationError(_("Expected total distance driven for: ") + f"{self.vehicle_id.display_name}" +
-                _(" was: ") + f"{odometer_higest - odometer_lowest}" + _(" but was instead found to be: ") + f"{sum_distance}" + '\n' +
+                raise ValidationError(_("Expected total distance driven for:") + f" {self.vehicle_id.display_name} " +
+                _("was:") + f" {odometer_higest - odometer_lowest} " + _("but was instead found to be:") + f" {sum_distance}" + '\n' +
                 _("Is there a gap between Odometer records?"))
 
     @api.model
@@ -220,7 +226,6 @@ class DrivingRecordLine(models.Model):
     @api.model
     def create(self,values):
         if not 'driving_record_id' in values:
-            _logger.warning("In the If")
             line = self.add_driving_line(
                 values.get('date', fields.Date.today()),
                 values.get('odometer_start'),
@@ -229,8 +234,6 @@ class DrivingRecordLine(models.Model):
                 values.get('type', 'private'),
                 values.get('employee_id', self.env.user.employee_id.id),
                 True)
-            _logger.warning(f"{self._context.get('partner_id')=}")
-            _logger.warning(f"{self.env.context.get('partner_id')=}")
             line.partner_id = self._context.get('partner_id', None)
         else:
             _logger.warning(f"{values=}")

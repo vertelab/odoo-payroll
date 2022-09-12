@@ -4,17 +4,17 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 14.0-20220407\n"
+"Project-Id-Version: Odoo Server 14.0-20220907\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-02 07:26+0000\n"
-"PO-Revision-Date: 2022-09-02 10:40+0200\n"
+"POT-Creation-Date: 2022-09-12 07:07+0000\n"
+"PO-Revision-Date: 2022-09-12 09:11+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: \n"
-"Language: sv_SE\n"
+"Language: sv\n"
 "X-Generator: Poedit 2.3\n"
 
 #. module: payroll_driving_record
@@ -85,6 +85,12 @@ msgid "Date"
 msgstr "Datum"
 
 #. module: payroll_driving_record
+#: code:addons/payroll_driving_record/models/driving_record.py:0
+#, python-format
+msgid "Date must be within the driving range dates."
+msgstr "Datumet måste vara inom det givna datumintervallet."
+
+#. module: payroll_driving_record
 #: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record_line__partner_id
 msgid "Destination partner"
 msgstr "Resmålet"
@@ -101,6 +107,12 @@ msgid "Draft"
 msgstr "Utkast"
 
 #. module: payroll_driving_record
+#: code:addons/payroll_driving_record/models/driving_record.py:0
+#, python-format
+msgid "Driving Compensation"
+msgstr "Milersättning"
+
+#. module: payroll_driving_record
 #: model:ir.model,name:payroll_driving_record.model_driving_record
 #: model_terms:ir.ui.view,arch_db:payroll_driving_record.form_view
 #: model_terms:ir.ui.view,arch_db:payroll_driving_record.list_view
@@ -109,6 +121,7 @@ msgstr "Körjournal"
 
 #. module: payroll_driving_record
 #: model:ir.model,name:payroll_driving_record.model_driving_record_line
+#: model_terms:ir.ui.view,arch_db:payroll_driving_record.driving_record_line_form
 msgid "Driving Record Line"
 msgstr "Körjournalrad"
 
@@ -118,8 +131,10 @@ msgid "Driving Records"
 msgstr "Körjournaler"
 
 #. module: payroll_driving_record
+#: code:addons/payroll_driving_record/models/driving_record.py:0
 #: model:ir.actions.act_window,name:payroll_driving_record.driving_record_action_window
 #: model:ir.ui.menu,name:payroll_driving_record.menu_root
+#, python-format
 msgid "Driving record"
 msgstr "Körjournal"
 
@@ -139,6 +154,22 @@ msgstr "Körjournalrad"
 #: model_terms:ir.ui.view,arch_db:payroll_driving_record.driving_record_view_search
 msgid "Employee"
 msgstr "Anställd"
+
+#. module: payroll_driving_record
+#: code:addons/payroll_driving_record/models/driving_record.py:0
+#, python-format
+msgid "Expected total distance driven for:"
+msgstr "Förväntat total körlängd var:"
+
+#. module: payroll_driving_record
+#: code:addons/payroll_driving_record/models/driving_record.py:0
+#, python-format
+msgid ""
+"Expense has already been paid, therefore this driving report cannot be set "
+"back to draft"
+msgstr ""
+"Utlägget har redan betalas, därför kan denna körrapport ej sättas tillbaka "
+"till utkast"
 
 #. module: payroll_driving_record
 #: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__expense_id
@@ -190,18 +221,26 @@ msgstr "Ikon för att indikera en undantagsaktivitet."
 #: model:ir.model.fields,help:payroll_driving_record.field_driving_record__message_needaction
 #: model:ir.model.fields,help:payroll_driving_record.field_driving_record__message_unread
 msgid "If checked, new messages require your attention."
-msgstr "Om den är markerad så finns det meddelanden som kräver din uppmärksamhet."
+msgstr ""
+"Om den är markerad så finns det meddelanden som kräver din uppmärksamhet."
 
 #. module: payroll_driving_record
 #: model:ir.model.fields,help:payroll_driving_record.field_driving_record__message_has_error
 #: model:ir.model.fields,help:payroll_driving_record.field_driving_record__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
-msgstr "Om den är markerad så finns det meddelanden som kräver din uppmärksamhet."
+msgstr ""
+"Om den är markerad så finns det meddelanden som kräver din uppmärksamhet."
 
 #. module: payroll_driving_record
 #: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__message_is_follower
 msgid "Is Follower"
 msgstr "Är följare"
+
+#. module: payroll_driving_record
+#: code:addons/payroll_driving_record/models/driving_record.py:0
+#, python-format
+msgid "Is there a gap between Odometer records?"
+msgstr "Finns det ett gap mellan Vägmätningarna?"
 
 #. module: payroll_driving_record
 #: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__journal_id
@@ -307,6 +346,16 @@ msgid "Number of unread messages"
 msgstr "Antal olästa meddelanden"
 
 #. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record_line__odometer_start
+msgid "Odometer start"
+msgstr ""
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record_line__odometer_stop
+msgid "Odometer stop"
+msgstr ""
+
+#. module: payroll_driving_record
 #: model:ir.model.fields.selection,name:payroll_driving_record.selection__driving_record_line__type__private
 msgid "Private"
 msgstr "Privat"
@@ -317,7 +366,8 @@ msgid "Private Length"
 msgstr "Privat Körsträcka"
 
 #. module: payroll_driving_record
-#: model:ir.model.fields,help:payroll_driving_record.field_driving_record_line__note
+#: code:addons/payroll_driving_record/models/driving_record.py:0
+#, python-format
 msgid "Purpose of trip"
 msgstr "Resans syfte"
 
@@ -325,6 +375,11 @@ msgstr "Resans syfte"
 #: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__analytic_account_id
 msgid "Registration number"
 msgstr "Registreringsnummer"
+
+#. module: payroll_driving_record
+#: model:ir.model.fields,help:payroll_driving_record.field_driving_record_line__note
+msgid "Resans syfte"
+msgstr ""
 
 #. module: payroll_driving_record
 #: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record__activity_user_id
@@ -396,6 +451,46 @@ msgid "Stop date"
 msgstr "Slutdatum"
 
 #. module: payroll_driving_record
+#: code:addons/payroll_driving_record/models/driving_record.py:0
+#, python-format
+msgid "Stop date can not be before the start date."
+msgstr "Slutdatum kan ej vara före startdatum."
+
+#. module: payroll_driving_record
+#: code:addons/payroll_driving_record/models/driving_record.py:0
+#, python-format
+msgid "Stop odometer value can not be lower than the start odometer value."
+msgstr "Vägmätarens stoppvärde kan ej vara lägre än vägmatarens startvärde."
+
+#. module: payroll_driving_record
+#: code:addons/payroll_driving_record/models/driving_record.py:0
+#, python-format
+msgid ""
+"The selected time period overlaps with an existing time period for this "
+"employee, which is not allowed."
+msgstr ""
+"Den valda tidsperioden överlappar med en existerande tidsperiod för denna "
+"anställd, vilket ej är tillåtet."
+
+#. module: payroll_driving_record
+#: code:addons/payroll_driving_record/models/driving_record.py:0
+#, python-format
+msgid ""
+"There is overlap of the odometer records for the following Driving Record "
+"lines:"
+msgstr "Vägmätarevärden överlappar för följande resor:"
+
+#. module: payroll_driving_record
+#: model_terms:ir.ui.view,arch_db:payroll_driving_record.list_view
+msgid "Total Buisiness Length"
+msgstr "Total Tjänst Körsträcka"
+
+#. module: payroll_driving_record
+#: model_terms:ir.ui.view,arch_db:payroll_driving_record.list_view
+msgid "Total Private Length"
+msgstr "Total Privat Körsträcka"
+
+#. module: payroll_driving_record
 #: model_terms:ir.ui.view,arch_db:payroll_driving_record.form_view
 msgid "Trips"
 msgstr "Resor"
@@ -436,26 +531,30 @@ msgid "Website communication history"
 msgstr "Webbplatsens kommunikationshistorik"
 
 #. module: payroll_driving_record
+#: code:addons/payroll_driving_record/models/driving_record.py:0
+#, python-format
+msgid "but was instead found to be:"
+msgstr "men fanns istället att vara:"
+
+#. module: payroll_driving_record
 #: model_terms:ir.ui.view,arch_db:payroll_driving_record.form_view
 msgid "driving record from"
-msgstr "Körjournal från"
+msgstr "körjournal från"
 
 #. module: payroll_driving_record
-#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record_line__odometer_start
-msgid "odometer start"
-msgstr "Vägmätare start"
+#: code:addons/payroll_driving_record/models/driving_record.py:0
+#, python-format
+msgid "start:"
+msgstr "start:"
 
 #. module: payroll_driving_record
-#: model:ir.model.fields,field_description:payroll_driving_record.field_driving_record_line__odometer_stop
-msgid "odometer stop"
-msgstr "Vägmätare stopp"
+#: code:addons/payroll_driving_record/models/driving_record.py:0
+#, python-format
+msgid "stop:"
+msgstr "stopp:"
 
 #. module: payroll_driving_record
-#: model_terms:ir.ui.view,arch_db:payroll_driving_record.list_view
-msgid "Total Buisiness Length"
-msgstr "Total Tjänst Körsträcka"
-
-#. module: payroll_driving_record
-#: model_terms:ir.ui.view,arch_db:payroll_driving_record.list_view
-msgid "Total Private Length"
-msgstr "Total Privat Körsträcka"
+#: code:addons/payroll_driving_record/models/driving_record.py:0
+#, python-format
+msgid "was:"
+msgstr "var:"
