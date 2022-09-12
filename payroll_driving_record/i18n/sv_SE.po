@@ -158,8 +158,8 @@ msgstr "Anställd"
 #. module: payroll_driving_record
 #: code:addons/payroll_driving_record/models/driving_record.py:0
 #, python-format
-msgid "Expected total distance driven for:"
-msgstr "Förväntat total körlängd var:"
+msgid "Expected total distance driven for car:"
+msgstr "Förväntat total körlängd för bilen:"
 
 #. module: payroll_driving_record
 #: code:addons/payroll_driving_record/models/driving_record.py:0
