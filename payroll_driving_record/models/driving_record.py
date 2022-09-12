@@ -71,9 +71,9 @@ class DrivingRecord(models.Model):
         if(not self.date_start <= self.date_stop):
             raise ValidationError(_("Stop date can not be before the start date."))
 
-    @api.constrains('date_start','date_stop')
+    @api.constrains('date_start','date_stop','employee_id','analytic_account_id')
     def overlapping_dates(self):
-        for record in self.env['driving.record'].search([('employee_id.id','=',self.employee_id.id), ('id','!=',self.id)]):
+        for record in self.env['driving.record'].search([('employee_id.id','=',self.employee_id.id), ('analytic_account_id.id','=',self.analytic_account_id.id), ('id','!=',self.id)]):
             if not((record.date_start < self.date_start and record.date_stop < self.date_start) or
                    (record.date_start > self.date_stop and record.date_stop > self.date_stop)):
                 raise ValidationError(_("The selected time period overlaps with an existing time period for this employee, which is not allowed."))
