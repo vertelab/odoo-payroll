@@ -1,0 +1,35 @@
+<odoo>
+    <data noupdate="0">
+        <record model="account.analytic.account">
+            <field name="name">ABC123</field>
+        </record>
+
+        <record id="driving_record_demo" model="driving.record">
+            <field name="employee_id"
+                model="hr.employee"
+                search="[('name', '=', 'Mitchell Admin')]"/>
+            <field name="analytic_account_id"
+                model="account.analytic.account"
+                search="[('name', '=', 'ABC123')]"/>
+        </record>
+
+        <record id="driving_record_line1_demo" model="driving.record.line">
+            <field name="driving_record_id"
+                ref="payroll_driving_record.driving_record_demo"/>
+            <field name="odometer_start">0</field>
+            <field name="odometer_stop">100</field>
+            <field name="type">business</field>
+            <field name="partner_id"
+                model="res.partner"
+                search="[('name', '=', 'Ready Mat')]"/>
+        </record>
+
+        <record id="driving_record_line2_demo" model="driving.record.line">
+            <field name="driving_record_id"
+                ref="payroll_driving_record.driving_record_demo"/>
+            <field name="odometer_start">100</field>
+            <field name="odometer_stop">150</field>
+            <field name="type">private</field>
+        </record>
+    </data>
+</odoo>
