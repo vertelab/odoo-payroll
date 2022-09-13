@@ -223,6 +223,9 @@
             <field name="model">driving.record.line</field>
             <field name="arch" type="xml">
                 <tree string="Driving Record" multi_edit="1" sample="1" editable="bottom">
+                    <field name="driving_record_id"/>
+                    <field name="analytic_account_id" optional="hide"/>
+                    <field name="partner_id" optional="hide"/>
                     <field name="date"/>
                     <field name="type"/>
                     <field name="odometer_start"/>

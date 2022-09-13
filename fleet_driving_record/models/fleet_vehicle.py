@@ -9,38 +9,26 @@ class FleetVehicle(models.Model):
 
     product_id = fields.Many2one(comodel_name='product.product', string='Expense type', domain="[('can_be_expensed', '=', True)]", help="Exense type for drivers that have to pay for fuel")
 
+    driving_record_count = fields.Integer(
+        compute="_compute_driving_record_count", string="# Driving Record Count", store=True
+    )
 
     driving_record_ids = fields.One2many(
-        "driving.record.line", "vehicle_id", "Driving Record Logs"
+        comodel_name="driving.record.line", inverse_name="vehicle_id"
     )
 
-    driving_record_count = fields.Integer(
-        compute="_compute_driving_record_count", string="# Driving Record Count"
-    )
-
-    @api.depends("driving_record_ids")
+    @api.depends('driving_record_ids')
     def _compute_driving_record_count(self):
         for rec in self:
-            rec.driving_record_count = len(rec.driving_record_ids)
+            rec.driving_record_count = len(self.env['driving.record.line'].search([('vehicle_id','=',rec.id)]))
 
-    def action_view_inspection(self):
+    def action_view_driving_record(self):
         action = (
-            self.env.ref("fleet_driving_record.fleet_driving_record_act_window")
+            self.env.ref("payroll_driving_record.action_driving_record_lines")
             .sudo()
             .read()[0]
         )
-        if self.inspection_count > 1:
-            action["domain"] = [("id", "in", self.driving_record_ids.ids)]
-        else:
-            action["views"] = [
-                (
-                    self.env.ref(
-                        "fleet_driving_record.fleet_driving_record_form_view"
-                    ).id,
-                    "form",
-                )
-            ]
-            action["res_id"] = (
-                self.driving_record_ids and self.driving_record_ids.ids[0] or False
-            )
+        action["domain"] = [("analytic_account_id", "=", self.analytic_account_id.id)]
+        action["context"] = {'default_vehicle_id':self.id,
+            'default_analytic_account_id':self.analytic_account_id.id}
         return action

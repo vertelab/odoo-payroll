@@ -1,29 +1,40 @@
 <odoo>
-  <data>
-    <!-- explicit list view definition -->
-    <record model="ir.ui.view" id="form_view">
-      <field name="name">payroll_driving_record fleet</field>
-      <field name="model">driving.record</field>
-      <field name="inherit_id" ref="payroll_driving_record.form_view" />
-      <field name="arch" type="xml">
-        <field name="analytic_account_id" position='replace'>
-          <field name="vehicle_id" />
-          <field name="analytic_account_id" invisible="1"/>
-          <field name="driver_id" invisible="0"/>
-        </field>
-      </field>
-    </record>
-    <record model="ir.ui.view" id="list_view">
-      <field name="name">payroll_driving_record fleet</field>
-      <field name="model">driving.record</field>
-      <field name="inherit_id" ref="payroll_driving_record.list_view" />
-      <field name="arch" type="xml">
-        <field name="analytic_account_id" position='replace'>
-          <field name="vehicle_id" optional="show" />
-          <field name="analytic_account_id" optional="hide"/>
-        </field>
-      </field>
-    </record>
+    <data>
+        <!-- explicit list view definition -->
+        <record model="ir.ui.view" id="form_view">
+            <field name="name">payroll_driving_record fleet</field>
+            <field name="model">driving.record</field>
+            <field name="inherit_id" ref="payroll_driving_record.form_view" />
+            <field name="arch" type="xml">
+                <field name="analytic_account_id" position='replace'>
+                    <field name="vehicle_id" />
+                    <field name="analytic_account_id" invisible="1"/>
+                    <field name="driver_id" invisible="0"/>
+                </field>
+            </field>
+        </record>
 
-  </data>
+        <record model="ir.ui.view" id="list_view">
+            <field name="name">payroll_driving_record fleet</field>
+            <field name="model">driving.record</field>
+            <field name="inherit_id" ref="payroll_driving_record.list_view" />
+            <field name="arch" type="xml">
+                <field name="analytic_account_id" position='replace'>
+                    <field name="vehicle_id" optional="show" />
+                    <field name="analytic_account_id" optional="hide"/>
+                </field>
+            </field>
+        </record>
+
+        <record id="view_driving_record_lines_tree" model="ir.ui.view">
+            <field name="name">driving.record.line.tree</field>
+            <field name="model">driving.record.line</field>
+            <field name="inherit_id" ref="payroll_driving_record.view_driving_record_lines_tree"/>
+            <field name="arch" type="xml">
+                <field name="date" position="before">
+                    <field name="vehicle_id" optional="hide"/>
+                </field>
+            </field>
+        </record>
+    </data>
 </odoo>

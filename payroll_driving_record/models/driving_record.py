@@ -142,7 +142,7 @@ class DrivingRecordLine(models.Model):
         ('business', 'Business')
     ], string='Type', required=1)
     partner_id = fields.Many2one(comodel_name='res.partner', string='Destination partner')
-    vehicle_id = fields.Many2one(comodel_name='account.analytic.account', string='Vehicle', related='driving_record_id.analytic_account_id',store=True)
+    analytic_account_id = fields.Many2one(comodel_name='account.analytic.account', string='Vehicle', related='driving_record_id.analytic_account_id',store=True)
     employee_id = fields.Many2one(comodel_name='hr.employee', string='Employee', related='driving_record_id.employee_id', store=True)
     state = fields.Selection(string='State',related='driving_record_id.state', store=True)
 
@@ -181,7 +181,7 @@ class DrivingRecordLine(models.Model):
                 raise ValidationError(_("Stop odometer value can not be lower than the start odometer value."))
 
     def overlapping_odometer(self):
-        for line in self.env['driving.record.line'].search([('vehicle_id.id','=',self.vehicle_id.id), ('id','!=',self.id)]):
+        for line in self.env['driving.record.line'].search([('analytic_account_id.id','=',self.analytic_account_id.id), ('id','!=',self.id)]):
             if not((line.odometer_start <= self.odometer_start and line.odometer_stop <= self.odometer_start) or
                    (line.odometer_start >= self.odometer_stop and line.odometer_stop >= self.odometer_stop)):
                 raise ValidationError(_("There is overlap of the odometer records for the following Driving Record lines:") + '\n' +
@@ -192,14 +192,14 @@ class DrivingRecordLine(models.Model):
         odometer_lowest = self.odometer_start
         odometer_higest = self.odometer_stop
         sum_distance = self.odometer_stop - self.odometer_start
-        for line in self.env['driving.record.line'].search([('vehicle_id.id','=',self.vehicle_id.id), ('id','!=',self.id)]):
+        for line in self.env['driving.record.line'].search([('analytic_account_id.id','=',self.analytic_account_id.id), ('id','!=',self.id)]):
             sum_distance = sum_distance + line.odometer_stop - line.odometer_start
             if line.odometer_start < odometer_lowest:
                 odometer_lowest = line.odometer_start
             if line.odometer_stop > odometer_higest:
                 odometer_higest = line.odometer_stop
         if odometer_higest - odometer_lowest != sum_distance:
-                raise ValidationError(_("Expected total distance driven for car:") + f" {self.vehicle_id.display_name} " +
+                raise ValidationError(_("Expected total distance driven for car:") + f" {self.analytic_account_id.display_name} " +
                 _("was:") + f" {odometer_higest - odometer_lowest} " + _("but was instead found to be:") + f" {sum_distance}" + '\n' +
                 _("Is there a gap between Odometer records?"))
 

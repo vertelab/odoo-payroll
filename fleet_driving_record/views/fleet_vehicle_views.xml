@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<!-- <?xml version='1.0' encoding='utf-8'?> -->
 <odoo>
     <record id="fleet_vehicle_view_form" model="ir.ui.view">
         <field name="name">fleet.vehicle.form</field>
@@ -8,39 +8,29 @@
             <field name="residual_value" position='after'>
                 <field name="product_id"/>
             </field>
-            
             <div class="oe_button_box" name="button_box" position="inside">
                 <button
                     class="oe_stat_button"
                     type="object"
                     name="action_view_driving_record"
                     icon="fa-th-list"
-                    context="{'default_vehicle_id': id}"
-                >
+                    context="{'default_vehicle_id': id}">
                     <div class="o_stat_info">
                         <field name="driving_record_count" class="o_stat_value" />
                         <span class="o_stat_text"> Driving Records</span>
                     </div>
                 </button>
             </div>
-            
-            
-            
-            
-            
         </field>
     </record>
-    
-    <record model="ir.ui.view" id="fleet_driving_record_tree_view">
-        <field
-            name="name"
-        >fleet.vehicle.driving_record </field>
+
+    <!-- <record model="ir.ui.view" id="fleet_driving_record_tree_view">
+        <field name="name">fleet.vehicle.driving_record </field>
         <field name="model">driving.record.line</field>
         <field name="arch" type="xml">
             <tree>
                 <field name="employee_id" />
                 <field name="date" />
-                <field name="vehicle_id" invisible="1" />
                 <field name="type" />
                 <field name="odometer_start" />
                 <field name="odometer_stop" />
@@ -49,7 +39,5 @@
                 <field name="note" />
             </tree>
         </field>
-    </record>
-
-    
+    </record> -->
 </odoo>
