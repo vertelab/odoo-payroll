@@ -15,7 +15,7 @@ class res_partner(models.Model):
 
     def action_get_driving_record_lines(self):
         self.ensure_one()
-        res = self.env['ir.actions.act_window']._for_xml_id('payroll_driving_record_res_partner.action_driving_record_lines')
+        res = self.env['ir.actions.act_window']._for_xml_id('payroll_driving_record.action_driving_record_lines')
         res['domain'] = [('partner_id.id', '=', self.id)]
         res['context'] = {'partner_id':self.id}
         return res

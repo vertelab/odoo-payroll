@@ -1,116 +1,116 @@
 <odoo>
-  <data>
+    <data>
     <!-- explicit list view definition -->
 
-    <record model="ir.ui.view" id="list_view">
-      <field name="name">payroll_driving_record list</field>
-      <field name="model">driving.record</field>
-      <field name="arch" type="xml">
-        <tree string="Driving Record" multi_edit="1" sample="1">
-          <field name="employee_id"/>
-          <field name="date_start"/>
-          <field name="date_stop"/>
-          <field name="analytic_account_id"/>
-          <field name="journal_id"/>
-          <field name="private_length" sum="Total Private Length" optional="show" readonly="1"/>
-          <field name="business_length" sum="Total Buisiness Length"  optional="show" readonly="1"/>
-          <field name="expense_state" optional="show" readonly="1"
-            decoration-info="expense_state == 'draft'"
-            decoration-success="expense_state in ['reported', 'approved', 'done']"
-            decoration-danger="expense_state in 'refused'" widget="badge"/>
-        </tree>
-      </field>
-    </record>
+        <record model="ir.ui.view" id="list_view">
+            <field name="name">payroll_driving_record list</field>
+            <field name="model">driving.record</field>
+            <field name="arch" type="xml">
+                <tree string="Driving Record" multi_edit="1" sample="1">
+                    <field name="employee_id"/>
+                    <field name="date_start"/>
+                    <field name="date_stop"/>
+                    <field name="analytic_account_id"/>
+                    <field name="journal_id"/>
+                    <field name="private_length" sum="Total Private Length" optional="show" readonly="1"/>
+                    <field name="business_length" sum="Total Buisiness Length"  optional="show" readonly="1"/>
+                    <field name="expense_state" optional="show" readonly="1"
+                        decoration-info="expense_state == 'draft'"
+                        decoration-success="expense_state in ['reported', 'approved', 'done']"
+                        decoration-danger="expense_state in 'refused'" widget="badge"/>
+                </tree>
+            </field>
+        </record>
 
-    <record model="ir.ui.view" id="driving_record_view_search" >
-        <field name="name">driving.record.view.search</field>
-        <field name="model">driving.record</field>
-        <field name="arch" type="xml">
-            <search string="Driving Records">
-                <field string="Driving Records" name="name"
-                  filter_domain="['|', '|', '|',
-                    ('employee_id', 'ilike', self),
-                    ('date_start', 'ilike', self),
-                    ('date_stop', 'ilike', self),
-                    ('analytic_account_id', 'ilike', self)]"/>
-                <field name="employee_id"/>
-                <field name="date_start"/>
-                <field name="date_stop"/>
-                <field name="analytic_account_id"/>
-                <field name="expense_state"/>
-                <filter string="My Driving Records" name="my_driving_records"
-                  domain="[('employee_id.user_id', '=', uid)]"/>
-                <group expand="0" string="Group By">
-                    <filter string="Employee" name="employee_group" domain="[]"
-                       context="{'group_by': 'employee_id'}"/>
-                    <filter string="Start Date" name="date_start_group" domain="[]"
-                       context="{'group_by': 'date_start:month'}" help="Start date for the Driving Record"/>
-                </group>
-            </search>
-        </field>
-    </record>
+        <record model="ir.ui.view" id="driving_record_view_search" >
+            <field name="name">driving.record.view.search</field>
+            <field name="model">driving.record</field>
+            <field name="arch" type="xml">
+                <search string="Driving Records">
+                    <field string="Driving Records" name="name"
+                    filter_domain="['|', '|', '|',
+                        ('employee_id', 'ilike', self),
+                        ('date_start', 'ilike', self),
+                        ('date_stop', 'ilike', self),
+                        ('analytic_account_id', 'ilike', self)]"/>
+                    <field name="employee_id"/>
+                    <field name="date_start"/>
+                    <field name="date_stop"/>
+                    <field name="analytic_account_id"/>
+                    <field name="expense_state"/>
+                    <filter string="My Driving Records" name="my_driving_records"
+                    domain="[('employee_id.user_id', '=', uid)]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Employee" name="employee_group" domain="[]"
+                        context="{'group_by': 'employee_id'}"/>
+                        <filter string="Start Date" name="date_start_group" domain="[]"
+                        context="{'group_by': 'date_start:month'}" help="Start date for the Driving Record"/>
+                    </group>
+                </search>
+            </field>
+        </record>
 
     <!--<record model="ir.actions.act_window" id="driving_record_view_search">-->
 
-    <record model="ir.ui.view" id="form_view">
-      <field name="name">payroll_driving_record form</field>
-      <field name="model">driving.record</field>
-      <field name="arch" type="xml">
-        <form string="driving record from">
-          <header>
-            <field name="state" widget="statusbar"/>
-            <button name="action_create_expense" id="action_create_expense" string="Create expense" class="btn-primary" type="object" attrs="{'invisible': [('state','=','sent')]}"/>
-            <button name="action_set_to_draft" id="action_set_to_draft" string="Set to draft" class="btn-primary" type="object" attrs="{'invisible': [('state','=','draft')]}"/>
-          </header>
-          <sheet>
-            <div class="oe_title">
-              <h1>Driving Record</h1>
-            </div>
-            <group>
-              <group>
-                <field name="employee_id"/>
-                <field name="analytic_account_id"/>
-                <field name="product_id"/>
-                <field name="private_length"/>
-                <field name="business_length"/>
-              </group>
-              <group>
-                <field name="date_start"/>
-                <field name="date_stop"/>
-                <field name="journal_id"/>
-                <field name="expense_id"/>
-                <field name="expense_state" optional="show" readonly="1"
-                  decoration-info="expense_state == 'draft'"
-                  decoration-success="expense_state in ['reported', 'approved', 'done']"
-                  decoration-danger="expense_state in 'refused'" widget="badge"/>
-              </group>
-            </group>
-            <notebook>
-              <page string="Trips">
-                <group>
-                  <field name="line_ids" nolabel="1">
-                    <tree string="Driving Record" multi_edit="1" sample="1" editable="bottom">
-                      <field name="date"/>
-                      <field name="type"/>
-                      <field name="odometer_start"/>
-                      <field name="odometer_stop"/>
-                      <field name="length" readonly="True"/>
-                      <field name="partner_id"/>
-                      <field name="note"/>
-                    </tree>
-                  </field>
-                </group>
-              </page>
-            </notebook>
-          </sheet>
-          <div class="oe_chatter">
-            <field name="message_follower_ids" widget="mail_followers"/>
-            <field name="activity_ids" widget="mail_activity"/>
-            <field name="message_ids" widget="mail_thread"/>
-        </div>
-        </form>
-      </field>
-    </record>
+        <record model="ir.ui.view" id="form_view">
+            <field name="name">payroll_driving_record form</field>
+            <field name="model">driving.record</field>
+            <field name="arch" type="xml">
+                <form string="driving record from">
+                    <header>
+                        <field name="state" widget="statusbar"/>
+                        <button name="action_create_expense" id="action_create_expense" string="Create expense" class="btn-primary" type="object" attrs="{'invisible': [('state','=','sent')]}"/>
+                        <button name="action_set_to_draft" id="action_set_to_draft" string="Set to draft" class="btn-primary" type="object" attrs="{'invisible': [('state','=','draft')]}"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                        <h1>Driving Record</h1>
+                        </div>
+                        <group>
+                        <group>
+                            <field name="employee_id"/>
+                            <field name="analytic_account_id"/>
+                            <field name="product_id"/>
+                            <field name="private_length"/>
+                            <field name="business_length"/>
+                        </group>
+                        <group>
+                            <field name="date_start"/>
+                            <field name="date_stop"/>
+                            <field name="journal_id"/>
+                            <field name="expense_id"/>
+                            <field name="expense_state" optional="show" readonly="1"
+                            decoration-info="expense_state == 'draft'"
+                            decoration-success="expense_state in ['reported', 'approved', 'done']"
+                            decoration-danger="expense_state in 'refused'" widget="badge"/>
+                        </group>
+                        </group>
+                        <notebook>
+                        <page string="Trips">
+                            <group>
+                            <field name="line_ids" nolabel="1">
+                                <tree string="Driving Record" multi_edit="1" sample="1" editable="bottom">
+                                <field name="date"/>
+                                <field name="type"/>
+                                <field name="odometer_start"/>
+                                <field name="odometer_stop"/>
+                                <field name="length" sum="Total Length" readonly="True"/>
+                                <field name="partner_id"/>
+                                <field name="note"/>
+                                </tree>
+                            </field>
+                            </group>
+                        </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
 
 <!--
     <record model="ir.ui.view" id="line_list_view">
@@ -155,12 +155,12 @@
 
 
     <!-- actions opening views on models -->
-    <record model="ir.actions.act_window" id="payroll_driving_record.driving_record_action_window">
-      <field name="name">Driving record</field>
-      <field name="res_model">driving.record</field>
-      <field name="view_mode">tree,form</field>
-      <field name="context">{'search_default_my_driving_records': 1}</field>
-    </record>
+        <record model="ir.actions.act_window" id="payroll_driving_record.driving_record_action_window">
+            <field name="name">Driving record</field>
+            <field name="res_model">driving.record</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'search_default_my_driving_records': 1}</field>
+        </record>
 
 
     <!-- server action to the one above -->
@@ -185,7 +185,7 @@
     <!-- <menuitem name="payroll_driving_record_driving_record_line" id="payroll_driving_record.driving_record.line.menu_root"/> -->
 
 
-    <menuitem name="Driving record" id="payroll_driving_record.menu_root" parent="hr_expense.menu_hr_expense_my_expenses" action="payroll_driving_record.driving_record_action_window"/>
+        <menuitem name="Driving record" id="payroll_driving_record.menu_root" parent="hr_expense.menu_hr_expense_my_expenses" action="payroll_driving_record.driving_record_action_window"/>
 
     <!-- actions -->
 
@@ -195,27 +195,52 @@
               action="payroll_driving_record.action_server"/> -->
 
 
-    <record id="driving_record_line_form" model="ir.ui.view">
-      <field name="name">driving.record.line.form</field>
-      <field name="model">driving.record.line</field>
-      <field name="arch" type="xml">
-        <form string="Driving Record Line" class="o_form_">
-          <sheet string="Driving Record Line" modifiers="{}">
-            <group col="4" modifiers="{}">
-              <field name="date" modifiers="{'required':true}" id="date" />
-              <field name="odometer_start" on_change="1"
-                modifiers="{'required':true}" id="odometer_start" />
-              <field name="type" modifiers="{'required':true}" id="type" />
-              <field name="odometer_stop" on_change="1"
-                modifiers="{'required':true}" id="odometer_stop" />
-              <field name="note" modifiers="{}" id="note" />
-              <field name="length" modifiers="{'readonly':true}" id="length" />
-              <separator modifiers="{}" />
-            </group>
-          </sheet>
-        </form>
-      </field>
-    </record>
+        <record id="driving_record_line_form" model="ir.ui.view">
+            <field name="name">driving.record.line.form</field>
+            <field name="model">driving.record.line</field>
+            <field name="arch" type="xml">
+                <form string="Driving Record Line" class="o_form_">
+                    <sheet string="Driving Record Line" modifiers="{}">
+                        <group col="4" modifiers="{}">
+                            <field name="date" modifiers="{'required':true}" id="date" />
+                            <field name="odometer_start" on_change="1"
+                                modifiers="{'required':true}" id="odometer_start" />
+                            <field name="type" modifiers="{'required':true}" id="type" />
+                            <field name="odometer_stop" on_change="1"
+                                modifiers="{'required':true}" id="odometer_stop" />
+                            <field name="note" modifiers="{}" id="note" />
+                            <field name="length" modifiers="{'readonly':true}" id="length" />
+                            <separator modifiers="{}" />
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
 
-  </data>
+        <!-- For Smart Buttons-->
+        <record id="view_driving_record_lines_tree" model="ir.ui.view">
+            <field name="name">driving.record.line.tree</field>
+            <field name="model">driving.record.line</field>
+            <field name="arch" type="xml">
+                <tree string="Driving Record" multi_edit="1" sample="1" editable="bottom">
+                    <field name="date"/>
+                    <field name="type"/>
+                    <field name="odometer_start"/>
+                    <field name="odometer_stop"/>
+                    <field name="length" sum="Total Length" readonly="True"/>
+                    <field name="note"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- For Smart Buttons-->
+        <record id="action_driving_record_lines" model="ir.actions.act_window">
+            <field name="name">Trips</field>
+            <field name="res_model">driving.record.line</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_driving_record_lines_tree"/>
+            <field name="context">{}</field>
+        </record>
+
+      </data>
 </odoo>

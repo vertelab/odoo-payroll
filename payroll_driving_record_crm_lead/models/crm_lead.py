@@ -15,7 +15,7 @@ class Lead(models.Model):
 
     def action_get_driving_record_lines(self):
         self.ensure_one()
-        res = self.env['ir.actions.act_window']._for_xml_id('payroll_driving_record_crm_lead.action_driving_record_lines')
+        res = self.env['ir.actions.act_window']._for_xml_id('payroll_driving_record.action_driving_record_lines')
         res['domain'] = [('partner_id.id', '=', self.partner_id.id)]
         res['context'] = {'partner_id':self.partner_id.id}
         return res

@@ -5,7 +5,7 @@
             <field name="model">res.partner</field>
             <field name="inherit_id" ref="base.view_partner_form"/>
             <field name="arch" type="xml">
-                <xpath expr="//div[@name='button_box']" position="inside">
+                <div name="button_box" position="inside">
                     <button name="action_get_driving_record_lines" type="object"
                         class="oe_stat_button" icon="fa-road">
                         <div class="o_stat_info">
@@ -13,32 +13,8 @@
                             <span class="o_stat_text">Trips</span>
                         </div>
                     </button>
-                </xpath>
+                </div>
             </field>
         </record>
-
-        <record id="view_driving_record_lines_tree" model="ir.ui.view">
-            <field name="name">driving.record.line.tree</field>
-            <field name="model">driving.record.line</field>
-            <field name="arch" type="xml">
-                <tree string="Driving Record" multi_edit="1" sample="1">
-                    <field name="date"/>
-                    <field name="type"/>
-                    <field name="odometer_start"/>
-                    <field name="odometer_stop"/>
-                    <field name="length" sum="Total Length" readonly="True"/>
-                    <field name="note"/>
-                </tree>
-            </field>
-        </record>
-
-        <record id="action_driving_record_lines" model="ir.actions.act_window">
-            <field name="name">Trips</field>
-            <field name="res_model">driving.record.line</field>
-            <field name="view_mode">tree,form</field>
-            <field name="view_id" ref="view_driving_record_lines_tree"/>
-            <field name="context">{}</field>
-        </record>
-
     </data>
 </odoo>
