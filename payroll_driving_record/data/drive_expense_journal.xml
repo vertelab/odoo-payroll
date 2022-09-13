@@ -9,8 +9,6 @@
             <field name="alias_name">purchase_expense_milage</field>
             <field name="payable_account" model="account.account" search="[('code', '=', '7331')]" />
             <field name="receivable_account" model="account.account" search="[('code', '=', '5890')]" />
-
         </record>
     </data>
-    
 </odoo>
