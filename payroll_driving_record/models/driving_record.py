@@ -159,14 +159,21 @@ class DrivingRecordLine(models.Model):
                 raise ValidationError(_("Date must be within the driving range dates."))
 
     # Performs several odometer constraints in the correct order:
-    @api.constrains('odometer_start', 'odometer_stop')
+    @api.constrains('odometer_start', 'odometer_stop', 'type')
     def odomoter_constraints(self):
+        # Checks that odometer_start and odometer_stop are not left as 0 and 0
+        self.odometer_both_zero()
         # Checks that start and stop dates are not in the wrong order
         self.stop_before_start_odometer()
         # Checks that the odometer readings never overlap with eachother, per vehicle.
         self.overlapping_odometer()
         # Checks that there are no gaps between odometer records, per vehicle.
         self.gaps_odometer()
+
+    def odometer_both_zero(self):
+        for record in self:
+            if record.odometer_start == 0 and record.odometer_stop == 0:
+                raise ValidationError(_("Start odometer and stop odometer may not both be 0."))
 
     def stop_before_start_odometer(self):
         for record in self:
@@ -192,7 +199,7 @@ class DrivingRecordLine(models.Model):
             if line.odometer_stop > odometer_higest:
                 odometer_higest = line.odometer_stop
         if odometer_higest - odometer_lowest != sum_distance:
-                raise ValidationError(_("Expected total distance driven for:") + f" {self.vehicle_id.display_name} " +
+                raise ValidationError(_("Expected total distance driven for car:") + f" {self.vehicle_id.display_name} " +
                 _("was:") + f" {odometer_higest - odometer_lowest} " + _("but was instead found to be:") + f" {sum_distance}" + '\n' +
                 _("Is there a gap between Odometer records?"))
 
