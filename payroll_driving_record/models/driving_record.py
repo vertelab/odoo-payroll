@@ -199,8 +199,10 @@ class DrivingRecordLine(models.Model):
             if line.odometer_stop > odometer_higest:
                 odometer_higest = line.odometer_stop
         if odometer_higest - odometer_lowest != sum_distance:
-                raise ValidationError(_("Expected total distance driven for car:") + f" {self.analytic_account_id.display_name} " +
-                _("was:") + f" {odometer_higest - odometer_lowest} " + _("but was instead found to be:") + f" {sum_distance}" + '\n' +
+                raise ValidationError(_("Expected total distance, based on highest and lowest odometer values,") + '\n' +
+                _("did not match actual total distance:") + '\n' +
+                _("Was expected to be:") + f" {odometer_higest - odometer_lowest} " + '\n' +
+                _("But was found to be:") + f" {sum_distance}" + '\n' + '\n' +
                 _("Is there a gap between Odometer records?"))
 
     @api.model
