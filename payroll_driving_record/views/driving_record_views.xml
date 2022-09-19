@@ -224,13 +224,14 @@
             <field name="arch" type="xml">
                 <tree string="Driving Record" multi_edit="1" sample="1" editable="bottom">
                     <field name="driving_record_id"/>
-                    <field name="analytic_account_id" optional="hide"/>
-                    <field name="partner_id" optional="hide"/>
+                    <field name="employee_id" readonly="True"/>
+                    <field name="analytic_account_id"/>
                     <field name="date"/>
                     <field name="type"/>
                     <field name="odometer_start"/>
                     <field name="odometer_stop"/>
                     <field name="length" sum="Total Length" readonly="True"/>
+                    <field name="partner_id" optional="hide"/>
                     <field name="note"/>
                 </tree>
             </field>
@@ -242,8 +243,6 @@
             <field name="res_model">driving.record.line</field>
             <field name="view_mode">tree</field>
             <field name="view_id" ref="view_driving_record_lines_tree"/>
-            <field name="context">{}</field>
         </record>
-
       </data>
 </odoo>
