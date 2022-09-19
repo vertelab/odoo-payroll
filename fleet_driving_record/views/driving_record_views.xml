@@ -31,8 +31,8 @@
             <field name="model">driving.record.line</field>
             <field name="inherit_id" ref="payroll_driving_record.view_driving_record_lines_tree"/>
             <field name="arch" type="xml">
-                <field name="date" position="before">
-                    <field name="vehicle_id" optional="hide"/>
+                <field name="analytic_account_id" position="replace">
+                    <field name="vehicle_id"/>
                 </field>
             </field>
         </record>
