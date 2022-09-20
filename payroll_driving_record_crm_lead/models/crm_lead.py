@@ -19,7 +19,8 @@ class Lead(models.Model):
         res['domain'] = [('partner_id.id', '=', self.partner_id.id)]
         res['context'] = {
             'default_partner_id':self.partner_id.id,
-            'default_type':'business'}
+            'default_type':'business'
+            }
         return res
 
     def _compute_driving_record_lines_count(self):
