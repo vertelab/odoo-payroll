@@ -40,7 +40,7 @@ class DrivingRecord(models.Model):
 
     driver_id = fields.Many2one('res.partner', string="Driver", default=_default_driver, compute=_compute_driver )
     analytic_account_id = fields.Many2one(related='vehicle_id.analytic_account_id',comodel_name='account.analytic.account', string='Registration number')
-    product_id = fields.Many2one(related='vehicle_id.product_id',comodel_name='product.product', string='Expense type', domain="[('can_be_expensed', '=', True)]", help="Exense type for drivers that have to pay for fuel")
+    product_id = fields.Many2one(related='vehicle_id.product_id',comodel_name='product.product', string='Expense type', domain="[('can_be_expensed', '=', True)]", help="Expense type for drivers that have to pay for fuel")
 
 
     def action_create_expense(self):
@@ -60,6 +60,16 @@ class DrivingRecordLine(models.Model):
         related='driving_record_id.vehicle_id', store=True)
 
 
+    @api.model
+    def create(self,values):
+        drivers = self.env['fleet.vehicle'].search([('driver_id','=',self.env.user.employee_id.user_partner_id.id)])
+        if len(drivers) == 0:
+            raise ValidationError(f"{self.env.user.employee_id.name} " + _("has no cars assigned to them."))
+
+        _logger.warning(f"{values=}")
+        return super(DrivingRecordLine, self).create(values)
+
+
 # ~ class DrivingRecordLine(models.Model):
     # ~ _inherit = 'driving.record.line'
 
@@ -69,7 +79,7 @@ class DrivingRecordLine(models.Model):
         # ~ for line in self.driving_record_id.line_ids:
             # ~ if line.odometer_stop > odometer:
                 # ~ odometer = line.odometer_stop
-        
+
         # ~ return odometer
     # ~ odoometer_start = fields.Integer(string='Odoometer start', default=_default_odometer, required=1)
     # ~ odoometer_stop = fields.Integer(string='Odoometer stop', required=1)
