@@ -208,8 +208,9 @@
                             <field name="type" modifiers="{'required':true}" id="type" />
                             <field name="odometer_stop" on_change="1"
                                 modifiers="{'required':true}" id="odometer_stop" />
-                            <field name="note" modifiers="{}" id="note" />
+                            <field name="partner_id" modifiers="{}" id="partner_id" />
                             <field name="length" modifiers="{'readonly':true}" id="length" />
+                            <field name="note" modifiers="{}" id="note" />
                             <separator modifiers="{}" />
                         </group>
                     </sheet>
@@ -223,8 +224,8 @@
             <field name="model">driving.record.line</field>
             <field name="arch" type="xml">
                 <tree string="Driving Record" multi_edit="1" sample="1" editable="bottom">
-                    <field name="driving_record_id"/>
-                    <field name="employee_id" readonly="True"/>
+                    <field name="driving_record_id" optional="hide"/>
+                    <field name="employee_id" optional="show"/>
                     <field name="analytic_account_id"/>
                     <field name="date"/>
                     <field name="type"/>

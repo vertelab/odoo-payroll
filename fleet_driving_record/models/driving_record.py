@@ -59,7 +59,6 @@ class DrivingRecordLine(models.Model):
     vehicle_id = fields.Many2one(comodel_name='fleet.vehicle', string='Vehicle',
         related='driving_record_id.vehicle_id', store=True)
 
-
     @api.model
     def create(self,values):
         drivers = self.env['fleet.vehicle'].search([('driver_id','=',self.env.user.employee_id.user_partner_id.id)])

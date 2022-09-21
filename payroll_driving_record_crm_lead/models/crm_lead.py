@@ -18,8 +18,8 @@ class Lead(models.Model):
         res = self.env['ir.actions.act_window']._for_xml_id('payroll_driving_record.action_driving_record_lines')
         res['domain'] = [('partner_id.id', '=', self.partner_id.id)]
         res['context'] = {
-            'default_partner_id':self.partner_id.id,
-            'default_type':'business'
+            'default_partner_id': self.partner_id.id,
+            'default_type': 'business'
             }
         return res
 
