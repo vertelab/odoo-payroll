@@ -20,18 +20,22 @@
 ##############################################################################
 
 {
-    'name': 'Hr Expense Journal Selection',
+    'name': 'Payroll: HR Expense Journal Selection',
+    'version': '14.0.0.0.0',
+    # Version ledger: 14.0 = Odoo version. 1 = Major. Non regressionable code. 2 = Minor. New features that are regressionable. 3 = Bug fixes
     'summary': 'Allows Us to Set a journal on a hr.expense',
+    'category': 'Payroll Localization',
+    'description': """
+    This module adds a field on a hr.expense which allows to set the journal.
+    """,
+    #'sequence': '1',
     'author': 'Vertel AB',
+    'website': 'https://vertel.se/apps/odoo-l10n_se_payroll/hr_expense_journal_selection',
+    'images': ['static/description/banner.png'], # 560x280 px.
+    'license': 'AGPL-3',
     'contributor': '',
     'maintainer': 'Vertel AB',
     'repository': 'https://github.com/vertelab/odoo-payroll',
-    'category': 'Accounting',
-    'version': '14.0.0.0.0',
-    # Version ledger: 14.0 = Odoo version. 1 = Major. Non regressionable code. 2 = Minor. New features that are regressionable. 3 = Bug fixes
-    'license': 'AGPL-3',
-    'website': '',
-    'description': """This module adds a field on a hr.expense which allows to set the journal""",
     'depends': ['hr_expense','account'],
     'data': ['views/hr_expense_views.xml'],
     'installable': 'True',
