@@ -19,14 +19,23 @@
 #
 ##############################################################################
 {
-    'name': 'Payroll Schema',
+    'name': 'Payroll: Schema',
     'version': '14.0.0.1',
+    # Version ledger: 14.0 = Odoo version. 1 = Major. Non regressionable code. 2 = Minor. New features that are regressionable. 3 = Bug fixes
     'summary': 'Extends hr.attendance with normalized days using resource schema',
-    'category': 'hr',
-    'description': """Extends hr.attendance with normalized days using resource schema""",
+    'category': 'Payroll Localization',
+    'description': """
+    Extends hr.attendance with normalized days using resource schema.
+    """,
+    #'sequence': '1',
     'author': 'Vertel AB',
     'license': 'AGPL-3',
-    'website': 'http://www.vertel.se',
+    'website': 'https://vertel.se/apps/odoo-l10n_se_payroll/hr_payroll_schema',
+    'images': ['static/description/banner.png'], # 560x280 px.
+    'license': 'AGPL-3',
+    'contributor': '',
+    'maintainer': 'Vertel AB',
+    'repository': 'https://github.com/vertelab/odoo-l10n_se_payroll',
     #hr_contract_type: https://github.com/OCA/hr
     'depends': ['payroll', 'hr_timesheet_sheet', 'hr_attendance', 'hr_contract_work_time', 'hr_contract_type'],
     'data': [
@@ -34,5 +43,6 @@
     ],
     'installable': True,
 }
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
 
 
