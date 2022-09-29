@@ -11,6 +11,7 @@ String? passwd = '';
 bool? recall = false;
 
 DateTime? date = DateTime.now();
+int? destination;
 bool? business = true;
 String? odo_start = '';
 String? odo_stop = '';
