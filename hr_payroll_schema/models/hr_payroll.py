@@ -21,15 +21,26 @@
 
 from odoo import models, fields, api, _, tools
 import odoo.tools
-from datetime import datetime, timedelta
+from datetime import timedelta, tzinfo, datetime
 import time
+# import datetime
 import re
 from odoo import SUPERUSER_ID
+from pytz import utc
+import pytz
 
 import logging
 
 _logger = logging.getLogger(__name__)
 
+def make_aware(dt):
+    """ Return ``dt`` with an explicit timezone, together with a function to
+        convert a datetime to the same (naive or aware) timezone as ``dt``.
+    """
+    if dt.tzinfo:
+        return dt, lambda val: val.astimezone(dt.tzinfo)
+    else:
+        return dt.replace(tzinfo=utc), lambda val: val.astimezone(utc).replace(tzinfo=None)
 
 class hr_attendance(models.Model):
     _inherit = 'hr.attendance'
@@ -198,15 +209,15 @@ class hr_payslip(models.Model):
         def was_on_leave(employee_id, datetime_day, context=None):
             res = False
             day = datetime_day.strftime("%Y-%m-%d")
-            holiday_ids = self.pool.get('hr.holidays').search(cr, uid, [('state', '=', 'validate'),
+            holiday_ids = self.env['hr.leave'].search([('state', '=', 'validate'),
                                                                         ('employee_id', '=', employee_id),
-                                                                        ('type', '=', 'remove'),
+                                                                        # ('type', '=', 'remove'),
                                                                         ('date_from', '<=', day),
                                                                         ('date_to', '>=', day)])
             if holiday_ids:
                 #res = self.pool.get('hr.holidays').browse(cr, uid, holiday_ids, context=context)[
                 #    0].holiday_status_id.name
-                res = self.env['hr.holidays'].browse(holiday_ids)
+                res = self.env['hr.leave'].browse(holiday_ids)
             return res
 
         res = []
@@ -230,14 +241,32 @@ class hr_payslip(models.Model):
                 'contract_id': contract.id,
             }
             leaves = {}
-            day_from = datetime.strptime(date_from, "%Y-%m-%d")
-            day_to = datetime.strptime(date_to, "%Y-%m-%d")
+            _logger.error(type(date_from))
+            _logger.error(f"{type(date_from) is not datetime.date}")
+            # _logger.error(isinstance(date_from, datetime.date))
+            _logger.error(f"{date_from}")
+            if type(date_from) is not datetime.date:
+                day_from = datetime.strptime(str(date_from), "%Y-%m-%d")
+            else:
+                day_from = date_from
+            if type(date_to) is not datetime.date:
+                day_to = datetime.strptime(str(date_to), "%Y-%m-%d")
+            else: 
+                day_to = date_to
             nb_of_days = (day_to - day_from).days + 1
             for day in range(0, nb_of_days):
-                working_hours_on_day = self.pool.get('resource.calendar').working_hours_on_day(cr, SUPERUSER_ID,
-                                                                                               contract.weekly_working_hours,
-                                                                                               day_from + timedelta(
-                                                                                                   days=day), context)
+                # working_hours_on_day = self.pool.get('resource.calendar').working_hours_on_day(cr, SUPERUSER_ID,
+                #                                                                                contract.weekly_working_hours,
+                #                                                                                day_from + timedelta(
+                #                                                                                    days=day), context)
+                # emp.contract_schema_time = emp.employee_id.sudo().contract_id.resource_calendar_id.get_work_duration_data(
+                #         emp.start_datetime, emp.end_datetime, compute_leaves=True)['hours']
+                _logger.error(type(day_to))
+                max_time = datetime.combine(day_to, datetime.max.time())
+                min_time = datetime.combine(day_from, datetime.min.time())
+                working_hours_on_day = self.sudo().contract_id.resource_calendar_id.get_work_duration_data(
+                        min_time, max_time, compute_leaves=True)['days']
+
                 if working_hours_on_day:
                     # the employee had to work
                     leave_type = was_on_leave(contract.employee_id.id, day_from + timedelta(days=day), context=context)
@@ -245,10 +274,11 @@ class hr_payslip(models.Model):
                         number_of_days = 0.0
                         # Sum time from all leaves
                         day = (day_from + timedelta(days=day)).strftime("%Y-%m-%d")
-                        for holiday in self.env['hr.holidays'].search(
+                        for holiday in self.env['hr.leave'].search(
                                 [('state', '=', 'validate'), ('employee_id', '=', contract.employee_id.id),
-                                 ('type', '=', 'remove'), ('date_from', '<=', day), ('date_to', '>=', day)]):
-                            number_of_days += holiday.number_of_days_temp
+                                #  ('type', '=', 'remove'),
+                                  ('date_from', '<=', day), ('date_to', '>=', day)]):
+                            number_of_days += holiday.number_of_days
                         # More than 1 day means the employee was gone all day.
                         if number_of_days > 1.0:
                             number_of_days = 1.0
