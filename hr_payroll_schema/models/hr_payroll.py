@@ -217,7 +217,7 @@ class hr_payslip(models.Model):
             if holiday_ids:
                 #res = self.pool.get('hr.holidays').browse(cr, uid, holiday_ids, context=context)[
                 #    0].holiday_status_id.name
-                res = self.env['hr.leave'].browse(holiday_ids)
+                res = self.env['hr.leave'].browse(holiday_ids).id.holiday_status_id.name
             return res
 
         res = []
@@ -241,10 +241,6 @@ class hr_payslip(models.Model):
                 'contract_id': contract.id,
             }
             leaves = {}
-            _logger.error(type(date_from))
-            _logger.error(f"{type(date_from) is not datetime.date}")
-            # _logger.error(isinstance(date_from, datetime.date))
-            _logger.error(f"{date_from}")
             if type(date_from) is not datetime.date:
                 day_from = datetime.strptime(str(date_from), "%Y-%m-%d")
             else:
@@ -259,9 +255,6 @@ class hr_payslip(models.Model):
                 #                                                                                contract.weekly_working_hours,
                 #                                                                                day_from + timedelta(
                 #                                                                                    days=day), context)
-                # emp.contract_schema_time = emp.employee_id.sudo().contract_id.resource_calendar_id.get_work_duration_data(
-                #         emp.start_datetime, emp.end_datetime, compute_leaves=True)['hours']
-                _logger.error(type(day_to))
                 max_time = datetime.combine(day_to, datetime.max.time())
                 min_time = datetime.combine(day_from, datetime.min.time())
                 working_hours_on_day = self.sudo().contract_id.resource_calendar_id.get_work_duration_data(
