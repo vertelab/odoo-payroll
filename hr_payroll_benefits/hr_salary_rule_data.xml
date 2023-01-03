@@ -1,6 +1,114 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
   <data noupdate="1">
+  <record id="hr_benefit_rule_carbru" model="hr.salary.rule">
+      <field name="category_id" ref="l10n_se_hr_payroll.hr_salary_rule_category-BRUTIL" />
+      <field name="code">forman_bilbru</field>
+      <field name="salary_art">550</field>
+      <field name="name">Bilförmån brutto</field>
+      <field name="sequence">240</field>
+      <field name="appears_on_payslip" eval="True"/>
+      <field name="condition_select">python</field>
+      <field name="condition_python">result = contract.benefit_value('forman_bilbru') &gt; 0</field>
+      <field name="amount_select">code</field>
+      <field name="amount_python_compute">
+result_qty = 1
+result = contract.benefit_value('forman_bilbru')
+      </field>
+      <field name="quantity">1</field>
+    </record>
+
+  <record id="hr_benefit_rule_carnet" model="hr.salary.rule">
+      <field name="category_id" ref="l10n_se_hr_payroll.hr_salary_rule_category-NETAVG" />
+      <field name="code">forman_bilnet</field>
+      <field name="salary_art">550</field>
+      <field name="name">Bilförmån netto</field>
+      <field name="sequence">240</field>
+      <field name="appears_on_payslip" eval="True"/>
+      <field name="condition_select">python</field>
+      <field name="condition_python">result = contract.benefit_value('forman_bilnet') &gt; 0</field>
+      <field name="amount_select">code</field>
+      <field name="amount_python_compute">
+result_qty = 1
+result = contract.benefit_value('forman_bilnet')
+      </field>
+      <field name="quantity">1</field>
+    </record>
+    
+      <record id="hr_benefit_rule_driv" model="hr.salary.rule">
+      <field name="category_id" ref="l10n_se_hr_payroll.hr_salary_rule_category-BRUTIL" />
+      <field name="code">forman_driv</field>
+      <field name="salary_art">550</field>
+      <field name="name">Drivmedelsförmån</field>
+      <field name="sequence">240</field>
+      <field name="appears_on_payslip" eval="True"/>
+      <field name="condition_select">python</field>
+      <field name="condition_python">result = contract.benefit_value('forman_driv') &gt; 0</field>
+      <field name="amount_select">code</field>
+      <field name="amount_python_compute">
+result_qty = 1
+result = contract.benefit_value('forman_driv')  # Dynamisk!
+      </field>
+      <field name="quantity">1</field>
+    </record>
+
+  <record id="hr_benefit_rule_home" model="hr.salary.rule">
+      <field name="category_id" ref="l10n_se_hr_payroll.hr_salary_rule_category-BRUTIL" />
+      <field name="code">forman_bost</field>
+      <field name="salary_art">550</field>
+      <field name="name">Bostadsförmån</field>
+      <field name="sequence">240</field>
+      <field name="appears_on_payslip" eval="True"/>
+      <field name="condition_select">python</field>
+      <field name="condition_python">result = contract.benefit_value('forman_bost') &gt; 0</field>
+      <field name="amount_select">code</field>
+      <field name="amount_python_compute">
+result_qty = 1
+result = contract.benefit_value('forman_bost')  
+      </field>
+      <field name="quantity">1</field>
+    </record>
+
+<record id="hr_benefit_carbru" model="hr.benefit">
+      <field name="name">forman_carbru</field>
+      <field name="desc">Bilförmån brutto</field>
+      <field name="note"></field>
+</record>
+
+<record id="hr_benefit_carnet" model="hr.benefit">
+      <field name="name">forman_carnet</field>
+      <field name="desc">Bilförmån netto</field>
+      <field name="note"></field>
+</record>
+<record id="hr_benefit_driv" model="hr.benefit">
+      <field name="name">forman_driv</field>
+      <field name="desc">Drivmedelsförmån</field>
+      <field name="note">Dynamisk hämta från körjournal</field>
+</record>
+
+<record id="hr_benefit_home" model="hr.benefit">
+      <field name="name">forman_bost</field>
+      <field name="desc">Bostadsförmån</field>
+      <field name="note"></field>
+</record>
+
+
+
+<!--
+Arbetskläder
+Arbetsredskap
+*Bilförmån
+*Drivmedelsförmån
+*Bostadsförmån
+Cykelförmån
+Hälso- och sjukvård
+Incitamentsprogram
+Rot- och rutarbete
+Semesterbostad
+-->
+
+
+
 
   </data>
 </odoo>
