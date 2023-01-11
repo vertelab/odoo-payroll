@@ -20,7 +20,6 @@
 ##############################################################################
 
 from odoo import models, fields, api, _
-import openerp.addons.decimal_precision as dp
 
 
 import logging
@@ -41,7 +40,8 @@ class hr_contract_benefit(models.Model):
     contract_id = fields.Many2one(comodel_name="hr.contract")
     name = fields.Many2one(comodel_name='hr.benefit',string="Code")
     desc = fields.Char(string="Description")
-    value = fields.Float(string="Value",digits_compute=dp.get_precision('Payroll'),)
+    # ~ value = fields.Float(string="Value",digits_compute=dp.get_precision('Payroll'),)
+    value = fields.Float(string="Value")
 
     #@api.depends('contract_id','name')
     @api.onchange('name')
@@ -52,7 +52,8 @@ class hr_contract_benefit(models.Model):
 class hr_benefit(models.Model):
     _name = 'hr.benefit'
 
-    name = fields.Char(string="Code")
+    code_id = fields.Many2one(comodel_name='hr.salary.rule')
+    name = fields.Char(string="Name")
     desc = fields.Char(string="Description")
     note = fields.Text(string="Note")
 
