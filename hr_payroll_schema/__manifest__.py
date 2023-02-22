@@ -30,12 +30,12 @@
     #'sequence': '1',
     'author': 'Vertel AB',
     'license': 'AGPL-3',
-    'website': 'https://vertel.se/apps/odoo-l10n_se_payroll/hr_payroll_schema',
+    'website': 'https://vertel.se/apps/odoo-payroll/hr_payroll_schema',
     'images': ['static/description/banner.png'], # 560x280 px.
     'license': 'AGPL-3',
     'contributor': '',
     'maintainer': 'Vertel AB',
-    'repository': 'https://github.com/vertelab/odoo-l10n_se_payroll',
+    'repository': 'https://github.com/vertelab/odoo-payroll',
     #hr_contract_type: https://github.com/OCA/hr
     'depends': ['payroll', 'hr_timesheet_sheet', 'hr_attendance', 'hr_contract_work_time', 'hr_contract_type'],
     'data': [
