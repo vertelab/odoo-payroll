@@ -20,7 +20,7 @@
 ##############################################################################
 
 {
-    'name': 'Payroll: Payroll Driving Record',
+    'name': 'Payroll: Driving Record',
     'version': '14.0.0.0.0',
     # Version ledger: 14.0 = Odoo version. 1 = Major. Non regressionable code. 2 = Minor. New features that are regressionable. 3 = Bug fixes
     'summary': """
@@ -42,8 +42,6 @@
     # Categories can be used to filter modules in modules listing
     # Check https://github.com/odoo/odoo/blob/14.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
-    'category': 'Uncategorized',
-    'version': '0.1',
 
     # any module necessary for this one to work correctly
     'depends': ['account', 'hr_expense', 'account_journal_select_payable_receivable_account', 'hr_expense_journal_selection'],
@@ -60,3 +58,4 @@
         'demo/driving_record_demo.xml',
     ],
 }
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
