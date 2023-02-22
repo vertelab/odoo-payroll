@@ -23,11 +23,10 @@
     'name': 'Payroll: Driving Record: Contacts',
     'version': '14.0.0.0.0',
     # Version ledger: 14.0 = Odoo version. 1 = Major. Non regressionable code. 2 = Minor. New features that are regressionable. 3 = Bug fixes
-    'summary': """
-        A glue module which gives smartbutton functionality to Contacts for Driving Records""",
+    'summary': 'A glue module which gives smartbutton functionality to Contacts for Driving Records',
     'category': 'Productivity',
     'description': """
-        A glue module which gives smartbutton functionality to Contacts for Driving Records.
+    A glue module which gives smartbutton functionality to Contacts for Driving Records.
     """,
     #'sequence': '1',
     'author': 'Vertel AB',
