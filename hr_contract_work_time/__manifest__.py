@@ -35,7 +35,7 @@
     'license': 'AGPL-3',
     'contributor': '',
     'maintainer': 'Vertel AB',
-    'repository': 'https://github.com/vertelab/odoo-l10n_se_payroll',
+    'repository': 'https://github.com/vertelab/odoo-payroll',
     'depends': ['hr_contract', 'hr_contract_type', 'payroll'],
     'data': [
         # 'views/hr_contract_view.xml'
