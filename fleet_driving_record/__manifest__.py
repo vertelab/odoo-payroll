@@ -20,13 +20,13 @@
 ##############################################################################
 
 {
-    'name': 'Fleet: Driving Record',
+    'name': 'Payroll: Driving Record',
     'version': '14.0.0.0.0',
     # Version ledger: 14.0 = Odoo version. 1 = Major. Non regressionable code. 2 = Minor. New features that are regressionable. 3 = Bug fixes
     'summary': 'Fleet driving record',
     'category': 'Payroll Localization',
     'description': """
-        Glue module for fleet and driving record
+    Glue module for fleet and driving record
     """,
     #'sequence': '1',
     'author': 'Vertel AB',
