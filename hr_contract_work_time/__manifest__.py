@@ -30,7 +30,7 @@
     """,
     #'sequence': '1',
     'author': 'Vertel AB',
-    'website': 'https://vertel.se/apps/odoo-l10n_se_payroll/hr_contract_work_time',
+    'website': 'https://vertel.se/apps/odoo-payroll/hr_contract_work_time',
     'images': ['static/description/banner.png'], # 560x280 px.
     'license': 'AGPL-3',
     'contributor': '',
