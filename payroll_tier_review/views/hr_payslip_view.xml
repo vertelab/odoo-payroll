@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="hr_payslip_view_form" model="ir.ui.view">
+        <field name="name">hr.payslip.form</field>
+        <field name="model">hr.payslip</field>
+        <field name="inherit_id" ref="payroll.hr_payslip_view_form" />
+        <field name="arch" type="xml">
+            <button name="compute_sheet" position="before">
+                <button
+                    name="request_validation"
+                    string="Request Validation"
+                    attrs="{'invisible': ['|','|',('need_validation', '!=', True),('rejected','=',True),('state','not in',['draft'])]}"
+                    type="object"
+                />
+                <button
+                    name="restart_validation"
+                    string="Restart Validation"
+                    attrs="{'invisible': ['|',('review_ids', '=', []),('state','not in',['draft'])]}"
+                    type="object"
+                />
+            </button>
+            <header position="after">
+                <field name="need_validation" invisible="1" />
+                <field name="validated" invisible="1" />
+                <field name="rejected" invisible="1" />
+                <field name="review_ids" invisible="1" />
+            </header>
+
+        </field>
+    </record>
+</odoo>
