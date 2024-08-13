@@ -1,12 +1,14 @@
-odoo-payroll | fleet_driving_record
-2023-02-22
+odoo-payroll | payroll_tier_review
+2024-08-13
 
-Path:
-/static/description/banner.png
-/static/description/icon.png
+Be aware of these!
+[project]/[module]/static/description/banner.png
+[project]/[module]/static/description/icon.png
 
 Icon: "reciept"
-Icons may be found at: https://fontawesome.com/v5/cheatsheet
+reciept_icon.png
+reciept_icon_50.png
+reciept_icon_50_neg.png
 
 Odoo banner: 560 x 280
 Odoo icon: 140 x 140
@@ -16,7 +18,6 @@ HEX
 #8105a7
 
 Source: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Colors/Color_picker_tool
-
 Edit image:
 Ubuntu = Pinta, https://www.pinta-project.com/howto/installing-pinta
 Windows = Paint.net , https://www.getpaint.net/
@@ -31,9 +32,6 @@ Guide:
 7. Be careful when selecting the filename! It's easy to select the wrong path!
 8. ...of choice and choose "Export".
 
-
-Make it right the first time! :-)
-
 grep -sR "'name':" */*__.py
 grep -sR "'version':" */*__.py
 grep -sR "'category':" */*__.py
@@ -41,11 +39,12 @@ grep -sR "'summary':" */*__.py
 grep -sR "'description':" */*__.py
 grep -sR "'description':" */*/*__.py -n | grep "40"
 grep -sR "'depends':" */*__.py
+grep -sR "'repository':" */*__.py
 grep -sR "'website':" */*__.py
 ls | wc -l
 grep -sR "'website':" */*__.py | tr "'" " "
 
-grep -r "2023-02-*" odoo-*/*/static/description/notes.txt
-
-
+Find the latest project to copy / paste:
+grep -r "2024-08-*" odoo-*/*/static/description/notes.txt
+grep -r "2024-*" */static/description/notes.txt
 
