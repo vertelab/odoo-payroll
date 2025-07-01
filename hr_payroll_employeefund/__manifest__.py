@@ -21,7 +21,7 @@
 
 {
     'name': 'Payroll: HR Payroll Employee Fund',
-    'version': '14.0.0.0.0',
+    'version': '18.0.0.0.0',
     # Version ledger: 14.0 = Odoo version. 1 = Major. Non regressionable code. 2 = Minor. New features that are regressionable. 3 = Bug fixes
     'summary': 'Extends hr.contract with an analytic account for a fund.',
     'category': 'Productivity',
@@ -39,12 +39,13 @@ Financed by Dermanord-Svensk Hudvård AB
     'contributor': '',
     'maintainer': 'Vertel AB',
     'repository': 'https://github.com/vertelab/odoo-payroll',
-    'depends': ['payroll','hr_timesheet_sheet'],
-    'data': ['payslip_view.xml',
+    'depends': ['payroll', 'hr_timesheet_sheet'],
+    'data': [
+        'views/payslip_view.xml',
         'security/security.xml',
-        'views/hr_expense_view_form.xml',
+        # 'views/hr_expense_view_form.xml',
         'security/ir.model.access.csv',
-        ],
-'installable': True,
+    ],
+    'installable': True,
 }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

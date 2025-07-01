@@ -23,7 +23,7 @@ import logging
 _logger = logging.getLogger(__name__)
 
 
-class hr_expense(models.Model):
+class HRExpense(models.Model):
     _inherit = 'hr.expense'
 
     journal_id = fields.Many2one('account.journal', string='Journal', domain="[('type', '=', 'purchase')]")

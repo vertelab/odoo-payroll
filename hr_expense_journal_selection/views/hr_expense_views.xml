@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-
          <record id="hr_expense_view_form_inherit" model="ir.ui.view">
             <field name="name">hr_expense_view_form_inherit</field>
             <field name="model">hr.expense</field>
@@ -12,6 +11,5 @@
                </field>
             </field>
       </record>
-
     </data>
 </odoo>

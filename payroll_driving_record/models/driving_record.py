@@ -50,9 +50,9 @@ class DrivingRecord(models.Model):
 
     name = fields.Char(compute=_compute_name)
     product_id = fields.Many2one(comodel_name='product.product', string='Compensation', domain="[('can_be_expensed', '=', True)]")
-    employee_id = fields.Many2one(comodel_name='hr.employee', string='Employee', default=_default_employee, required=1)
-    date_start = fields.Date(string='Start date', default=_default_date_start, required=1)
-    date_stop = fields.Date(string='Stop date', default=_default_date_stop, required=1)
+    employee_id = fields.Many2one(comodel_name='hr.employee', string='Employee', default=_default_employee, required=True)
+    date_start = fields.Date(string='Start date', default=_default_date_start, required=True)
+    date_stop = fields.Date(string='Stop date', default=_default_date_stop, required=True)
     analytic_account_id = fields.Many2one(comodel_name='account.analytic.account', string='Registration number')
     line_ids = fields.One2many(comodel_name='driving.record.line', inverse_name='driving_record_id', string='Driving record line')
     expense_id = fields.Many2one(comodel_name='hr.expense', string='Expense report', readonly=True)
@@ -132,18 +132,23 @@ class DrivingRecordLine(models.Model):
     def _default_date(self):
         return datetime.date.today()
 
-    date = fields.Date(string='Date', required=1, default=_default_date)
+    date = fields.Date(string='Date', required=True, default=_default_date)
     length = fields.Integer(string='Length (km)', store=True, compute='compute_length')
-    odometer_start = fields.Integer(string='Odometer start', required=1, store=True)
-    odometer_stop = fields.Integer(string='Odometer stop', required=1)
-    note = fields.Char(string='Note', help=_("Purpose of trip"))
+    odometer_start = fields.Integer(string='Odometer start', required=True, store=True)
+    odometer_stop = fields.Integer(string='Odometer stop', required=True)
+    note = fields.Char(string='Note', help="Purpose of trip")
     type = fields.Selection([
         ('private', 'Private'),
         ('business', 'Business')
-    ], string='Type', required=1)
+    ], string='Type', required=True)
     partner_id = fields.Many2one(comodel_name='res.partner', string='Destination partner')
-    analytic_account_id = fields.Many2one(comodel_name='account.analytic.account', string='Vehicle', related='driving_record_id.analytic_account_id',store=True)
-    employee_id = fields.Many2one(comodel_name='hr.employee', string='Employee', related='driving_record_id.employee_id', store=True)
+    analytic_account_id = fields.Many2one(
+        comodel_name='account.analytic.account', string='Vehicle',
+        related='driving_record_id.analytic_account_id',store=True
+    )
+    employee_id = fields.Many2one(
+        comodel_name='hr.employee', string='Employee', related='driving_record_id.employee_id', store=True
+    )
     state = fields.Selection(string='State',related='driving_record_id.state', store=True)
 
     @api.onchange('odometer_start', 'odometer_stop')
@@ -246,21 +251,20 @@ class DrivingRecordLine(models.Model):
                 'date_stop': date.replace(month=(date.month % 12) + 1, day=1) - datetime.timedelta(days=1),
             }
 
-    @api.model
-    def create(self,values):
-        if (not 'driving_record_id' in values) or values.get('driving_record_id') == False:
-            line = self.add_driving_line(
-                values.get('date', fields.Date.today()),
-                values.get('odometer_start'),
-                values.get('odometer_stop'),
-                values.get('note'),
-                values.get('type', 'private'),
-                values.get('employee_id', self.env.user.employee_id.id),
-                values.get('partner_id', False),
-                True)
-            if line.partner_id == False:
-                line.partner_id = self._context.get('partner_id', None)
-        else:
-            _logger.warning(f"{values=}")
-            line = super(DrivingRecordLine, self).create(values)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for val in vals_list:
+            if (not 'driving_record_id' in val) or val.get('driving_record_id') == False:
+                line = self.add_driving_line(
+                    val.get('date', fields.Date.today()),
+                    val.get('odometer_start'),
+                    val.get('odometer_stop'),
+                    val.get('note'),
+                    val.get('type', 'private'),
+                    val.get('employee_id', self.env.user.employee_id.id),
+                    val.get('partner_id', False),
+                    True)
+                if not line.partner_id:
+                    line.partner_id = self._context.get('partner_id', None)
+        line = super(DrivingRecordLine, self).create(vals_list)
         return line
