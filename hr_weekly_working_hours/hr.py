@@ -50,16 +50,15 @@ class hr_contract(models.Model):
         for contract in self:
             contract.scheduled_working_hours = contract.resource_calendar_id and contract.resource_calendar_id.get_weekly_working_hours() or 0
             
-
 class resource_calendar(models.Model):
     _inherit = "resource.calendar"
 
-    def get_weekly_working_hours(self):
-        self.ensure_one()
-        res = 0
-        for line in self.attendance_ids:
-            res += line.hour_to - line.hour_from
-        return res
+    # def get_weekly_working_hours(self):
+    #     self.ensure_one()
+    #     res = 0
+    #     for line in self.attendance_ids:
+    #         res += line.hour_to - line.hour_from
+    #     return res
 
 class hr_employee(models.Model):
     _inherit = "hr.employee"
@@ -90,5 +89,3 @@ class hr_employee(models.Model):
 
     def get_working_hours_per_day(self, date = None):
         return self.get_working_hours(date) / (self.get_working_days(date) or 5) # Assume 5 day week if 0
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
