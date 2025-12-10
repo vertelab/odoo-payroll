@@ -21,28 +21,20 @@
 
 {
     'name': 'Payroll: Weekly Working Hours',
-    'version': '18.0.0.0.0',
-    # Version ledger: 14.0 = Odoo version. 1 = Major. Non regressionable code. 2 = Minor. New features that are regressionable. 3 = Bug fixes
+    'version': '1.0',
     'summary': 'Adds Weekly working hours fields to hr.contract.',
-    # Categories can be used to filter modules in modules listing
-    # Check https://github.com/odoo/odoo/blob/14.0/odoo/addons/base/data/ir_module_category_data.xml
-    # for the full list
     'category': 'Hr',
     'description': """
     Adds Weekly working hours fields to hr.contract.
     """,
-    #'sequence': '1',
     'author': 'Vertel AB',
     'website': 'https://vertel.se/apps/odoo-payroll/hr_weekly_working_hours',
-    'images': ['static/description/banner.png'], # 560x280 px.
+    'images': ['static/description/banner.png'],
     'license': 'AGPL-3',
     'contributor': '',
     'maintainer': 'Vertel AB',
     'repository': 'https://github.com/vertelab/odoo-payroll',
-    # Any module necessary for this one to work correctly
-
     'depends': ['hr_contract'],
-    'data': ['hr_view.xml'],
+    'data': ['views/hr_view.xml'],
     'installable': True,
 }
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

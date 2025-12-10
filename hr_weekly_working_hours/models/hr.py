@@ -53,12 +53,12 @@ class hr_contract(models.Model):
 class resource_calendar(models.Model):
     _inherit = "resource.calendar"
 
-    # def get_weekly_working_hours(self):
-    #     self.ensure_one()
-    #     res = 0
-    #     for line in self.attendance_ids:
-    #         res += line.hour_to - line.hour_from
-    #     return res
+    def get_weekly_working_hours(self):
+        self.ensure_one()
+        res = 0
+        for line in self.attendance_ids:
+            res += line.hour_to - line.hour_from
+        return res
 
 class hr_employee(models.Model):
     _inherit = "hr.employee"
