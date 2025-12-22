@@ -46,10 +46,7 @@ class hr_contract(models.Model):
     @api.depends('resource_calendar_id', 'resource_calendar_id.attendance_ids',
         'resource_calendar_id.attendance_ids.hour_from',
         'resource_calendar_id.attendance_ids.hour_to')
-    def get_scheduled_working_hours(self):
-        for contract in self:
-            contract.scheduled_working_hours = contract.resource_calendar_id and contract.resource_calendar_id.get_weekly_working_hours() or 0
-            
+
 class resource_calendar(models.Model):
     _inherit = "resource.calendar"
 
