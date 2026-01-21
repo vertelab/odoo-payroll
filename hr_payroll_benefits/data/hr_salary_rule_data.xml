@@ -2,7 +2,7 @@
 <odoo>
     <data noupdate="1">
         <record id="hr_benefit_rule_carbru" model="hr.salary.rule">
-            <field name="category_id" ref="l10n_se_hr_payroll.hr_salary_rule_category-BRUTIL" />
+            <field name="category_id" ref="l10n_se_hr_payroll.hr_salary_rule_category_BRUTIL" />
             <field name="code">forman_bilbru</field>
             <field name="salary_art">550</field>
             <field name="name">Bilförmån brutto</field>
@@ -18,7 +18,7 @@
             <field name="quantity">1</field>
         </record>
         <record id="hr_benefit_rule_carnet" model="hr.salary.rule">
-            <field name="category_id" ref="l10n_se_hr_payroll.hr_salary_rule_category-NETAVG" />
+            <field name="category_id" ref="l10n_se_hr_payroll.hr_salary_rule_category_NETAVG" />
             <field name="code">forman_bilnet</field>
             <field name="salary_art">550</field>
             <field name="name">Bilförmån netto</field>
@@ -34,7 +34,7 @@
             <field name="quantity">1</field>
         </record>
         <record id="hr_benefit_rule_driv" model="hr.salary.rule">
-            <field name="category_id" ref="l10n_se_hr_payroll.hr_salary_rule_category-BRUTIL" />
+            <field name="category_id" ref="l10n_se_hr_payroll.hr_salary_rule_category_BRUTIL" />
             <field name="code">forman_driv</field>
             <field name="salary_art">550</field>
             <field name="name">Drivmedelsförmån</field>
@@ -50,7 +50,7 @@
             <field name="quantity">1</field>
         </record>
         <record id="hr_benefit_rule_home" model="hr.salary.rule">
-            <field name="category_id" ref="l10n_se_hr_payroll.hr_salary_rule_category-BRUTIL" />
+            <field name="category_id" ref="l10n_se_hr_payroll.hr_salary_rule_category_BRUTIL" />
             <field name="code">forman_bost</field>
             <field name="salary_art">550</field>
             <field name="name">Bostadsförmån</field>
