@@ -1,0 +1,28 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* hr_expense_journal_selection
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0-20260105\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-01-08 12:10+0000\n"
+"PO-Revision-Date: 2026-01-08 13:15+0100\n"
+"Last-Translator: Jakob Krabbe <jakob.krabbe@vertel.se>\n"
+"Language-Team: \n"
+"Language: sv\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.4.2\n"
+
+#. module: hr_expense_journal_selection
+#: model:ir.model,name:hr_expense_journal_selection.model_hr_expense
+msgid "Expense"
+msgstr "Utgift"
+
+#. module: hr_expense_journal_selection
+#: model:ir.model.fields,field_description:hr_expense_journal_selection.field_hr_expense__journal_id
+msgid "Journal"
+msgstr "Journal"
