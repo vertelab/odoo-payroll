@@ -38,10 +38,22 @@ class hr_contract(models.Model):
     _inherit = "hr.contract"
 
     weekly_working_hours = fields.Float(string='Weekly Working Hours', default=40, help="The amount of hours/working week that should be used in calculations. Ought to be the same as the amount of hours in the schedule.")
-    scheduled_working_hours = fields.Float(string='Scheduled Working Hours', compute='get_scheduled_working_hours', store=True, help="The amount of hours in the schedule for this contract.")
+    scheduled_working_hours = fields.Float(string='Scheduled Working Hours', compute='_compute_scheduled_working_hours', store=True, help="The amount of hours in the schedule for this contract.")
     wwh_days_full = fields.Float(string='WWH Days Full Time', default=5, help="The number of worked days/week for a full time employee. Currently not used.")
     wwh_days_intermittent = fields.Float(string='WWH Days Intermittent', default=5, help="The number of worked days/week for a part time employee. Currently used for both full and part time.")
     working_percent = fields.Float(string='Working Percent',default=100, help="Currently not used.")
+
+    @api.depends('resource_calendar_id')
+    def _compute_scheduled_working_hours(self):
+        """Compute scheduled weekly working hours from the contract's
+        resource calendar (sum of attendance day hours).
+        """
+        for contract in self:
+            calendar = contract.resource_calendar_id
+            if calendar:
+                contract.scheduled_working_hours = calendar.get_weekly_working_hours()
+            else:
+                contract.scheduled_working_hours = contract.weekly_working_hours
 
 class resource_calendar(models.Model):
     _inherit = "resource.calendar"
