@@ -20,15 +20,21 @@
 ##############################################################################
 {
     'name': 'Payroll: HR Payroll Benefits',
-    'version': '1.1',
-    'summary': 'Extends contract with benefits',
+    'version': '18.0.1.1.0',
+    'summary': 'Extends contract with benefits.',
     'category': 'Payroll Localization',
-    'description': """
-Extends the contract with benefits for use in rules
+    'description': '''
+HR Payroll Benefits
+===================
 
-In rules you can use benefits like this both in conditions and computation:
-return = contract.benefit_value('car')
-    """,
+    In rules you can use benefits like this both in conditions and computation:
+    return = contract.benefit_value('car')
+
+    Features:
+
+        - UI Integration: Extends 1 view(s) in the Odoo interface.
+        - Extends Odoo: Builds on contract_id, hr.benefit, hr.contract, hr.contract.benefit.
+    ''',
     'author': 'Vertel AB',
     'website': 'https://vertel.se/apps/odoo-payroll/hr_payroll_benefits',
     'images': ['static/description/banner.png'],

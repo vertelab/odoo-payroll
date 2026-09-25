@@ -21,12 +21,22 @@
 
 {
     'name': 'Payroll: Driving Record',
-    'version': '1.0',
+    'version': '18.0.1.0.0',
     # Version ledger: 14.0 = Odoo version. 1 = Major. Non regressionable code. 2 = Minor. New features that are regressionable. 3 = Bug fixes
-    'summary': '',
+    'summary': "Adds driving record tracking to payroll.",
     'category': 'Productivity',
-    'description': """
-    """,
+    'description': '''
+Driving Record
+==============
+
+    Adds driving record tracking to payroll.
+
+    Features:
+
+        - Web integration: Exposes HTTP endpoints for external systems.
+        - UI Integration: Extends 2 view(s) in the Odoo interface.
+        - Extends Odoo: Builds on account.analytic.account, driving.record, driving.record.line, driving_record_id.
+    ''',
     #'sequence': '1',
     'author': 'Vertel AB',
     'website': 'https://vertel.se/apps/odoo-payroll/payroll_driving_record',

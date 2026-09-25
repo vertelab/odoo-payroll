@@ -23,11 +23,19 @@
     'name': 'Payroll: HR Expense Journal Selection',
     'version': '18.0.0.0.0',
     # Version ledger: 14.0 = Odoo version. 1 = Major. Non regressionable code. 2 = Minor. New features that are regressionable. 3 = Bug fixes
-    'summary': 'Allows Us to Set a journal on a hr.expense',
+    'summary': 'Allows Us to Set a journal on a hr.expense.',
     'category': 'Payroll Localization',
-    'description': """
+    'description': '''
+HR Expense Journal Selection
+============================
+
     This module adds a field on a hr.expense which allows to set the journal.
-    """,
+
+    Features:
+
+        - UI Integration: Extends 1 view(s) in the Odoo interface.
+        - Extends Odoo: Builds on hr.expense.
+    ''',
     #'sequence': '1',
     'author': 'Vertel AB',
     'website': 'https://vertel.se/apps/odoo-payroll/hr_expense_journal_selection',

@@ -25,12 +25,18 @@
     # Version ledger: 14.0 = Odoo version. 1 = Major. Non regressionable code. 2 = Minor. New features that are regressionable. 3 = Bug fixes
     'summary': 'Extends hr.contract with an analytic account for a fund.',
     'category': 'Productivity',
-    'description': """
-    Extends the Employee Contract with an analytic account to be used as a fund. 
-This can be used as a flexible time bank (hours) or monetary values (cost/revenue).
+    'description': '''
+HR Payroll Employee Fund
+========================
 
-Financed by Dermanord-Svensk Hudvård AB
-    """,
+    Extends the Employee Contract with an analytic account to be used as a fund. 
+    This can be used as a flexible time bank (hours) or monetary values (cost/revenue).
+
+    Features:
+
+        - UI Integration: Extends 2 view(s) in the Odoo interface.
+        - Extends Odoo: Builds on account.analytic.account, hr.contract, hr.payslip, hr.salary.rule.
+    ''',
     #'sequence': '1',
     'author': 'Vertel AB',
     'website': 'https://vertel.se/apps/odoo-payroll/hr_payroll_employeefund',

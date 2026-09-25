@@ -21,12 +21,20 @@
 
 {
     'name': 'Payroll: Weekly Working Hours',
-    'version': '1.0',
+    'version': '18.0.1.0.0',
     'summary': 'Adds Weekly working hours fields to hr.contract.',
     'category': 'Hr',
-    'description': """
+    'description': '''
+Weekly Working Hours
+====================
+
     Adds Weekly working hours fields to hr.contract.
-    """,
+
+    Features:
+
+        - UI Integration: Extends 1 view(s) in the Odoo interface.
+        - Extends Odoo: Builds on hr.contract, hr.employee, resource.calendar.
+    ''',
     'author': 'Vertel AB',
     'website': 'https://vertel.se/apps/odoo-payroll/hr_weekly_working_hours',
     'images': ['static/description/banner.png'],
