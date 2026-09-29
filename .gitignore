@@ -90,3 +90,8 @@ ENV/
 *.packages
 *.iml
 .dart_tool/
+.shazam/
+PLAN*
+*.pyc
+graphify-out/
+openspec/
