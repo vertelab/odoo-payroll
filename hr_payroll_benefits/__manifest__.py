@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    Odoo, Open Source Enterprise Management Solution, third party addon
-#    Copyright (C) 2018 Vertel AB (<http://vertel.se>).
+#    Copyright (C) 2018 Vertel Sverige AB (<http://vertel.se>).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -20,27 +20,21 @@
 ##############################################################################
 {
     'name': 'Payroll: HR Payroll Benefits',
-    'version': '18.0.1.1.0',
-    'summary': 'Extends contract with benefits.',
+    'version': '1.1',
+    'summary': 'Extends contract with benefits',
     'category': 'Payroll Localization',
-    'description': '''
-HR Payroll Benefits
-===================
+    'description': """
+Extends the contract with benefits for use in rules
 
-    In rules you can use benefits like this both in conditions and computation:
-    return = contract.benefit_value('car')
-
-    Features:
-
-        - UI Integration: Extends 1 view(s) in the Odoo interface.
-        - Extends Odoo: Builds on contract_id, hr.benefit, hr.contract, hr.contract.benefit.
-    ''',
-    'author': 'Vertel AB',
+In rules you can use benefits like this both in conditions and computation:
+return = contract.benefit_value('car')
+    """,
+    'author': 'Vertel Sverige AB',
     'website': 'https://vertel.se/apps/odoo-payroll/hr_payroll_benefits',
     'images': ['static/description/banner.png'],
     'license': 'AGPL-3',
     'contributor': '',
-    'maintainer': 'Vertel AB',
+    'maintainer': 'Vertel Sverige AB',
     'repository': 'https://github.com/vertelab/odoo-l10n_se_payroll',
     'depends': ['payroll', 'l10n_se_hr_payroll'],
     'data': ['views/hr_contract_view.xml', 'security/ir.model.access.csv','data/hr_salary_rule_data.xml'],

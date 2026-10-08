@@ -1,4 +1,4 @@
-//  Driving Record app by Vertel AB
+//  Driving Record app by Vertel Sverige AB
 //  Code written by Robin Calvin
 
 //import 'dart:developer';
@@ -743,7 +743,7 @@ void showAbout(BuildContext context) {
             // title: const Text('About'),
             content: Wrap(alignment: WrapAlignment.center, children: [
               const Text('Driving Record v1.0', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600)),
-              const Text('\u00a9 2022 Vertel AB'),
+              const Text('\u00a9 2022 Vertel Sverige AB'),
               Image.asset('assets/images/vertel_logo.png'),
               const Text(' '),
               const Center(

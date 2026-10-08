@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    Odoo SA, Open Source Management Solution, third party addon
-#    Copyright (C) 2023- Vertel AB (<https://vertel.se>).
+#    Copyright (C) 2023- Vertel Sverige AB (<https://vertel.se>).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -21,26 +21,18 @@
 
 {
     'name': 'Payroll: Weekly Working Hours',
-    'version': '18.0.1.0.0',
+    'version': '1.0',
     'summary': 'Adds Weekly working hours fields to hr.contract.',
     'category': 'Hr',
-    'description': '''
-Weekly Working Hours
-====================
-
+    'description': """
     Adds Weekly working hours fields to hr.contract.
-
-    Features:
-
-        - UI Integration: Extends 1 view(s) in the Odoo interface.
-        - Extends Odoo: Builds on hr.contract, hr.employee, resource.calendar.
-    ''',
-    'author': 'Vertel AB',
+    """,
+    'author': 'Vertel Sverige AB',
     'website': 'https://vertel.se/apps/odoo-payroll/hr_weekly_working_hours',
     'images': ['static/description/banner.png'],
     'license': 'AGPL-3',
     'contributor': '',
-    'maintainer': 'Vertel AB',
+    'maintainer': 'Vertel Sverige AB',
     'repository': 'https://github.com/vertelab/odoo-payroll',
     'depends': ['hr_contract'],
     'data': ['views/hr_view.xml'],
