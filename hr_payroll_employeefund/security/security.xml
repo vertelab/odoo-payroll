@@ -2,10 +2,20 @@
         <!-- ir.rule does not exist in 20.0 (merged into ir.access.domain) and
              the rule targets hr_contract, which is gone from 19.0. Kept for
              18.0/19.0; documented technical debt for 20.0. -->
+        <!-- 19.0 replaced res.groups.category_id with res.groups.privilege_id
+             (res.groups.privilege). hr_contract, which owned the Contracts
+             module category, is gone; the group hangs under the Employees
+             privilege instead. -->
+        <record id="res_groups_privilege_contract_holder" model="res.groups.privilege">
+            <field name="name">Contracts</field>
+            <field name="sequence">30</field>
+            <field name="category_id" ref="base.module_category_human_resources"/>
+        </record>
+
         <record id="group_contract_holder" model="res.groups">
-            <field name="category_id" ref="base.module_category_human_resources_contracts"/>
             <field name="name">Contract Holder</field>
-    </record>
+            <field name="privilege_id" ref="res_groups_privilege_contract_holder"/>
+        </record>
     
         <record id="portal_read_own_contract" model="ir.rule">
             <field name="name">res_partner: read access on my partner</field>

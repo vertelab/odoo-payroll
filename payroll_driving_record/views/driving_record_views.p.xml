@@ -40,12 +40,16 @@
                     <field name="expense_state"/>
                     <filter string="My Driving Records" name="my_driving_records"
                             domain="[('employee_id.user_id', '=', uid)]"/>
+                    <!-- #if VERSION <= "18.0" -->
                     <group expand="0" string="Group By">
+                    <!-- #endif -->
                         <filter string="Employee" name="employee_group" domain="[]"
                                 context="{'group_by': 'employee_id'}"/>
                         <filter string="Start Date" name="date_start_group" domain="[]"
                                 context="{'group_by': 'date_start:month'}" help="Start date for the Driving Record"/>
+                    <!-- #if VERSION <= "18.0" -->
                     </group>
+                    <!-- #endif -->
                 </search>
             </field>
         </record>
