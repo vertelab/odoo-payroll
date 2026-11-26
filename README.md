@@ -29,17 +29,31 @@ databasen för utgåvan, och p-filerna finns på grenen.
 
 | Modul | 18.0 | 19.0 | 20.0 |
 |---|---|---|---|
-| `hr_expense_journal_selection` | ✅ porterad | ⛔ blockerad | ⛔ blockerad |
-| `hr_payroll_benefits` | ✅ porterad | ⛔ blockerad | ⛔ blockerad |
-| `hr_payroll_employeefund` | ✅ porterad | ⛔ blockerad | ⛔ blockerad |
-| `hr_weekly_working_hours` | ✅ porterad | ⛔ blockerad | ⛔ blockerad |
-| `payroll_driving_record` | ✅ porterad | ⛔ blockerad | ⛔ blockerad |
+| `hr_expense_journal_selection` | ✅ porterad | ✅ porterad | ⛔ blockerad |
+| `hr_payroll_benefits` | ✅ porterad | ✅ porterad | ⛔ blockerad |
+| `hr_payroll_employeefund` | ✅ porterad | ✅ porterad | ⛔ blockerad |
+| `hr_weekly_working_hours` | ✅ porterad | ✅ porterad | ⛔ blockerad |
+| `payroll_driving_record` | ✅ porterad | ✅ porterad | ⛔ blockerad |
 
 **18.0** är verifierad i `pfile_18.0`: alla fem modulerna är `installed`.
 
-**19.0 och 20.0** är p-filsberedda (villkoren finns, utdata genereras) men
-kan inte installeras eftersom beroendekedjan inte är porterad. Se
+**19.0** är verifierad i `pfile_19.0`: alla fem modulerna är `installed`.
+Två av dem krävde att beroenden länkades in först: `payroll` (OCA/payroll
+19.0) och `hr_timesheet_sheet` (OCA/timesheet 19.0, som i sin tur kräver
+`web_widget_x2many_2d_matrix` från OCA/web 19.0).
+
+**20.0** är p-filsberedd (villkoren finns, utdata genereras) men kan inte
+installeras: `payroll` saknas helt i OCA/payroll 20.0 (tomstubbe). Se
 blockerarlistan nedan.
+
+### Vad som krävdes för 19.0 (hittat genom att installera, inte genom att läsa)
+
+| Modul | Åtgärd |
+|---|---|
+| `hr_weekly_working_hours` | `depends` `hr_contract` → `hr` (modulen finns inte i 19.0) |
+| `hr_payroll_benefits` | `depends` `l10n_se_hr_payroll` släppt för 19/20; löneregel-datan som refererar dess kategorier utesluten |
+| `hr_payroll_employeefund` | `res.groups.category_id` → `privilege_id` (19.0); access-CSV mot `hr.model_hr_version` |
+| `payroll_driving_record` | sökvyns `<group expand=...>` ogiltig från 19.0 → villkorad till `<= 18.0` |
 
 ### Blockerare
 
@@ -50,13 +64,13 @@ klass 3 = kärnmodulen är borttagen eller ersatt.
 |---|---|---|---|---|---|
 | `payroll` | OCA/payroll | 144 filer | 141 filer | **0 filer** (bara `.github`) | 1 |
 | `l10n_se_hr_payroll` | vertelab/odoo-l10n_se_payroll | ✅ | **tom gren** | **bär `18.0.1.0.1`** | 1 |
-| `hr_timesheet_sheet` | OCA/timesheet | ✅ (i 18.0) | 0 filer | 0 filer | 2 |
+| `hr_timesheet_sheet` | OCA/timesheet | ✅ | ✅ (kräver `web_widget_x2many_2d_matrix` 19.0) | 0 filer | 1 |
 | `hr_contract` | kärnan | ✅ | **borttagen** → `hr.version` | **borttagen** → `hr.version` | 3 |
-| `account_journal_select_payable_receivable_account` | vertelab | ✅ | okänd | finns men `uninstalled` | 2 |
+| `account_journal_select_payable_receivable_account` | vertelab | ✅ | ✅ | finns men `uninstalled` | 2 |
 
 `payroll` (klass 1) blockerar **alla fem** modulerna i 20.0 — det är den
-dyraste enskilda blockeraren i repot. `l10n_se_hr_payroll` (klass 1) blockerar
-`hr_payroll_benefits` i både 19.0 och 20.0.
+dyraste enskilda blockeraren i repot. Så länge den är en tomstubbe går inget
+av repo:t att installera i 20.0, oavsett hur korrekt p-filerna är.
 
 ## Vad som skiljer mellan utgåvorna
 
