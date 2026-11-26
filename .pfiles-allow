@@ -46,3 +46,11 @@ payroll_driving_record/native_app/windows/runner/win32_window.h
 
 # Tom platshållare (webbportal-mall), inte laddad i manifestet.
 payroll_driving_record/views/templates.xml
+
+# Tester är versionsagnostiska som källa (de löser modellnamnet från modulens
+# eget fält) och har därför ingen p-fil — samma testfil på alla grenar.
+hr_expense_journal_selection/tests/test_expense_journal.py
+hr_weekly_working_hours/tests/test_weekly_working_hours.py
+hr_payroll_benefits/tests/test_benefits.py
+hr_payroll_employeefund/tests/test_employee_fund.py
+payroll_driving_record/tests/test_driving_record.py
