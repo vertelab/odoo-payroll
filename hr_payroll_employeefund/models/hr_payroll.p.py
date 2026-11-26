@@ -1,0 +1,107 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+# OpenERP, Open Source Management Solution, third party addon
+# Copyright (C) 2004-2016 Vertel Sverige AB (<http://vertel.se>).
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+##############################################################################
+
+from odoo import models, fields, api, _
+
+# #if VERSION < "19.0"
+# Unused import (every dp.get_precision() call is commented out), and the
+# module does not exist in 19.0/20.0. Kept for 18.0 so the expansion stays
+# byte-identical to what is deployed today.
+import odoo.addons.decimal_precision as dp
+# #endif
+import logging
+_logger = logging.getLogger(__name__)
+
+
+# #if VERSION >= "19.0"
+# hr_contract was removed from core in 19.0; the contract model is hr.version.
+class HRContract(models.Model):
+    _inherit = 'hr.version'
+# #else
+class HRContract(models.Model):
+    _inherit = 'hr.contract'
+# #endif
+
+    employee_fund = fields.Many2one(string="Employee Fund", comodel_name='account.analytic.account',
+                                    help="Use this account together with marked salary rule")
+    employee_fund_balance = fields.Monetary(string='Balance', related='employee_fund.balance',
+                                            currency_field='currency_id')
+    employee_fund_name = fields.Char(string='Name', related='employee_fund.name')
+
+
+class HRSalaryRule(models.Model):
+    _inherit = 'hr.salary.rule'
+
+    use_employee_fund = fields.Boolean(string="Use for employee fund",default=False)
+
+
+class HRPayslip(models.Model):
+    _inherit = 'hr.payslip'
+
+#    @api.multi
+    def get_employeefund_addition(self):
+        return sum(self.env['account.analytic.line'].search([
+            ('account_id', '=', self.contract_id.employee_fund.id),
+            ('date', '>=', self.date_from), ('date', '<=', self.date_to),
+            ('amount', '>', 0.0)]
+        ).mapped('amount'))
+
+
+#    @api.one
+    def process_sheet(self):
+        for line in self.details_by_salary_rule_category:
+            if line.salary_rule_id.use_employee_fund and self.employee_id.contract_id.employee_fund:
+                self.env['account.analytic.line'].create({
+                    'name': 'Payslip %s' % self.name,
+                    'date': fields.Date.today(),
+                    'account_id': self.employee_id.contract_id.employee_fund.id,
+                    'unit_amount': 1.0,
+                    'amount': line.amount,
+                    'general_account_id': self.env['account.account'].search([('code', 'in', ['7690','7610','7600','7699'])])[0].id,
+                    'user_id': self.employee_id.user_id.id if self.employee_id.user_id else None,
+                    'journal_id': self.env.ref('account.exp').id,
+                })
+        return super(hr_payslip, self).process_sheet()
+
+# #if VERSION < "19.0"
+# hr_timesheet_sheet is not available for 19.0/20.0 (OCA/timesheet has no
+# ported module yet), and employee.contract_id does not exist there.
+class hr_timesheet_sheet(models.Model):
+    _inherit = "hr_timesheet.sheet"
+    currency_id = fields.Many2one('res.currency', related='company_id.currency_id')
+
+#    @api.one
+    def _employee_fund(self):
+        self.employee_fund = self.employee_id.sudo().contract_id.employee_fund
+    employee_fund = fields.Many2one(comodel_name='account.analytic.account', string='Employee Fund', compute='_employee_fund')
+ #   @api.one
+    def _employee_fund_balance(self):
+        self.employee_fund_balance = self.employee_id.sudo().contract_id.employee_fund_balance
+    employee_fund_balance = fields.Monetary(string='Balance', compute='_employee_fund_balance',currency_field='currency_id')
+  #  @api.one
+    def _employee_fund_name(self):
+        self.employee_fund_name = self.employee_id.sudo().contract_id.employee_fund_name
+    employee_fund_name = fields.Char(string='Name', compute='_employee_fund_name')
+    company_currency = fields.Many2one(related='company_id.currency_id')
+# #endif
+
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -21,7 +21,7 @@
 
 {
     'name': 'Payroll: Weekly Working Hours',
-    'version': '1.0',
+    'version': '1.1',
     'summary': 'Adds Weekly working hours fields to hr.contract.',
     'category': 'Hr',
     'description': """

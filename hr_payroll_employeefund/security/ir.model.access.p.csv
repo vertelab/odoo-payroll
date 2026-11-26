@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+group_contract_holder_reac_contract,read_contract,model_hr_contract,hr_payroll_employeefund.group_contract_holder,1,0,0,0
+
+
+

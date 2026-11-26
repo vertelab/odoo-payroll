@@ -1,0 +1,64 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+#    Odoo SA, Open Source Management Solution, third party addon
+#    Copyright (C) 2022- Vertel Sverige AB (<https://vertel.se>).
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+##############################################################################
+
+{
+    'name': 'Payroll: HR Payroll Employee Fund',
+    'version': '1.1',
+    # Version ledger: 14.0 = Odoo version. 1 = Major. Non regressionable code. 2 = Minor. New features that are regressionable. 3 = Bug fixes
+    'summary': 'Extends hr.contract with an analytic account for a fund.',
+    'category': 'Productivity',
+    'description': '''
+HR Payroll Employee Fund
+========================
+
+    Extends the Employee Contract with an analytic account to be used as a fund. 
+    This can be used as a flexible time bank (hours) or monetary values (cost/revenue).
+
+    Features:
+
+        - UI Integration: Extends 2 view(s) in the Odoo interface.
+        - Extends Odoo: Builds on account.analytic.account, hr.contract, hr.payslip, hr.salary.rule.
+    ''',
+    #'sequence': '1',
+    'author': 'Vertel Sverige AB',
+    'website': 'https://vertel.se/apps/odoo-payroll/hr_payroll_employeefund',
+    'images': ['/static/description/banner.png'], # 560x280 px.
+    'license': 'AGPL-3',
+    'contributor': '',
+    'maintainer': 'Vertel Sverige AB',
+    'repository': 'https://github.com/vertelab/odoo-payroll',
+    'depends': ['payroll', 'hr_timesheet_sheet'],
+    'data': [
+        # #if VERSION < "19.0"
+        'views/payslip_view.xml',
+        # #endif
+        # #if VERSION < "20.0"
+        'security/security.xml',
+        # #endif
+        # 'views/hr_expense_view_form.xml',
+        # #if VERSION >= "20.0"
+        'security/ir.access.csv',
+        # #else
+        'security/ir.model.access.csv',
+        # #endif
+    ],
+    'installable': True,
+}

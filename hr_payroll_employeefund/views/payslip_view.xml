@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+        <!-- Both views inherit views that do not exist in 19.0/20.0:
+             hr_contract.hr_contract_view_form (hr_contract removed) and the
+             hr.contract "other" page. The fields stay on the model. -->
         <!-- Adding Account fields to the Salary Rules -->
         <record id="hr_salary_rule_analytic_form_inherit" model="ir.ui.view">
             <field name="name">hr.salary.rule.analytic.form.inherit</field>

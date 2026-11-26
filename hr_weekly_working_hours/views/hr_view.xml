@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
   <data>
+    <!-- hr.version has no dedicated form view in 19.0/20.0 (versions are
+         edited from the employee form with a version_id context), so there is
+         no form view to inherit. The fields are still on the model there. -->
     <record model="ir.ui.view" id="hr_contract_view_form">
       <field name="name">hr.contract.view.form.weekly_work_hours</field>
       <field name="model">hr.contract</field>

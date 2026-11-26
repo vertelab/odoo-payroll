@@ -20,6 +20,10 @@
 ##############################################################################
 
 from odoo import models, fields, api, _
+
+# Unused import (every dp.get_precision() call is commented out), and the
+# module does not exist in 19.0/20.0. Kept for 18.0 so the expansion stays
+# byte-identical to what is deployed today.
 import odoo.addons.decimal_precision as dp
 import logging
 _logger = logging.getLogger(__name__)
@@ -69,6 +73,8 @@ class HRPayslip(models.Model):
                 })
         return super(hr_payslip, self).process_sheet()
 
+# hr_timesheet_sheet is not available for 19.0/20.0 (OCA/timesheet has no
+# ported module yet), and employee.contract_id does not exist there.
 class hr_timesheet_sheet(models.Model):
     _inherit = "hr_timesheet.sheet"
     currency_id = fields.Many2one('res.currency', related='company_id.currency_id')

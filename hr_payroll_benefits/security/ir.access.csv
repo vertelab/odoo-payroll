@@ -1,0 +1,5 @@
+id,name,model_id,group_id/id,operation,domain
+access_hr_benefit_user,hr.benefit.user,hr.benefit,hr.group_hr_user,crud,
+access_hr_benefit_manager,hr.benefit.manager,hr.benefit,hr.group_hr_manager,crud,
+access_hr_contract_benefit_user,hr.contract.benefit.user,hr.contract.benefit,hr.group_hr_user,r,
+access_hr_contract_benefit_manager,hr.contract.benefit.manager,hr.contract.benefit,hr.group_hr_manager,crud,

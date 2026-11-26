@@ -1,0 +1,21 @@
+name: pfiles
+
+# Gate for version-agnostic code (p-files). See /skill:odoo-pfiles.
+# Shared scripts are fetched from vertelab/pfiles-ci, not copied — a fix there
+# reaches every repo without being re-copied.
+#
+# Repo-specific, and stays here:
+#   .pfiles-ci     which editions this repo has, and the repos it depends on
+#   .pfiles-allow  files that are not p-files yet
+
+on:
+  push:
+    branches: ['*.0', 'ci/**', 'pfiles/**']
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  pfiles:
+    uses: vertelab/pfiles-ci/.github/workflows/pfiles.yml@v1

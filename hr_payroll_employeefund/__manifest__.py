@@ -21,7 +21,7 @@
 
 {
     'name': 'Payroll: HR Payroll Employee Fund',
-    'version': '18.0.0.0.0',
+    'version': '1.1',
     # Version ledger: 14.0 = Odoo version. 1 = Major. Non regressionable code. 2 = Minor. New features that are regressionable. 3 = Bug fixes
     'summary': 'Extends hr.contract with an analytic account for a fund.',
     'category': 'Productivity',

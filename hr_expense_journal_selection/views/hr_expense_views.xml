@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+         <!-- 19.0+ ships journal_id in core; the module does not own the field
+              there, so the view extension is dropped for those editions. -->
          <record id="hr_expense_view_form_inherit" model="ir.ui.view">
             <field name="name">hr_expense_view_form_inherit</field>
             <field name="model">hr.expense</field>

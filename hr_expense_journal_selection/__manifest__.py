@@ -21,7 +21,7 @@
 
 {
     'name': 'Payroll: HR Expense Journal Selection',
-    'version': '18.0.0.0.0',
+    'version': '1.1',
     # Version ledger: 14.0 = Odoo version. 1 = Major. Non regressionable code. 2 = Minor. New features that are regressionable. 3 = Bug fixes
     'summary': 'Allows Us to Set a journal on a hr.expense.',
     'category': 'Payroll Localization',
@@ -45,7 +45,12 @@ HR Expense Journal Selection
     'maintainer': 'Vertel Sverige AB',
     'repository': 'https://github.com/vertelab/odoo-payroll',
     'depends': ['hr_expense','account'],
-    'data': ['views/hr_expense_views.xml'],
+    'data': [
+        # Odoo 19+ ships hr.expense.journal_id in core (related to the payment
+        # method line's journal). The view extension only makes sense where the
+        # module owns the field, so it is dropped for 19.0 and 20.0.
+        'views/hr_expense_views.xml',
+    ],
     'installable': 'True',
     'application': 'False',
 }

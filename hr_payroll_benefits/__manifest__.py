@@ -37,6 +37,10 @@ return = contract.benefit_value('car')
     'maintainer': 'Vertel Sverige AB',
     'repository': 'https://github.com/vertelab/odoo-l10n_se_payroll',
     'depends': ['payroll', 'l10n_se_hr_payroll'],
-    'data': ['views/hr_contract_view.xml', 'security/ir.model.access.csv','data/hr_salary_rule_data.xml'],
+    'data': [
+        'views/hr_contract_view.xml',
+        'security/ir.model.access.csv',
+        'data/hr_salary_rule_data.xml',
+    ],
     'installable': True,
 }

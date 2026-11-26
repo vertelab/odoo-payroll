@@ -26,9 +26,13 @@ _logger = logging.getLogger(__name__)
 class HRExpense(models.Model):
     _inherit = 'hr.expense'
 
+    # Odoo 19+ owns hr.expense.journal_id (related to the payment method line's
+    # journal, readonly). Redeclaring it here would clash with core, so the
+    # field is only declared where core does not have it.
     journal_id = fields.Many2one('account.journal', string='Journal', domain="[('type', '=', 'purchase')]")
 
     def _create_sheet_from_expenses(self):
+        # Renamed to action_submit()/_create_sheets_from_expense() in 19.0.
         res = super()._create_sheet_from_expenses()
         if self.journal_id:
             res.journal_id = self.journal_id

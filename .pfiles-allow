@@ -1,0 +1,48 @@
+# .pfiles-allow — filer som inte är p-filer (än).
+# En sökväg per rad, relativ till repo-roten. '#' inleder kommentar.
+# Genererad: pfiles-check --version 18.0 --print-allow .
+#
+# Odoo-modulerna: allt versionsberoende är p-fil. Det som står här är
+# antingen genererat (index.html) eller medvetet 18.0-only.
+
+# security/ir.access.csv är 20.0-filen. Den laddas aldrig i 18/19 (manifestet
+# väljer ir.model.access.csv där) — se odoo-pfiles fälla 12c.
+hr_payroll_benefits/security/ir.access.csv
+hr_payroll_employeefund/security/ir.access.csv
+payroll_driving_record/security/ir.access.csv
+
+# Kommenterad ur manifestet sedan tidigare (18.0-only vy för utlägg).
+hr_payroll_employeefund/views/hr_expense_view_form.xml
+
+# Genererad av Odoo-appstore-verktyget, inte en källa.
+hr_expense_journal_selection/static/description/index.html
+hr_payroll_benefits/static/description/index.html
+hr_payroll_employeefund/static/description/index.html
+hr_weekly_working_hours/static/description/index.html
+payroll_driving_record/static/description/index.html
+
+# Flutter-appen (native_app) är inte Odoo-kod och versionshanteras inte med
+# p-filer. Den ligger kvar som den är.
+payroll_driving_record/native_app/android/app/src/debug/AndroidManifest.xml
+payroll_driving_record/native_app/android/app/src/main/AndroidManifest.xml
+payroll_driving_record/native_app/android/app/src/main/res/drawable-v21/launch_background.xml
+payroll_driving_record/native_app/android/app/src/main/res/drawable/launch_background.xml
+payroll_driving_record/native_app/android/app/src/main/res/values-night/styles.xml
+payroll_driving_record/native_app/android/app/src/main/res/values/styles.xml
+payroll_driving_record/native_app/android/app/src/profile/AndroidManifest.xml
+payroll_driving_record/native_app/ios/Runner/Runner-Bridging-Header.h
+payroll_driving_record/native_app/linux/flutter/generated_plugin_registrant.h
+payroll_driving_record/native_app/linux/my_application.h
+payroll_driving_record/native_app/web/index.html
+payroll_driving_record/native_app/windows/flutter/generated_plugin_registrant.h
+payroll_driving_record/native_app/windows/runner/flutter_window.cpp
+payroll_driving_record/native_app/windows/runner/flutter_window.h
+payroll_driving_record/native_app/windows/runner/main.cpp
+payroll_driving_record/native_app/windows/runner/resource.h
+payroll_driving_record/native_app/windows/runner/utils.cpp
+payroll_driving_record/native_app/windows/runner/utils.h
+payroll_driving_record/native_app/windows/runner/win32_window.cpp
+payroll_driving_record/native_app/windows/runner/win32_window.h
+
+# Tom platshållare (webbportal-mall), inte laddad i manifestet.
+payroll_driving_record/views/templates.xml

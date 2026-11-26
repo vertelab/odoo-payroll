@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo noupdate="1">
 
+
+
     <!-- Driving Record -->
     <!-- Manager -->
     <record id="ir_rule_driving_record_manager" model="ir.rule">
@@ -59,5 +61,6 @@
         <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
         <field name="groups" eval="[(4, ref('base.group_user'))]"/>
     </record>
+
 
 </odoo>
