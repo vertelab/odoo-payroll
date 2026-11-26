@@ -36,7 +36,15 @@ return = contract.benefit_value('car')
     'contributor': '',
     'maintainer': 'Vertel Sverige AB',
     'repository': 'https://github.com/vertelab/odoo-l10n_se_payroll',
+    # #if VERSION >= "19.0"
+    # l10n_se_hr_payroll is not ported to 19.0/20.0 (empty 19.0 branch, 20.0
+    # carries 18.0 code) and hr_contract is gone. The module installs on
+    # payroll alone there; the salary-rule data that references
+    # l10n_se_hr_payroll categories is dropped for those editions.
+    'depends': ['payroll'],
+    # #else
     'depends': ['payroll', 'l10n_se_hr_payroll'],
+    # #endif
     'data': [
         # #if VERSION < "19.0"
         'views/hr_contract_view.xml',
@@ -46,7 +54,9 @@ return = contract.benefit_value('car')
         # #else
         'security/ir.model.access.csv',
         # #endif
+        # #if VERSION < "19.0"
         'data/hr_salary_rule_data.xml',
+        # #endif
     ],
     'installable': True,
 }

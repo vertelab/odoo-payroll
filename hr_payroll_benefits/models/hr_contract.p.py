@@ -21,7 +21,11 @@ class hr_contract(models.Model):
 class hr_contract_benefit(models.Model):
     _name = 'hr.contract.benefit'
 
+    # #if VERSION >= "19.0"
+    contract_id = fields.Many2one(comodel_name="hr.version")
+    # #else
     contract_id = fields.Many2one(comodel_name="hr.contract")
+    # #endif
     name = fields.Many2one(comodel_name='hr.benefit',string="Code")
     desc = fields.Char(string="Description")
     # ~ value = fields.Float(string="Value",digits_compute=dp.get_precision('Payroll'),)
