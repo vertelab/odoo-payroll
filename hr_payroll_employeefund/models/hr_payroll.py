@@ -21,16 +21,13 @@
 
 from odoo import models, fields, api, _
 
-# Unused import (every dp.get_precision() call is commented out), and the
-# module does not exist in 19.0/20.0. Kept for 18.0 so the expansion stays
-# byte-identical to what is deployed today.
-import odoo.addons.decimal_precision as dp
 import logging
 _logger = logging.getLogger(__name__)
 
 
+# hr_contract was removed from core in 19.0; the contract model is hr.version.
 class HRContract(models.Model):
-    _inherit = 'hr.contract'
+    _inherit = 'hr.version'
 
     employee_fund = fields.Many2one(string="Employee Fund", comodel_name='account.analytic.account',
                                     help="Use this account together with marked salary rule")
@@ -73,25 +70,6 @@ class HRPayslip(models.Model):
                 })
         return super(hr_payslip, self).process_sheet()
 
-# hr_timesheet_sheet is not available for 19.0/20.0 (OCA/timesheet has no
-# ported module yet), and employee.contract_id does not exist there.
-class hr_timesheet_sheet(models.Model):
-    _inherit = "hr_timesheet.sheet"
-    currency_id = fields.Many2one('res.currency', related='company_id.currency_id')
-
-#    @api.one
-    def _employee_fund(self):
-        self.employee_fund = self.employee_id.sudo().contract_id.employee_fund
-    employee_fund = fields.Many2one(comodel_name='account.analytic.account', string='Employee Fund', compute='_employee_fund')
- #   @api.one
-    def _employee_fund_balance(self):
-        self.employee_fund_balance = self.employee_id.sudo().contract_id.employee_fund_balance
-    employee_fund_balance = fields.Monetary(string='Balance', compute='_employee_fund_balance',currency_field='currency_id')
-  #  @api.one
-    def _employee_fund_name(self):
-        self.employee_fund_name = self.employee_id.sudo().contract_id.employee_fund_name
-    employee_fund_name = fields.Char(string='Name', compute='_employee_fund_name')
-    company_currency = fields.Many2one(related='company_id.currency_id')
 
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

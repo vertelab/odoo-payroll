@@ -34,8 +34,10 @@ _logger = logging.getLogger(__name__)
 #VAD = Veckoarbetstid dagar heltid           WWH Days Full Time
 #VADI = Veckoarbetstid dagar intermittent    WWH Days Intermittent
 
+# hr_contract was removed from core in 19.0; the contract model is hr.version
+# (in hr / hr_attendance). The field names are unchanged.
 class hr_contract(models.Model):
-    _inherit = "hr.contract"
+    _inherit = "hr.version"
 
     weekly_working_hours = fields.Float(string='Weekly Working Hours', default=40, help="The amount of hours/working week that should be used in calculations. Ought to be the same as the amount of hours in the schedule.")
     scheduled_working_hours = fields.Float(string='Scheduled Working Hours', compute='_compute_scheduled_working_hours', store=True, help="The amount of hours in the schedule for this contract.")

@@ -46,10 +46,6 @@ HR Expense Journal Selection
     'repository': 'https://github.com/vertelab/odoo-payroll',
     'depends': ['hr_expense','account'],
     'data': [
-        # Odoo 19+ ships hr.expense.journal_id in core (related to the payment
-        # method line's journal). The view extension only makes sense where the
-        # module owns the field, so it is dropped for 19.0 and 20.0.
-        'views/hr_expense_views.xml',
     ],
     'installable': 'True',
     'application': 'False',
