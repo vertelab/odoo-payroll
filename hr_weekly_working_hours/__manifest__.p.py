@@ -34,7 +34,12 @@
     'contributor': '',
     'maintainer': 'Vertel Sverige AB',
     'repository': 'https://github.com/vertelab/odoo-payroll',
+    # #if VERSION >= "19.0"
+    # hr_contract was removed from core in 19.0; hr.version lives in hr.
+    'depends': ['hr'],
+    # #else
     'depends': ['hr_contract'],
+    # #endif
     'data': ['views/hr_view.xml'],
     'installable': True,
 }
