@@ -47,10 +47,8 @@ HR Payroll Employee Fund
     'repository': 'https://github.com/vertelab/odoo-payroll',
     'depends': ['payroll', 'hr_timesheet_sheet'],
     'data': [
-        'views/payslip_view.xml',
-        'security/security.xml',
         # 'views/hr_expense_view_form.xml',
-        'security/ir.model.access.csv',
+        'security/ir.access.csv',
     ],
     'installable': True,
 }

@@ -56,7 +56,7 @@ Driving Record
     # always loaded
     'data': [
         'security/ir_rule.xml',
-        'security/ir.model.access.csv',
+        'security/ir.access.csv',
         'views/driving_record_views.xml',
         #'data/drive_expense_journal.xml'
     ],

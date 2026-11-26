@@ -4,8 +4,9 @@ from odoo import models, fields, api, _
 
 _logger = logging.getLogger(__name__)
 
+# hr_contract was removed from core in 19.0; the contract model is hr.version.
 class hr_contract(models.Model):
-    _inherit = 'hr.contract'
+    _inherit = 'hr.version'
 
     benefit_ids = fields.One2many(comodel_name="hr.contract.benefit",inverse_name='contract_id')
 
