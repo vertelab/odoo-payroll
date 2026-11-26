@@ -36,7 +36,10 @@ fi
 # aven __pycache__/*.p.cpython-312.pyc (binarfil) -> preprocess kraschar.
 files=$(git diff --cached --name-only --diff-filter=ACM \
     | grep -E '\.p\.(py|js|csv|xml|sh|html|htm|kpf|xul)$' || true)
-[ -n "$files" ] || exit 0
+# Inga staged p-filer betyder INTE att det inte finns nagot att kontrollera:
+# en handredigerad utdatafil committas utan att dess p-fil rors. Grinden nedan
+# kor darfor alltid pa hela repot.
+if [ -n "$files" ]; then
 
 failed=0
 printf '%s\n' "$files" | while IFS= read -r f; do
@@ -46,6 +49,7 @@ printf '%s\n' "$files" | while IFS= read -r f; do
     git add "$o"
     echo "pfiles: $f -> $o (VERSION=$V)"
 done
+fi
 
 # Expansionen kan ga igenom och anda ge ogiltig kod for utgaVan -- t.ex. en
 # 20.0-modul vars manifest laddar en security-CSV i gammalt format. Hooken
