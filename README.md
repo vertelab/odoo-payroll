@@ -35,9 +35,11 @@ databasen för utgåvan, och p-filerna finns på grenen.
 | `hr_weekly_working_hours` | ✅ porterad | ✅ porterad | ⛔ blockerad |
 | `payroll_driving_record` | ✅ porterad | ✅ porterad | ⛔ blockerad |
 
-**18.0** är verifierad i `pfile_18.0`: alla fem modulerna är `installed`.
+**18.0** är verifierad i `pfile_18.0`: alla fem modulerna är `installed`
+och alla tester gröna (4/6/6/6/6 tester, 0 fel).
 
-**19.0** är verifierad i `pfile_19.0`: alla fem modulerna är `installed`.
+**19.0** är verifierad i `pfile_19.0`: alla fem modulerna är `installed`
+och alla tester gröna (2/3/3/3/3 tester, 0 fel).
 Två av dem krävde att beroenden länkades in först: `payroll` (OCA/payroll
 19.0) och `hr_timesheet_sheet` (OCA/timesheet 19.0, som i sin tur kräver
 `web_widget_x2many_2d_matrix` från OCA/web 19.0).
