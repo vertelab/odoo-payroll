@@ -35,7 +35,8 @@ databasen för utgåvan, och p-filerna finns på grenen.
 | `hr_weekly_working_hours` | ✅ porterad | ⛔ blockerad | ⛔ blockerad |
 | `payroll_driving_record` | ✅ porterad | ⛔ blockerad | ⛔ blockerad |
 
-**18.0** är verifierad i `pfile_18.0`: alla fem modulerna är `installed`.
+**18.0** är verifierad i `pfile_18.0`: alla fem modulerna är `installed`
+och alla tester gröna (4/6/6/6/6 tester, 0 fel).
 
 **19.0 och 20.0** är p-filsberedda (villkoren finns, utdata genereras) men
 kan inte installeras eftersom beroendekedjan inte är porterad. Se
